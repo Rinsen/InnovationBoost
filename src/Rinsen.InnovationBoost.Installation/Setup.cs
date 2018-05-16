@@ -12,7 +12,7 @@ namespace Rinsen.Logger.Installation
         {
             var installation = new List<DatabaseVersion>
             {
-                new CreateLogTable()
+                new CreateTables()
             };
 
             app.ApplicationServices.GetRequiredService<Installer>().Run(installation);

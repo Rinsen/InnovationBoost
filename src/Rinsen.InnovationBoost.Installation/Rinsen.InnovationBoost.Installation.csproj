@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Rinsen.DatabaseInstaller" Version="0.4.2-beta" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rinsen.IdentityProvider\Rinsen.IdentityProvider.csproj" />
+    <ProjectReference Include="..\Rinsen.Logger.Service\Rinsen.Logger.Service.csproj" />
+  </ItemGroup>
+
+</Project>

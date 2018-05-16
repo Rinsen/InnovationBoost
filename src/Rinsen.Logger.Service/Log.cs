@@ -8,11 +8,11 @@ namespace Rinsen.Logger.Service
     {
         public int Id { get; set; }
 
-        public string SourceName { get; set; }
-
         public int ApplicationId { get; set; }
 
         public int EnvironmentId { get; set; }
+
+        public int SourceId { get; set; }
 
         public string RequestId { get; set; }
 

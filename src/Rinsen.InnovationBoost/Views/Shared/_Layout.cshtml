@@ -1,0 +1,74 @@
+﻿@using Microsoft.AspNetCore.Hosting;
+
+@inject IHostingEnvironment HostingEnvironment
+<!DOCTYPE html>
+
+<html @{if (!string.IsNullOrEmpty(ViewBag.NgAppName)) { <text> ng-app="@ViewBag.NgAppName" </text>  } }>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @if (HostingEnvironment.IsDevelopment())
+    {
+        <link href="~/css/bootstrap.css" rel="stylesheet" />
+    }
+    else
+    {
+        <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    }
+    <style>
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    Log Browser
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="ng-cloak">
+        @RenderBody()
+    </div>
+    @if (HostingEnvironment.IsDevelopment())
+    {
+        <script src="~/js/jquery.js"></script>
+        <script src="~/js/angular.js"></script>
+        <script src="~/js/bootstrap.js"></script>
+    }
+    else
+    {
+        <script src="~/js/jquery.min.js"></script>
+        <script src="~/js/angular.min.js"></script>
+        <script src="~/js/bootstrap.min.js"></script>
+    }
+    @RenderSection("Scripts", false)
+</body>
+</html>

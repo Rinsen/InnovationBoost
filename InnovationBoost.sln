@@ -1,0 +1,86 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7DEA85E7-1A8C-4CD8-851C-93DA06876478}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider", "src\Rinsen.IdentityProvider\Rinsen.IdentityProvider.csproj", "{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Contracts", "src\Rinsen.IdentityProvider.Contracts\Rinsen.IdentityProvider.Contracts.csproj", "{239961DA-23C0-4310-B597-9FBFDDF1063E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Core", "src\Rinsen.IdentityProvider.Core\Rinsen.IdentityProvider.Core.csproj", "{11037521-A2F0-46F8-9557-116C4B6518D3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Installation", "src\Rinsen.IdentityProvider.Installation\Rinsen.IdentityProvider.Installation.csproj", "{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Token", "src\Rinsen.IdentityProvider.Token\Rinsen.IdentityProvider.Token.csproj", "{6790C595-180B-4E16-B7D9-0139873EC6CA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.InnovationBoost", "src\Rinsen.InnovationBoost\Rinsen.InnovationBoost.csproj", "{392560C2-D3BA-4F31-95C7-87FE13427C25}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.Logger", "src\Rinsen.Logger\Rinsen.Logger.csproj", "{3B91405A-959D-4291-A681-BFF647EF664C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.Logger.Service", "src\Rinsen.Logger.Service\Rinsen.Logger.Service.csproj", "{E3703329-5592-40E8-B6D5-C23F7CE8C22E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.InnovationBoost.Installation", "src\Rinsen.InnovationBoost.Installation\Rinsen.InnovationBoost.Installation.csproj", "{7994390A-D199-4D78-A305-FB42129DC73A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{239961DA-23C0-4310-B597-9FBFDDF1063E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{239961DA-23C0-4310-B597-9FBFDDF1063E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{239961DA-23C0-4310-B597-9FBFDDF1063E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{239961DA-23C0-4310-B597-9FBFDDF1063E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11037521-A2F0-46F8-9557-116C4B6518D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11037521-A2F0-46F8-9557-116C4B6518D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11037521-A2F0-46F8-9557-116C4B6518D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11037521-A2F0-46F8-9557-116C4B6518D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6790C595-180B-4E16-B7D9-0139873EC6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6790C595-180B-4E16-B7D9-0139873EC6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6790C595-180B-4E16-B7D9-0139873EC6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6790C595-180B-4E16-B7D9-0139873EC6CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{392560C2-D3BA-4F31-95C7-87FE13427C25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{392560C2-D3BA-4F31-95C7-87FE13427C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{392560C2-D3BA-4F31-95C7-87FE13427C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{392560C2-D3BA-4F31-95C7-87FE13427C25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B91405A-959D-4291-A681-BFF647EF664C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B91405A-959D-4291-A681-BFF647EF664C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B91405A-959D-4291-A681-BFF647EF664C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B91405A-959D-4291-A681-BFF647EF664C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3703329-5592-40E8-B6D5-C23F7CE8C22E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3703329-5592-40E8-B6D5-C23F7CE8C22E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3703329-5592-40E8-B6D5-C23F7CE8C22E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3703329-5592-40E8-B6D5-C23F7CE8C22E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7994390A-D199-4D78-A305-FB42129DC73A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7994390A-D199-4D78-A305-FB42129DC73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7994390A-D199-4D78-A305-FB42129DC73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7994390A-D199-4D78-A305-FB42129DC73A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{239961DA-23C0-4310-B597-9FBFDDF1063E} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{11037521-A2F0-46F8-9557-116C4B6518D3} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{6790C595-180B-4E16-B7D9-0139873EC6CA} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{392560C2-D3BA-4F31-95C7-87FE13427C25} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{3B91405A-959D-4291-A681-BFF647EF664C} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{E3703329-5592-40E8-B6D5-C23F7CE8C22E} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{7994390A-D199-4D78-A305-FB42129DC73A} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E647C73B-6B19-4B4F-97EC-8D3ECE787B91}
+	EndGlobalSection
+EndGlobal

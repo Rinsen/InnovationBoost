@@ -39,12 +39,37 @@ namespace Rinsen.Logger.Service
             }
         }
 
+        public async Task<LogSource> CreateLogSourceAsync(string sourceName)
+        {
+            string insertSql = @"INSERT INTO LogSources (
+                                    Name) 
+                                 VALUES (
+                                    @Name);
+                                 SELECT 
+                                    CAST(SCOPE_IDENTITY() as int)";
+
+
+            using (var connection = new SqlConnection(_options.ConnectionString))
+            {
+                connection.Open();
+                using (var command = new SqlCommand(insertSql, connection))
+                {
+                    command.Parameters.Add(new SqlParameter("@Name", sourceName));
+                    return new LogSource
+                    {
+                        Id = (int)await command.ExecuteScalarAsync(),
+                        Name = sourceName
+                    };
+                }
+            }
+        }
+
         public async Task WriteLogsAsync(IEnumerable<Log> logs)
         {
             string insertSql = @"
                                 INSERT INTO Logs (
                                     ApplicationId,
-                                    SourceName, 
+                                    SourceId, 
                                     EnvironmentId, 
                                     RequestId, 
                                     LogLevel, 
@@ -53,7 +78,7 @@ namespace Rinsen.Logger.Service
                                     Timestamp) 
                                 VALUES (
                                     @ApplicationId,
-                                    @SourceName, 
+                                    @SourceId, 
                                     @EnvironmentId, 
                                     @RequestId, 
                                     @LogLevel, 
@@ -71,7 +96,7 @@ namespace Rinsen.Logger.Service
                     using (var command = new SqlCommand(insertSql, connection))
                     {
                         command.Parameters.Add(new SqlParameter("@ApplicationId", item.ApplicationId));
-                        command.Parameters.Add(new SqlParameter("@SourceName", item.SourceName));
+                        command.Parameters.Add(new SqlParameter("@SourceId", item.SourceId));
                         command.Parameters.Add(new SqlParameter("@EnvironmentId", item.EnvironmentId));
                         command.Parameters.Add(new SqlParameter("@RequestId", item.RequestId));
                         command.Parameters.Add(new SqlParameter("@LogLevel", item.LogLevel));

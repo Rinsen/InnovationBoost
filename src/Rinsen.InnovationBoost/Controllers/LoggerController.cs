@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Rinsen.IdentityProvider.ExternalApplications;
 using Rinsen.InnovationBoost.Models;
 using Rinsen.Logger;
 using Rinsen.Logger.Service;
@@ -15,12 +16,17 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly ILogReader _logReader;
         private readonly ILogWriter _logWriter;
         private readonly LogHandler _logHandler;
+        private readonly ExternalApplicationStorage _externalApplicationStorage;
 
-        public LoggerController(ILogReader logReader, ILogWriter logWriter, LogHandler logHandler)
+        public LoggerController(ILogReader logReader,
+            ILogWriter logWriter,
+            LogHandler logHandler,
+            ExternalApplicationStorage externalApplicationStorage)
         {
             _logReader = logReader;
             _logWriter = logWriter;
             _logHandler = logHandler;
+            _externalApplicationStorage = externalApplicationStorage;
         }
 
         [HttpPost]
@@ -71,9 +77,9 @@ namespace Rinsen.InnovationBoost.Controllers
 
         private async Task<IEnumerable<SelectionLogApplication>> GetLogApplications()
         {
-            return (await _logReader.GetLogApplicationsAsync()).Select(la =>
+            return (await _externalApplicationStorage.GetAllAsync()).Select(la =>
             {
-                return new SelectionLogApplication { Id = la.Id, Name = la.ApplicationName };
+                return new SelectionLogApplication { Id = la.Id, Name = la.Name };
             }).ToArray();
         }
 

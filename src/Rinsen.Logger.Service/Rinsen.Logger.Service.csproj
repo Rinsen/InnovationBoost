@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Rinsen.IdentityProvider\Rinsen.IdentityProvider.csproj" />
     <ProjectReference Include="..\Rinsen.Logger\Rinsen.Logger.csproj" />
   </ItemGroup>
 </Project>

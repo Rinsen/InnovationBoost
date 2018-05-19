@@ -4,32 +4,34 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Rinsen.DatabaseInstaller;
+using Rinsen.InnovationBoost.Installation;
 using Rinsen.Logger.Service;
-using Rinsen.Logger.Service.Installation;
 
 namespace Rinsen.InnovationBoost
 {
     public class Startup
     {
+        private readonly IHostingEnvironment _env;
 
         // https://github.com/aspnet/LibraryManager
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services, IHostingEnvironment env)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddLoggerService(options =>
             {
                 options.ConnectionString = Configuration["Rinsen:ConnectionString"];
             });
 
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 services.AddDatabaseInstaller(Configuration["Rinsen:ConnectionString"]);
             }
@@ -38,16 +40,16 @@ namespace Rinsen.InnovationBoost
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
 
-                app.RunDatabaseInstaller(new List<DatabaseVersion>
+                app.UseDatabaseInstaller(options =>
                 {
-                    new CreateTables()
+                    options.DatabaseVersions.Add(new CreateTables());
                 });
             }
             else
@@ -58,6 +60,7 @@ namespace Rinsen.InnovationBoost
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
+
             {
                 routes.MapRoute(
                     name: "default",

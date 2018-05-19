@@ -4,9 +4,10 @@ using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.ExternalApplications;
 using Rinsen.IdentityProvider.LocalAccounts;
+using Rinsen.Logger.Service;
 using System.Collections.Generic;
 
-namespace Rinsen.Logger.Service.Installation
+namespace Rinsen.InnovationBoost.Installation
 {
     public class CreateTables : DatabaseVersion
     {
@@ -85,6 +86,11 @@ namespace Rinsen.Logger.Service.Installation
             externalSessionsTable.AddColumn(m => m.Created);
             externalSessionsTable.AddColumn(m => m.CorrelationId);
             externalSessionsTable.AddColumn(m => m.ExternalApplicationId).ForeignKey<ExternalApplication>(m => m.ExternalApplicationId);
+
+
+            var logSource = dbChangeList.AddNewTable<LogSource>();
+            logSource.AddAutoIncrementColumn(m => m.Id);
+            logSource.AddColumn(m => m.Name, 100).Unique().NotNull();
 
             var logEnvironmentTable = dbChangeList.AddNewTable<LogEnvironment>();
             logEnvironmentTable.AddAutoIncrementColumn(m => m.Id);

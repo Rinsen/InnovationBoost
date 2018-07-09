@@ -22,6 +22,8 @@ namespace Rinsen.InnovationBoost.Models
 
         public IEnumerable<SelectionLogLevel> LogLevels { get; set; }
 
+        public IEnumerable<SelectionLogSource> LogSources { get; set; }
+
         public DateTimeOffset From { get; set; }
 
         public DateTimeOffset To { get; set; }
@@ -50,6 +52,16 @@ namespace Rinsen.InnovationBoost.Models
     public class SelectionLogLevel
     {
         public int Level { get; set; }
+
+        public string Name { get; set; }
+
+        public bool Selected { get; set; }
+
+    }
+
+    public class SelectionLogSource
+    {
+        public int Id { get; set; }
 
         public string Name { get; set; }
 

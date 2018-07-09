@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.Logger.Service", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.InnovationBoost.Installation", "src\Rinsen.InnovationBoost.Installation\Rinsen.InnovationBoost.Installation.csproj", "{7994390A-D199-4D78-A305-FB42129DC73A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rinsen.Messaging", "src\Rinsen.Messaging\Rinsen.Messaging.csproj", "{2B8F6027-B862-4B0C-A199-AA461346076F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{7994390A-D199-4D78-A305-FB42129DC73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7994390A-D199-4D78-A305-FB42129DC73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7994390A-D199-4D78-A305-FB42129DC73A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B8F6027-B862-4B0C-A199-AA461346076F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B8F6027-B862-4B0C-A199-AA461346076F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B8F6027-B862-4B0C-A199-AA461346076F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B8F6027-B862-4B0C-A199-AA461346076F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +85,7 @@ Global
 		{3B91405A-959D-4291-A681-BFF647EF664C} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{E3703329-5592-40E8-B6D5-C23F7CE8C22E} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{7994390A-D199-4D78-A305-FB42129DC73A} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{2B8F6027-B862-4B0C-A199-AA461346076F} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E647C73B-6B19-4B4F-97EC-8D3ECE787B91}

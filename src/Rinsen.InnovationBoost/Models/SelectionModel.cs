@@ -9,5 +9,7 @@ namespace Rinsen.InnovationBoost.Models
         public IEnumerable<int> LogEnvironments { get; set; }
 
         public IEnumerable<int> LogApplications { get; set; }
+
+        public IEnumerable<int> LogSources { get; set; }
     }
 }

@@ -44,6 +44,7 @@ namespace Rinsen.InnovationBoost.Controllers
                 {
                     LogApplications = await GetLogApplications(),
                     LogEnvironments = await GetLogEnvironments(),
+                    LogSources = await GetLogSources(),
                     LogLevels = GetLogLevels(),
                     From = DateTimeOffset.Now.AddHours(-24),
                     To = DateTimeOffset.Now.AddHours(5)
@@ -57,6 +58,11 @@ namespace Rinsen.InnovationBoost.Controllers
             return View(model);
         }
 
+        private async Task<IEnumerable<SelectionLogSource>> GetLogSources()
+        {
+            return (await _logReader.GetLogSourcesAsync()).Select(ls => new SelectionLogSource { Id = ls.Id, Name = ls.Name });
+        }
+
         [HttpPost]
         public async Task<IEnumerable<LogResult>> GetLogs([FromBody]SearchModel searchModel)
         {
@@ -64,7 +70,7 @@ namespace Rinsen.InnovationBoost.Controllers
 
             var logViews = await _logReader.GetLogsAsync(searchModel.From, searchModel.To, searchModel.LogApplications, searchModel.LogEnvironments, searchModel.LogLevels);
 
-            return logViews.Select(log => new LogResult(log)).ToArray();
+            return logViews.Select(log => new LogResult(log));
         }
 
         private async Task<IEnumerable<SelectionLogEnvironment>> GetLogEnvironments()
@@ -72,7 +78,7 @@ namespace Rinsen.InnovationBoost.Controllers
             return (await _logReader.GetLogEnvironmentsAsync()).Select(le =>
             {
                 return new SelectionLogEnvironment { Id = le.Id, Name = le.Name };
-            }).ToArray();
+            });
         }
 
         private async Task<IEnumerable<SelectionLogApplication>> GetLogApplications()
@@ -80,7 +86,7 @@ namespace Rinsen.InnovationBoost.Controllers
             return (await _externalApplicationStorage.GetAllAsync()).Select(la =>
             {
                 return new SelectionLogApplication { Id = la.Id, Name = la.Name };
-            }).ToArray();
+            });
         }
 
         private IEnumerable<SelectionLogLevel> GetLogLevels()
@@ -134,6 +140,14 @@ namespace Rinsen.InnovationBoost.Controllers
                 if (selectionModel.LogLevels.Contains(logLevel.Level))
                 {
                     logLevel.Selected = true;
+                }
+            }
+
+            foreach (var logSource in model.SelectionOptions.LogSources)
+            {
+                if (selectionModel.LogSources.Contains(logSource.Id))
+                {
+                    logSource.Selected = true;
                 }
             }
         }

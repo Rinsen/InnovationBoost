@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
 //using Microsoft.AspNetCore.Builder;
 
@@ -6,22 +9,34 @@ namespace Rinsen.Logger.Service
 {
     public static class LogServiceExtensions
     {
-        public static void AddLoggerService(this IServiceCollection services, Action<LogServiceOptions> logServiceOptionsAction)
+        public static void AddLoggerService(this ILoggingBuilder loggingBuilder, IConfiguration configuration, string environmentName)
+        {
+            loggingBuilder.AddLoggerService(options =>
+            {
+                options.ApplicationLogKey = configuration["Rinsen:ApplicationKey"];
+                options.LogServiceUri = configuration["Rinsen:InnovationBoost"];
+                options.EnvironmentName = environmentName;
+            });
+        }
+
+        public static void AddLoggerService(this ILoggingBuilder loggingBuilder, Action<LogServiceOptions> logServiceOptionsAction)
         {
             var logOptions = new LogServiceOptions();
 
             logServiceOptionsAction.Invoke(logOptions);
                         
-            services.AddSingleton(logOptions);
-            services.AddSingleton<LogOptions>(logOptions);
+            loggingBuilder.Services.AddSingleton(logOptions);
+            loggingBuilder.Services.AddSingleton<LogOptions>(logOptions);
 
-            services.AddSingleton<ILogQueue, LogQueue>();
-            services.AddSingleton<QueueLoggerProvider, QueueLoggerProvider>();
-            services.AddSingleton<ILogServiceClient, LogServiceClient>();
+            loggingBuilder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILogQueue, LogQueue>());
+            loggingBuilder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, QueueLoggerProvider>());
+            loggingBuilder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILogServiceClient, LogServiceClient>());
 
-            services.AddScoped<ILogReader, DatabaseLogReader>();
-            services.AddScoped<ILogWriter, DatabaseLogWriter>();
-            services.AddScoped<LogHandler, LogHandler>();
+            loggingBuilder.Services.AddScoped<ILogReader, DatabaseLogReader>();
+            loggingBuilder.Services.AddScoped<ILogWriter, DatabaseLogWriter>();
+            loggingBuilder.Services.AddScoped<LogHandler, LogHandler>();
+            loggingBuilder.Services.AddScoped<ILogEnvironmentHandler, LogEnvironmentHandler>();
+            loggingBuilder.Services.AddScoped<ISourceHandler, SourceHandler>();
         }
     }
 }

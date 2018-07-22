@@ -62,7 +62,7 @@ namespace Rinsen.Logger
                         }
                         else
                         {
-                            logProperties.Add(new LogProperty { Name = keyValue.Key, Value = keyValue.Value.ToString() });
+                            logProperties.Add(new LogProperty { Name = keyValue.Key, Value = keyValue.Value?.ToString() });
                         }
                     }
                     

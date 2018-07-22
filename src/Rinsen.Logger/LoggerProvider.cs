@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rinsen.Logger
 {
+    [ProviderAlias("QueueLogger")]
     public class QueueLoggerProvider : ILoggerProvider
     {
         private readonly Func<string, LogLevel, bool> _filter;
@@ -15,8 +16,6 @@ namespace Rinsen.Logger
 
         private CancellationTokenSource _cancellationTokenSource;
         private Task _logHandlerTask;
-        private static bool _initialized = false;
-        private static readonly object _sync = new object();
 
         public QueueLoggerProvider(ILogQueue logQueue, ILogServiceClient logServiceClient, LogOptions options)
         {
@@ -24,7 +23,8 @@ namespace Rinsen.Logger
             _logServiceClient = logServiceClient;
             _options = options;
             _filter = (category, logLevel) => logLevel >= options.MinLevel && category.StartsWith("");
-            Initializer();
+            _cancellationTokenSource = new CancellationTokenSource();
+            _logHandlerTask = Task.Factory.StartNew(ProcessLogQueue, null, TaskCreationOptions.LongRunning);
         }
 
         public ILogger CreateLogger(string name)
@@ -35,25 +35,8 @@ namespace Rinsen.Logger
         public void Dispose()
         {
             _cancellationTokenSource?.Dispose();
-            if (_initialized)
-            {
-                StopProcessing();
-            }
-        }
 
-        private void Initializer()
-        {
-            lock (_sync)
-            {
-                if (_initialized)
-                    return;
-
-                _cancellationTokenSource = new CancellationTokenSource();
-
-                _logHandlerTask = Task.Factory.StartNew(ProcessLogQueue, null, TaskCreationOptions.LongRunning);
-
-                _initialized = true;
-            }
+            StopProcessing();
         }
 
         private void StopProcessing()
@@ -84,7 +67,7 @@ namespace Rinsen.Logger
                         var result = await _logServiceClient.ReportAsync(new LogReport { ApplicationKey = _options.ApplicationLogKey, LogItems = logs });
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                 }
 

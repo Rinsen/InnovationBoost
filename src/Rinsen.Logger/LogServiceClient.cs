@@ -24,7 +24,7 @@ namespace Rinsen.Logger
 #endif
                 var serializedLogs = JsonConvert.SerializeObject(logReport);
                 var stringContent = new StringContent(serializedLogs, Encoding.UTF8, "application/json");
-                using (var result = await httpClient.PostAsync($"{_options.LogServiceUri}Logger/ReportAsync", stringContent))
+                using (var result = await httpClient.PostAsync($"{_options.LogServiceUri}Logger/Report", stringContent))
                 {
                     result.EnsureSuccessStatusCode();
                     var result2 = await result.Content.ReadAsStringAsync();

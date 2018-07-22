@@ -1,10 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>RinsenIdentityProvider</UserSecretsId>
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.0-rc1-final" />
+    <None Remove="bundleconfig2.json2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bundleconfig2.json2" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.2" />
     <PackageReference Include="Rinsen.DatabaseInstaller" Version="0.4.2-beta" />
   </ItemGroup>
   <ItemGroup>
@@ -13,6 +21,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Rinsen.InnovationBoost.Installation\Rinsen.InnovationBoost.Installation.csproj" />
     <ProjectReference Include="..\Rinsen.Logger.Service\Rinsen.Logger.Service.csproj" />
+    <ProjectReference Include="..\Rinsen.Logger\Rinsen.Logger.csproj" />
+    <ProjectReference Include="..\Rinsen.Messaging\Rinsen.Messaging.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Home\" />

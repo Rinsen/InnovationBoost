@@ -16,12 +16,12 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly ILogReader _logReader;
         private readonly ILogWriter _logWriter;
         private readonly LogHandler _logHandler;
-        private readonly ExternalApplicationStorage _externalApplicationStorage;
+        private readonly IExternalApplicationStorage _externalApplicationStorage;
 
         public LoggerController(ILogReader logReader,
             ILogWriter logWriter,
             LogHandler logHandler,
-            ExternalApplicationStorage externalApplicationStorage)
+            IExternalApplicationStorage externalApplicationStorage)
         {
             _logReader = logReader;
             _logWriter = logWriter;

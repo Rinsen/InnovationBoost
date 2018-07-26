@@ -15,6 +15,7 @@ namespace Rinsen.Logger.Service
             {
                 options.ApplicationLogKey = configuration["Rinsen:ApplicationKey"];
                 options.LogServiceUri = configuration["Rinsen:InnovationBoost"];
+                options.ConnectionString = configuration["Rinsen:ConnectionString"];
                 options.EnvironmentName = environmentName;
             });
         }

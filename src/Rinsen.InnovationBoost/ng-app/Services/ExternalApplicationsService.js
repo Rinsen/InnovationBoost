@@ -17,15 +17,15 @@
         return service;
 
         function getAll() {
-            return $http.get('/webapi/ExternalApplications/GetAll');
+            return $http.get('/ExternalApplications/GetAll');
         }
 
         function create(data) {
-            return $http.post('/webapi/ExternalApplications/Create', data);
+            return $http.post('/ExternalApplications/Create', data);
         }
 
         function update(data) {
-            return $http.post('/webapi/ExternalApplications/Update', data);
+            return $http.post('/ExternalApplications/Update', data);
         }
 
 

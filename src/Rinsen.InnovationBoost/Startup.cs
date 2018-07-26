@@ -33,6 +33,11 @@ namespace Rinsen.InnovationBoost
             }
             services.AddRinsenIdentity(options => options.ConnectionString = Configuration["Rinsen:ConnectionString"]);
 
+            //services.AddAuthentication(options => 
+            //    {
+            //        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //    })
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -74,6 +79,9 @@ namespace Rinsen.InnovationBoost
             {
                 app.UseExceptionHandler("/Error");
             }
+            app.UseHttpsRedirection();
+
+            app.UseAuthentication();
 
             app.UseStaticFiles();
 

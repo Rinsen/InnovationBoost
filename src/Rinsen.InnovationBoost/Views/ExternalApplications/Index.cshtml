@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.NgAppName = "Administration";
+    ViewBag.NgAppName = "app";
 }
 
 @section Scripts {
@@ -19,7 +19,7 @@
         margin-top: 2em;
     }
 </style>
-<div data-ng-controller="ExternalApplicationsController as vm">
+<div class="container-fluid" data-ng-controller="ExternalApplicationsController as vm">
     <h1>External applications</h1>
     <div data-ng-if="vm.createFailed" class="alert alert-danger alert-dismissible ng-cloak" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>

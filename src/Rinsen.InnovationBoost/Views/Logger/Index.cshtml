@@ -4,7 +4,7 @@
 @using Newtonsoft.Json.Serialization;
 
 @inject IHostingEnvironment HostingEnvironment
-@{ 
+@{
     ViewBag.NgAppName = "app";
 }
 <style>
@@ -16,7 +16,7 @@
         text-overflow: ellipsis;
     }
 </style>
-<div class="container-fluid" data-ng-controller="LoggerController as vm">
+<div class="container-fluid ng-cloak" data-ng-controller="LoggerController as vm">
     <div class="col-xs-2">
         <div class="panel panel-primary">
             <div class="panel-heading">Log selection</div>
@@ -115,21 +115,9 @@
         <div class="loader popup" data-ng-show="vm.dataLoading"></div>
     </div>
 </div>
-    <div id="selectionOptions" data-json="@JsonConvert.SerializeObject(Model.SelectionOptions, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })"></div>
+<div id="selectionOptions" data-json="@JsonConvert.SerializeObject(Model.SelectionOptions, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })"></div>
 
-    @section Scripts
-{
-        @if (HostingEnvironment.IsDevelopment())
-        {
-            <script src="~/js/debug/app.js"></script>
-            <script src="~/js/debug/Controllers/LoggerController.js"></script>
-            <script src="~/js/debug/Services/LogSelectionOptionsService.js"></script>
-        }
-        else
-        {
-            <script src="~/js/debug/app.js"></script>
-            <script src="~/js/debug/Controllers/LoggerController.js"></script>
-            <script src="~/js/debug/Services/LogSelectionOptionsService.js"></script>
-        }
-    }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_Angular");}
+}
 

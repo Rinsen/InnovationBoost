@@ -30,7 +30,7 @@ namespace Rinsen.InnovationBoost.Controllers
             _localAccountService = localAccountService;
         }
 
-        [HttpGet]
+        [HttpGet] 
         [AllowAnonymous]
         public async Task<IActionResult> Login(string externalUrl, string host, string applicationName)
         {
@@ -42,7 +42,7 @@ namespace Rinsen.InnovationBoost.Controllers
             }
 
             return View(model);
-        }
+        }              
 
         [HttpPost]
         [ValidateAntiForgeryToken]

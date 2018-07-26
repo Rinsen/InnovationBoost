@@ -31,7 +31,7 @@ namespace Rinsen.Logger.Service
             if (_logSourceIds.ContainsKey(sourceName))
                 return _logSourceIds[sourceName];
 
-            var logSource = await _logWriter.CreateLogEnvironmentAsync(sourceName);
+            var logSource = await _logWriter.CreateLogSourceAsync(sourceName);
 
             _logSourceIds.Add(sourceName, logSource.Id);
 

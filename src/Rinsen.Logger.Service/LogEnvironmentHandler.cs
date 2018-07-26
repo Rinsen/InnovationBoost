@@ -26,7 +26,7 @@ namespace Rinsen.Logger.Service
 
         private async Task<int> GetOrCreateLogEnvironmentIdAsync(string sourceName)
         {
-            _logEnvironmentIds = await _logReader.GetLogSourceIdsAsync();
+            _logEnvironmentIds = await _logReader.GetLogEnvironmentIdsAsync();
 
             if (_logEnvironmentIds.ContainsKey(sourceName))
                 return _logEnvironmentIds[sourceName];

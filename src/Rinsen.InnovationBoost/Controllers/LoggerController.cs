@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Rinsen.InnovationBoost.Controllers
 {
+    [Authorize("AdminsOnly")]
     public class LoggerController : Controller
     {
         private readonly ILogReader _logReader;
@@ -42,9 +43,9 @@ namespace Rinsen.InnovationBoost.Controllers
             {
                 SelectionOptions = new SelectionOptions
                 {
-                    LogApplications = await GetLogApplications(),
-                    LogEnvironments = await GetLogEnvironments(),
-                    LogSources = await GetLogSources(),
+                    LogApplications = (await GetLogApplications()).ToArray(),
+                    LogEnvironments = (await GetLogEnvironments()).ToArray(),
+                    LogSources = (await GetLogSources()).ToArray(),
                     LogLevels = GetLogLevels(),
                     From = DateTimeOffset.Now.AddHours(-24),
                     To = DateTimeOffset.Now.AddHours(5)
@@ -111,9 +112,10 @@ namespace Rinsen.InnovationBoost.Controllers
         {
             return new SelectionModel
             {
-                LogApplications = new List<int> { 1, 2, 3, 4 },
-                LogEnvironments = new List<int> { 1, 2, 3 },
-                LogLevels = new List<int> { 2, 3, 4, 5 }
+                LogApplications = new List<int> { 1 },
+                LogEnvironments = new List<int> { 3 },
+                LogLevels = new List<int> { 2, 3, 4, 5 },
+                LogSources = new List<int> { 1 }
             };
         }
 

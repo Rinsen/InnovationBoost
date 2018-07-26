@@ -138,7 +138,7 @@ namespace Rinsen.Logger.Service
                             {
                                 Id = (int)reader["Id"],
                                 ApplicationName = (string)reader["ExtName"],
-                                EnvironmentName = (string)reader["Name"],
+                                EnvironmentName = (string)reader["EnvironmentName"],
                                 LogLevel = (LogLevel)Enum.Parse(typeof(LogLevel), reader["LogLevel"].ToString()),
                                 LogProperties = JsonConvert.DeserializeObject<IEnumerable<LogProperty>>((string)reader["LogProperties"]),
                                 MessageFormat = (string)reader["MessageFormat"],
@@ -165,13 +165,14 @@ namespace Rinsen.Logger.Service
                                                         Logs.LogProperties,
                                                         Logs.MessageFormat,
                                                         Logs.RequestId,
-                                                        Logs.SourceName,
                                                         Logs.Timestamp,
                                                         ExtApp.Name AS ExtName,
-                                                        LogEnv.Name
+                                                        Env.Name AS EnvironmentName,
+														Src.Name AS SourceName
 	                                                FROM Logs
                                                         JOIN ExternalApplications ExtApp ON Logs.ApplicationId = ExtApp.Id
-                                                        JOIN LogEnvironments LogEnv ON Logs.EnvironmentId = LogEnv.Id
+                                                        JOIN LogEnvironments Env ON Logs.EnvironmentId = Env.Id
+														JOIN LogSources Src ON Logs.SourceId = Src.Id
                                                     WHERE Logs.Timestamp > @from 
                                                         AND Logs.Timestamp < @to 
                                                         AND Logs.ApplicationId IN (");

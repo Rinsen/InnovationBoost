@@ -7,5 +7,6 @@ namespace Rinsen.Logger.Service
     {
         Task WriteLogsAsync(IEnumerable<Log> logItems);
         Task<LogEnvironment> CreateLogEnvironmentAsync(string environmentName);
+        Task<LogSource> CreateLogSourceAsync(string environmentName);
     }
 }

@@ -15,5 +15,6 @@ namespace Rinsen.InnovationBoost.Models
 
         public IEnumerable<int> LogApplications { get; set; }
 
+        public IEnumerable<int> LogSources { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.ExternalApplications;
 using Rinsen.InnovationBoost.Models;
 using Rinsen.Logger;
@@ -7,6 +8,7 @@ using Rinsen.Logger.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Rinsen.InnovationBoost.Controllers
@@ -17,17 +19,20 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly ILogReader _logReader;
         private readonly ILogWriter _logWriter;
         private readonly LogHandler _logHandler;
+        private readonly ISettingsManager _settingsManager;
         private readonly IExternalApplicationStorage _externalApplicationStorage;
 
         public LoggerController(ILogReader logReader,
             ILogWriter logWriter,
             LogHandler logHandler,
-            IExternalApplicationStorage externalApplicationStorage)
+            IExternalApplicationStorage externalApplicationStorage,
+            ISettingsManager settingsManager)
         {
             _logReader = logReader;
             _logWriter = logWriter;
             _logHandler = logHandler;
             _externalApplicationStorage = externalApplicationStorage;
+            _settingsManager = settingsManager;
         }
 
         [HttpPost]
@@ -52,9 +57,7 @@ namespace Rinsen.InnovationBoost.Controllers
                 }
             };
 
-            var selectionModel = GetSelectionModel();
-
-            ApplySelectionModel(model, selectionModel);
+            await ApplySavedSelection(model);
 
             return View(model);
         }
@@ -67,9 +70,9 @@ namespace Rinsen.InnovationBoost.Controllers
         [HttpPost]
         public async Task<IEnumerable<LogResult>> GetLogs([FromBody]SearchModel searchModel)
         {
-            UpdateSelectionModel(searchModel);
+            await UpdateSelectionModel(searchModel);
 
-            var logViews = await _logReader.GetLogsAsync(searchModel.From, searchModel.To, searchModel.LogApplications, searchModel.LogEnvironments, searchModel.LogLevels);
+            var logViews = await _logReader.GetLogsAsync(searchModel.From, searchModel.To, searchModel.LogApplications, searchModel.LogEnvironments, searchModel.LogSources, searchModel.LogLevels);
 
             return logViews.Select(log => new LogResult(log));
         }
@@ -103,24 +106,33 @@ namespace Rinsen.InnovationBoost.Controllers
             };
         }
 
-        private void UpdateSelectionModel(SearchModel searchModel)
+        private Task UpdateSelectionModel(SearchModel searchModel)
         {
-
-        }
-
-        private SelectionModel GetSelectionModel()
-        {
-            return new SelectionModel
+            var selectionModel = new SelectionModel
             {
-                LogApplications = new List<int> { 1 },
-                LogEnvironments = new List<int> { 3 },
-                LogLevels = new List<int> { 2, 3, 4, 5 },
-                LogSources = new List<int> { 1 }
+                LogApplications = searchModel.LogApplications,
+                LogEnvironments = searchModel.LogEnvironments,
+                LogLevels = searchModel.LogLevels,
+                LogSources = searchModel.LogSources
             };
+
+            return _settingsManager.Set("LoggerSelectionModel", User.GetClaimGuidValue(ClaimTypes.NameIdentifier), selectionModel);
         }
 
-        private void ApplySelectionModel(LoggerModel model, SelectionModel selectionModel)
+        private Task<SelectionModel> GetSelectionModel()
         {
+            return _settingsManager.GetValueOrDefault<SelectionModel>("LoggerSelectionModel", User.GetClaimGuidValue(ClaimTypes.NameIdentifier));
+        }
+
+        private async Task ApplySavedSelection(LoggerModel model)
+        {
+            var selectionModel = await GetSelectionModel();
+
+            if (selectionModel == default(SelectionModel)) // Bail from this if no presaved setting is available
+            {
+                return;
+            }
+
             foreach (var logApplication in model.SelectionOptions.LogApplications)
             {
                 if (selectionModel.LogApplications.Contains(logApplication.Id))

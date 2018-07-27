@@ -117,7 +117,7 @@ namespace Rinsen.Logger.Service
             return results;
         }
 
-        public async Task<IEnumerable<LogView>> GetLogsAsync(DateTimeOffset from, DateTimeOffset to, IEnumerable<int> logApplications, IEnumerable<int> logEnvironments, IEnumerable<int> logLevels, int take = 200)
+        public async Task<IEnumerable<LogView>> GetLogsAsync(DateTimeOffset from, DateTimeOffset to, IEnumerable<int> logApplications, IEnumerable<int> logEnvironments, IEnumerable<int> logSources, IEnumerable<int> logLevels, int take = 200)
         {
             var logs = new List<LogView>();
             var taken = 0;
@@ -125,7 +125,7 @@ namespace Rinsen.Logger.Service
             using (var connection = new SqlConnection(_options.ConnectionString))
             using (var command = new SqlCommand("", connection))
             {
-                CreateCommandSqlAndParameters(command, from, to, logApplications, logEnvironments, logLevels);
+                CreateCommandSqlAndParameters(command, from, to, logApplications, logEnvironments, logSources, logLevels);
 
                 connection.Open();
                 using (var reader = await command.ExecuteReaderAsync())
@@ -155,7 +155,7 @@ namespace Rinsen.Logger.Service
             return logs;
         }
 
-        private void CreateCommandSqlAndParameters(SqlCommand command, DateTimeOffset from, DateTimeOffset to, IEnumerable<int> logApplications, IEnumerable<int> logEnvironments, IEnumerable<int> logLevels)
+        private void CreateCommandSqlAndParameters(SqlCommand command, DateTimeOffset from, DateTimeOffset to, IEnumerable<int> logApplications, IEnumerable<int> logEnvironments, IEnumerable<int> sourceIds, IEnumerable<int> logLevels)
         {
             command.Parameters.Add(new SqlParameter("@from", from));
             command.Parameters.Add(new SqlParameter("@to", to));
@@ -191,9 +191,9 @@ namespace Rinsen.Logger.Service
                 }
                 count++;
             }
-            sql.Append(") AND Logs.EnvironmentId IN (");
 
             count = 0;
+            sql.Append(") AND Logs.EnvironmentId IN (");
             foreach (var logEnvironment in logEnvironments)
             {
                 command.Parameters.Add(new SqlParameter($"@le{count}", logEnvironment));
@@ -207,9 +207,25 @@ namespace Rinsen.Logger.Service
                 }
                 count++;
             }
-            sql.Append(") AND Logs.LogLevel IN (");
 
             count = 0;
+            sql.Append(") AND Logs.SourceId IN (");
+            foreach (var sourceId in sourceIds)
+            {
+                command.Parameters.Add(new SqlParameter($"@si{count}", sourceId));
+                if (count == 0)
+                {
+                    sql.Append($"@si{count}");
+                }
+                else
+                {
+                    sql.Append($", @si{count}");
+                }
+                count++;
+            }
+
+            count = 0;
+            sql.Append(") AND Logs.LogLevel IN (");
             foreach (var logLevel in logLevels)
             {
                 command.Parameters.Add(new SqlParameter($"@level{count}", logLevel));

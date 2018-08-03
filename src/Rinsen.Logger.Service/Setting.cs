@@ -8,9 +8,9 @@ namespace Rinsen.Logger.Service
 
         public Guid IdentityId { get; set; }
 
-        public string Key { get; set; }
+        public string KeyField { get; set; }
 
-        public string Value { get; set; }
+        public string ValueField { get; set; }
 
         public DateTimeOffset Accessed { get; set; }
 

@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Text;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Rinsen.Logger.Service
 {
@@ -174,72 +175,90 @@ namespace Rinsen.Logger.Service
                                                         JOIN LogEnvironments Env ON Logs.EnvironmentId = Env.Id
 														JOIN LogSources Src ON Logs.SourceId = Src.Id
                                                     WHERE Logs.Timestamp > @from 
-                                                        AND Logs.Timestamp < @to 
-                                                        AND Logs.ApplicationId IN (");
+                                                        AND Logs.Timestamp < @to");
 
             var count = 0;
             foreach (var logApplication in logApplications)
             {
                 command.Parameters.Add(new SqlParameter($"@la{count}", logApplication));
+
                 if (count == 0)
                 {
-                    sql.Append($"@la{count}");
+                    sql.Append($" AND Logs.ApplicationId IN (@la0");
                 }
                 else
                 {
                     sql.Append($", @la{count}");
                 }
+
                 count++;
             }
 
+            if (count > 0)
+            {
+                sql.Append(")");
+            }
+
             count = 0;
-            sql.Append(") AND Logs.EnvironmentId IN (");
             foreach (var logEnvironment in logEnvironments)
             {
                 command.Parameters.Add(new SqlParameter($"@le{count}", logEnvironment));
+
                 if (count == 0)
                 {
-                    sql.Append($"@le{count}");
+                    sql.Append($" AND Logs.EnvironmentId IN (@le0");
                 }
                 else
                 {
                     sql.Append($", @le{count}");
                 }
+
                 count++;
             }
 
+            if (count > 0)
+            {
+                sql.Append(")");
+            }
+
             count = 0;
-            sql.Append(") AND Logs.SourceId IN (");
             foreach (var sourceId in sourceIds)
             {
                 command.Parameters.Add(new SqlParameter($"@si{count}", sourceId));
+
                 if (count == 0)
                 {
-                    sql.Append($"@si{count}");
+                    sql.Append($" AND Logs.SourceId IN (@si0");
                 }
                 else
                 {
                     sql.Append($", @si{count}");
                 }
+
                 count++;
             }
-
+            
             count = 0;
-            sql.Append(") AND Logs.LogLevel IN (");
             foreach (var logLevel in logLevels)
             {
                 command.Parameters.Add(new SqlParameter($"@level{count}", logLevel));
+
                 if (count == 0)
                 {
-                    sql.Append($"@level{count}");
+                    sql.Append($" AND Logs.LogLevel IN (@level0");
                 }
                 else
                 {
                     sql.Append($", @level{count}");
                 }
+
                 count++;
             }
-            sql.Append(")");
+
+            if (count > 0)
+            {
+                sql.Append(")");
+            }
 
             command.CommandText = sql.ToString();
 

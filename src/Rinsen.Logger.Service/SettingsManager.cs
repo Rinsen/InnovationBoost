@@ -6,9 +6,9 @@ namespace Rinsen.Logger.Service
     public class SettingsManager : ISettingsManager
     {
 
-        private readonly SettingsStorage _settingsStorage;
+        private readonly ISettingsStorage _settingsStorage;
 
-        public SettingsManager(SettingsStorage settingsStorage)
+        public SettingsManager(ISettingsStorage settingsStorage)
         {
             _settingsStorage = settingsStorage;
         }
@@ -29,7 +29,7 @@ namespace Rinsen.Logger.Service
                 await _settingsStorage.Update(setting);
             }
 
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(setting.Value);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(setting.ValueField);
         }
 
         public async Task Set<T>(string key, Guid identityId, T value)
@@ -43,8 +43,8 @@ namespace Rinsen.Logger.Service
                 setting = new Setting
                 {
                     IdentityId = identityId,
-                    Key = key,
-                    Value = settingString,
+                    KeyField = key,
+                    ValueField = settingString,
                     Accessed = DateTimeOffset.Now
                 };
 
@@ -53,14 +53,14 @@ namespace Rinsen.Logger.Service
                 return;
             }
 
-            if (setting.Value.Equals(settingString))
+            if (setting.ValueField.Equals(settingString))
             {
                 // No need to update when the value is the same
                 return; 
             }
 
             setting.Accessed = DateTimeOffset.Now;
-            setting.Value = settingString;
+            setting.ValueField = settingString;
 
             await _settingsStorage.Update(setting);
         }

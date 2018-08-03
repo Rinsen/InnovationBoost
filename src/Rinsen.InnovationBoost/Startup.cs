@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Rinsen.DatabaseInstaller;
 using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.Core;
@@ -24,7 +25,6 @@ namespace Rinsen.InnovationBoost
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             if (_env.IsDevelopment())
@@ -33,11 +33,6 @@ namespace Rinsen.InnovationBoost
             }
             services.AddRinsenIdentity(options => options.ConnectionString = Configuration["Rinsen:ConnectionString"]);
 
-            //services.AddAuthentication(options => 
-            //    {
-            //        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    })
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -62,8 +57,7 @@ namespace Rinsen.InnovationBoost
             services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app)//, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
         {
             if (_env.IsDevelopment())
             {
@@ -73,6 +67,7 @@ namespace Rinsen.InnovationBoost
                 app.UseDatabaseInstaller(options =>
                 {
                     options.DatabaseVersions.Add(new CreateTables());
+                    options.DatabaseVersions.Add(new CreateSettingsTable());
                 });
             }
             else
@@ -93,7 +88,7 @@ namespace Rinsen.InnovationBoost
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            //logger.LogInformation("Starting");
+            logger.LogInformation("Starting");
         }
     }
 }

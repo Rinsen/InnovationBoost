@@ -7,10 +7,10 @@ namespace Rinsen.InnovationBoost.Controllers
     public class HomeController : Controller
     {
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            logger.LogInformation("Helloooo");
-        }
+        //public HomeController(ILogger<HomeController> logger)
+        //{
+        //    logger.LogInformation("Helloooo");
+        //}
 
         [AllowAnonymous]
         public IActionResult Index()

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Rinsen.Logger.Service
 {
-    public class SettingsStorage
+    public class SettingsStorage : ISettingsStorage
     {
         private readonly LogServiceOptions _options;
 
@@ -16,9 +16,9 @@ namespace Rinsen.Logger.Service
         public async Task Create(Setting setting)
         {
             string insertSql = @"INSERT INTO Settings (
-                                    Accessed, IdentityId, Key, Value) 
+                                    Accessed, IdentityId, KeyField, ValueField) 
                                  VALUES (
-                                    @accessed, @identityId, @key, @value);
+                                    @accessed, @identityId, @keyfield, @valuefield);
                                  SELECT 
                                     CAST(SCOPE_IDENTITY() as int)";
 
@@ -27,8 +27,8 @@ namespace Rinsen.Logger.Service
             {
                 command.Parameters.Add(new SqlParameter("@accessed", setting.Accessed));
                 command.Parameters.Add(new SqlParameter("@identityId", setting.IdentityId));
-                command.Parameters.Add(new SqlParameter("@key", setting.Key));
-                command.Parameters.Add(new SqlParameter("@value", setting.Value));
+                command.Parameters.Add(new SqlParameter("@keyfield", setting.KeyField));
+                command.Parameters.Add(new SqlParameter("@valuefield", setting.ValueField));
 
                 await connection.OpenAsync();
 
@@ -38,14 +38,14 @@ namespace Rinsen.Logger.Service
 
         public async Task Update(Setting setting)
         {
-            string insertSql = @"UPDATE Settings SET Accessed = @accessed, Value = @value WHERE Id = @id";
+            string insertSql = @"UPDATE Settings SET Accessed = @accessed, ValueField = @valuefield WHERE Id = @id";
 
             using (var connection = new SqlConnection(_options.ConnectionString))
             using (var command = new SqlCommand(insertSql, connection))
             {
                 command.Parameters.Add(new SqlParameter("@id", setting.Id));
                 command.Parameters.Add(new SqlParameter("@accessed", setting.Accessed));
-                command.Parameters.Add(new SqlParameter("@value", setting.Value));
+                command.Parameters.Add(new SqlParameter("@valuefield", setting.ValueField));
 
                 await connection.OpenAsync();
 
@@ -61,9 +61,9 @@ namespace Rinsen.Logger.Service
         public async Task<Setting> Get(string key, Guid identityId)
         {
             using (var connection = new SqlConnection(_options.ConnectionString))
-            using (var command = new SqlCommand("SELECT Id, IdentityId, Key, Value, Accessed FROM Settings where Key = @key AND IdentityId = @identityId", connection))
+            using (var command = new SqlCommand("SELECT Id, IdentityId, KeyField, ValueField, Accessed FROM Settings where KeyField = @keyfield AND IdentityId = @identityId", connection))
             {
-                command.Parameters.Add(new SqlParameter($"@key", key));
+                command.Parameters.Add(new SqlParameter($"@keyfield", key));
                 command.Parameters.Add(new SqlParameter($"@identityId", identityId));
 
                 await connection.OpenAsync();
@@ -76,9 +76,9 @@ namespace Rinsen.Logger.Service
                         return new Setting
                         {
                             Id = (int)reader["Id"],
-                            IdentityId = Guid.Parse((string)reader["IdentityId"]),
-                            Key = (string)reader["Key"],
-                            Value = (string)reader["Value"],
+                            IdentityId = (Guid)reader["IdentityId"],
+                            KeyField = (string)reader["KeyField"],
+                            ValueField = (string)reader["ValueField"],
                             Accessed = (DateTimeOffset)reader["Accessed"]
                         };
                     }

@@ -23,7 +23,8 @@
                 to: vm.options.to,
                 logLevels: [],
                 logEnvironments: [],
-                logApplications: []
+                logApplications: [],
+                logSources: []
             };
 
             vm.options.logLevels.forEach(function (logLevel) {
@@ -41,6 +42,12 @@
             vm.options.logApplications.forEach(function (logApplication) {
                 if (logApplication.selected) {
                     searchModel.logApplications.push(logApplication.id)
+                }
+            });
+
+            vm.options.logSources.forEach(function (logSource) {
+                if (logSource.selected) {
+                    searchModel.logSources.push(logSource.id)
                 }
             });
 

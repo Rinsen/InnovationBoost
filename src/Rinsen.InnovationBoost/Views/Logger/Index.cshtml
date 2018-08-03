@@ -19,7 +19,7 @@
 <div class="container-fluid ng-cloak" data-ng-controller="LoggerController as vm">
     <div class="col-xs-2">
         <div class="panel panel-primary">
-            <div class="panel-heading">Log selection</div>
+            <div class="panel-heading">Log selection</div> @*http://davidstutz.de/bootstrap-multiselect/*@
             <div class="panel-body">
                 <div>
                     <button class=" btn btn-primary" data-ng-click="vm.show()">
@@ -55,6 +55,17 @@
                             <label>
                                 <input type="checkbox" data-ng-checked="logLevel.selected" data-ng-model="logLevel.selected" />
                                 {{logLevel.name}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2>Log sources</h2>
+                    <div data-ng-repeat="logSource in vm.options.logSources track by logSource.id">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" data-ng-checked="logSource.selected" data-ng-model="logSource.selected" />
+                                {{logSource.name}}
                             </label>
                         </div>
                     </div>

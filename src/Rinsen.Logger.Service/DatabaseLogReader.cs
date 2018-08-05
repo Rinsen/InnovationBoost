@@ -177,85 +177,90 @@ namespace Rinsen.Logger.Service
                                                     WHERE Logs.Timestamp > @from 
                                                         AND Logs.Timestamp < @to");
 
-            var count = 0;
+            var logAppCount = 0;
             foreach (var logApplication in logApplications)
             {
-                command.Parameters.Add(new SqlParameter($"@la{count}", logApplication));
+                command.Parameters.Add(new SqlParameter($"@la{logAppCount}", logApplication));
 
-                if (count == 0)
+                if (logAppCount == 0)
                 {
                     sql.Append($" AND Logs.ApplicationId IN (@la0");
                 }
                 else
                 {
-                    sql.Append($", @la{count}");
+                    sql.Append($", @la{logAppCount}");
                 }
 
-                count++;
+                logAppCount++;
             }
 
-            if (count > 0)
+            if (logAppCount > 0)
             {
                 sql.Append(")");
             }
 
-            count = 0;
+            var logEnvCount = 0;
             foreach (var logEnvironment in logEnvironments)
             {
-                command.Parameters.Add(new SqlParameter($"@le{count}", logEnvironment));
+                command.Parameters.Add(new SqlParameter($"@le{logEnvCount}", logEnvironment));
 
-                if (count == 0)
+                if (logEnvCount == 0)
                 {
                     sql.Append($" AND Logs.EnvironmentId IN (@le0");
                 }
                 else
                 {
-                    sql.Append($", @le{count}");
+                    sql.Append($", @le{logEnvCount}");
                 }
 
-                count++;
+                logEnvCount++;
             }
 
-            if (count > 0)
+            if (logEnvCount > 0)
             {
                 sql.Append(")");
             }
 
-            count = 0;
+            var sourceIdCount = 0;
             foreach (var sourceId in sourceIds)
             {
-                command.Parameters.Add(new SqlParameter($"@si{count}", sourceId));
+                command.Parameters.Add(new SqlParameter($"@si{sourceIdCount}", sourceId));
 
-                if (count == 0)
+                if (sourceIdCount == 0)
                 {
                     sql.Append($" AND Logs.SourceId IN (@si0");
                 }
                 else
                 {
-                    sql.Append($", @si{count}");
+                    sql.Append($", @si{sourceIdCount}");
                 }
 
-                count++;
+                sourceIdCount++;
             }
-            
-            count = 0;
+
+            if (sourceIdCount > 0)
+            {
+                sql.Append(")");
+            }
+
+            var logLevelCount = 0;
             foreach (var logLevel in logLevels)
             {
-                command.Parameters.Add(new SqlParameter($"@level{count}", logLevel));
+                command.Parameters.Add(new SqlParameter($"@level{logLevelCount}", logLevel));
 
-                if (count == 0)
+                if (logLevelCount == 0)
                 {
                     sql.Append($" AND Logs.LogLevel IN (@level0");
                 }
                 else
                 {
-                    sql.Append($", @level{count}");
+                    sql.Append($", @level{logLevelCount}");
                 }
 
-                count++;
+                logLevelCount++;
             }
 
-            if (count > 0)
+            if (logLevelCount > 0)
             {
                 sql.Append(")");
             }

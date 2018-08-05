@@ -7,6 +7,6 @@
         // Custom modules 
 
         // 3rd Party Modules
-
+        'isteven-multi-select'
     ]);
 })();

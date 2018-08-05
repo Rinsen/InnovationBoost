@@ -14,7 +14,7 @@ var gulp = require('gulp'),
 
 var webRoot = "./wwwroot/";
 var webRootPaths = {
-    js: webRoot + "js/**/*.js",
+    js: webRoot + "js/debug/**/*.js",
     minJs: webRoot + "js/**/*.min.js",
     css: webRoot + "css/**/*.css",
     minCss: webRoot + "css/**/*.min.css",
@@ -27,7 +27,9 @@ var npmPaths = {
     bootstrap: "./node_modules/bootstrap/dist/css/*.css",
     bootstrapJs: "./node_modules/bootstrap/dist/js/*.js",
     angularJs: "./node_modules/angular/*.js",
-    jQuery: "./node_modules/jquery/dist/*.js"
+    jQuery: "./node_modules/jquery/dist/*.js",
+    istevenMultiSelectCss: "./node_modules/isteven-angular-multiselect/*.css",
+    istevenMultiSelectJs: "./node_modules/isteven-angular-multiselect/*.js"
 };
 
 var destPaths = {
@@ -77,11 +79,19 @@ gulp.task("jQuery", function () {
         .pipe(gulp.dest(destPaths.js));
 });
 
+gulp.task("istevenMultiSelect", function () {
+    gulp.src([npmPaths.istevenMultiSelectJs])
+        .pipe(gulp.dest(destPaths.js));
+
+    return gulp.src([npmPaths.istevenMultiSelectCss])
+        .pipe(gulp.dest(destPaths.css));
+});
+
 gulp.task("debug:ngApp", function () {
     return gulp.src("./ng-app/**/*.js")
         .pipe(gulp.dest("./wwwroot/js/debug/"));
 });
 
-gulp.task("3rdparty", ["bootstrap", "angular", "jQuery"]);
+gulp.task("3rdparty", ["bootstrap", "angular", "jQuery", "istevenMultiSelect"]);
 
 gulp.task("min", ["min:js", "min:css"]);

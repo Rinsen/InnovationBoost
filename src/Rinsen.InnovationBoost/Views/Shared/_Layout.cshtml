@@ -13,10 +13,12 @@
     @if (HostingEnvironment.IsDevelopment())
     {
         <link href="~/css/bootstrap.css" rel="stylesheet" />
+        <link href="~/css/isteven-multi-select.css" rel="stylesheet" />
     }
     else
     {
         <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="~/css/isteven-multi-select.css" rel="stylesheet" />
     }
     <style>
         .loader {
@@ -37,9 +39,15 @@
         }
 
         @@keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
             display: none !important;
         }
@@ -75,15 +83,17 @@
     </div>
     @if (HostingEnvironment.IsDevelopment())
     {
-        <script src="~/js/jquery.js"></script>
-        <script src="~/js/angular.js"></script>
-        <script src="~/js/bootstrap.js"></script>
+        <script src="~/js/jquery.js" asp-append-version="true"></script>
+        <script src="~/js/angular.js" asp-append-version="true"></script>
+        <script src="~/js/bootstrap.js" asp-append-version="true"></script>
+        <script src="~/js/isteven-multi-select.js" asp-append-version="true"></script>
     }
     else
     {
-        <script src="~/js/jquery.min.js"></script>
-        <script src="~/js/angular.min.js"></script>
-        <script src="~/js/bootstrap.min.js"></script>
+        <script src="~/js/jquery.min.js" asp-append-version="true"></script>
+        <script src="~/js/angular.min.js" asp-append-version="true"></script>
+        <script src="~/js/bootstrap.min.js" asp-append-version="true"></script>
+        <script src="~/js/isteven-multi-select.js" asp-append-version="true"></script>
     }
     @RenderSection("Scripts", false)
 </body>

@@ -13,6 +13,7 @@
     "rimraf": "2.6.2",
     "angular": "1.7.2",
     "jquery": "3.3.1",
-    "isteven-angular-multiselect": "4.0.0"
+    "isteven-angular-multiselect": "4.0.0",
+    "angular-smart-table": "2.1.11"
   }
 }

@@ -7,6 +7,7 @@
         // Custom modules 
 
         // 3rd Party Modules
-        'isteven-multi-select'
+        'isteven-multi-select',
+        'smart-table'
     ]);
 })();

@@ -19,17 +19,19 @@ var webRootPaths = {
     css: webRoot + "css/**/*.css",
     minCss: webRoot + "css/**/*.min.css",
 
+    istevenMinJs: webRoot + "js/isteven-multi-select.min.js",
     concatJsDest: webRoot + "js/site.min.js",
     concatCssDest: webRoot + "css/site.min.css"
 };
 
 var npmPaths = {
     bootstrap: "./node_modules/bootstrap/dist/css/*.css",
-    bootstrapJs: "./node_modules/bootstrap/dist/js/*.js",
+    bootstrapJs: "./node_modules/bootstrap/dist/js/bootstrap*.js*",
     angularJs: "./node_modules/angular/*.js",
-    jQuery: "./node_modules/jquery/dist/*.js",
+    jQuery: "./node_modules/jquery/dist/jquery*.js*",
     istevenMultiSelectCss: "./node_modules/isteven-angular-multiselect/*.css",
-    istevenMultiSelectJs: "./node_modules/isteven-angular-multiselect/*.js"
+    istevenMultiSelectJs: "./node_modules/isteven-angular-multiselect/*.js",
+    smartTableJs: "./node_modules/angular-smart-table/dist/*.js*"
 };
 
 var destPaths = {
@@ -81,10 +83,20 @@ gulp.task("jQuery", function () {
 
 gulp.task("istevenMultiSelect", function () {
     gulp.src([npmPaths.istevenMultiSelectJs])
+        .pipe(concat(webRootPaths.istevenMinJs))
+        .pipe(uglify())
+        .pipe(gulp.dest("."));
+
+    gulp.src([npmPaths.istevenMultiSelectJs])
         .pipe(gulp.dest(destPaths.js));
 
     return gulp.src([npmPaths.istevenMultiSelectCss])
         .pipe(gulp.dest(destPaths.css));
+});
+
+gulp.task("smartTable", function () {
+    return gulp.src([npmPaths.smartTableJs])
+        .pipe(gulp.dest(destPaths.js));
 });
 
 gulp.task("debug:ngApp", function () {
@@ -92,6 +104,6 @@ gulp.task("debug:ngApp", function () {
         .pipe(gulp.dest("./wwwroot/js/debug/"));
 });
 
-gulp.task("3rdparty", ["bootstrap", "angular", "jQuery", "istevenMultiSelect"]);
+gulp.task("3rdparty", ["bootstrap", "angular", "jQuery", "istevenMultiSelect", "smartTable"]);
 
 gulp.task("min", ["min:js", "min:css"]);

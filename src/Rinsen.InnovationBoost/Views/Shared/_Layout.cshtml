@@ -51,6 +51,13 @@
         [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
             display: none !important;
         }
+        .st-sort-ascent:before {
+            content: '\25B2';
+        }
+
+        .st-sort-descent:before {
+            content: '\25BC';
+        }
     </style>
 </head>
 <body>
@@ -87,13 +94,15 @@
         <script src="~/js/angular.js" asp-append-version="true"></script>
         <script src="~/js/bootstrap.js" asp-append-version="true"></script>
         <script src="~/js/isteven-multi-select.js" asp-append-version="true"></script>
+        <script src="~/js/smart-table.js" asp-append-version="true"></script>
     }
     else
     {
         <script src="~/js/jquery.min.js" asp-append-version="true"></script>
         <script src="~/js/angular.min.js" asp-append-version="true"></script>
         <script src="~/js/bootstrap.min.js" asp-append-version="true"></script>
-        <script src="~/js/isteven-multi-select.js" asp-append-version="true"></script>
+        <script src="~/js/isteven-multi-select.min.js" asp-append-version="true"></script>
+        <script src="~/js/smart-table.min.js" asp-append-version="true"></script>
     }
     @RenderSection("Scripts", false)
 </body>

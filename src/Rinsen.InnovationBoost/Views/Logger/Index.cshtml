@@ -44,76 +44,8 @@
         </div>
     </div>
     <div class="row top-buffer">
-        @*<div class="col-xs-2">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Log selection</div>
-                <div class="panel-body">
-                    <div>
-                        <button class=" btn btn-primary" data-ng-click="vm.show()">
-                            Show
-                        </button>
-                    </div>
-                    <div>
-                        <h2>Environments</h2>
-                        <div data-ng-repeat="logEnv in vm.options.logEnvironments track by logEnv.id">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" data-ng-checked="logEnv.selected" data-ng-model="logEnv.selected" />
-                                    {{logEnv.name}}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h2>Applications</h2>
-                        <div data-ng-repeat="logApp in vm.options.logApplications track by logApp.id">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" data-ng-checked="logApp.selected" data-ng-model="logApp.selected" />
-                                    {{logApp.name}}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h2>Log levels</h2>
-                        <div data-ng-repeat="logLevel in vm.options.logLevels track by logLevel.level">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" data-ng-checked="logLevel.selected" data-ng-model="logLevel.selected" />
-                                    {{logLevel.name}}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h2>Log sources</h2>
-                        <div data-ng-repeat="logSource in vm.options.logSources track by logSource.id">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" data-ng-checked="logSource.selected" data-ng-model="logSource.selected" />
-                                    {{logSource.name}}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h2>Period</h2>
-                        <div class="form-group">
-                            <label for="from">From</label>
-                            <input class="form-control" type="datetime-local" id="from" data-ng-model="vm.options.from" />
-                        </div>
-                        <div class="form-group">
-                            <label for="to">To</label>
-                            <input class="form-control" type="datetime-local" id="to" data-ng-model="vm.options.to" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>*@
         <div class="col-xs-12">
             <table st-table="logTable" st-safe-src="vm.logs" class="table table-striped table-bordered">
-                http://lorenzofox3.github.io/smart-table-website/
                 <thead>
                     <tr>
                         <th st-sort="id">Id</th>
@@ -128,8 +60,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @*data-ng-click="log.expanded = !log.expanded"*@
-                <tr data-ng-repeat="log in logTable">
+                <tr data-ng-repeat-start="log in logTable" data-ng-click="log.expanded = !log.expanded">
                     <td>{{log.id}}</td>
                     <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 20em;">{{log.sourceName}}</td>
                     <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 20em;">{{log.message}}</td>
@@ -137,19 +68,21 @@
                     <td>{{log.logLevelName}}</td>
                     <td style="white-space: nowrap">{{log.timestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                 </tr>
-                @*<tr data-ng-show="log.expanded">
-            <td colspan="6">
-                {{log.message}}<br />
-                <table class="table table-striped table-bordered">
-                    <tbody data-ng-repeat="prop in log.logProperties">
-                        <tr>
-                            <td>{{prop.name}}</td>
-                            <td>{{prop.value}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>*@
+                <tr data-ng-show="false"></tr>
+                <tr data-ng-show="log.expanded" data-ng-repeat-end="">
+                    <td colspan="6">
+                        {{log.message}}<br />
+                                       <table class="table table-striped table-bordered">
+                                           <tbody data-ng-repeat="prop in log.logProperties">
+                                               <tr>
+                                                   <td>{{prop.name}}</td>
+                                                   <td>{{prop.value}}</td>
+                                               </tr>
+                                           </tbody>
+                                           @*https://github.com/atifaziz/StackTraceFormatter*@
+                                       </table>
+                    </td>
+                </tr>
             </tbody>
             </table>
             <div data-ng-show="!vm.dataLoading && vm.logs.length === 0">

@@ -17,7 +17,7 @@ namespace Rinsen.InnovationBoost.Controllers
         {
             return View();
         }
-
+        
         public IActionResult Error()
         {
             return View();

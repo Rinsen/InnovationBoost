@@ -7,5 +7,6 @@ namespace Rinsen.Logger
     {
         void AddLog(string sourceName, string requestId, LogLevel logLevel, string messageFormat, IEnumerable<LogProperty> logProperties);
         IEnumerable<LogItem> GetReportedLogs();
+        void AddLogs(IEnumerable<LogItem> logs);
     }
 }

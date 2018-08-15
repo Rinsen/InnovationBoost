@@ -17,7 +17,14 @@ namespace Rinsen.InnovationBoost.Controllers
         {
             return View();
         }
-        
+
+        [AllowAnonymous]
+        public IActionResult TestErrorHandling()
+        {
+            throw new System.Exception("This is a test exception");
+        }
+
+        [AllowAnonymous]
         public IActionResult Error()
         {
             return View();

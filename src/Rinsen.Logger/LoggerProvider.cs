@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,16 +60,20 @@ namespace Rinsen.Logger
         {
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
+                IEnumerable<LogItem> logs = null;
                 try
                 {
-                    var logs = _logQueue.GetReportedLogs();
+                    logs = _logQueue.GetReportedLogs();
                     if (logs.Any())
                     {
                         var result = await _logServiceClient.ReportAsync(new LogReport { ApplicationKey = _options.ApplicationLogKey, LogItems = logs });
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    _logQueue.AddLogs(logs);
+
+                    CreateLogger(GetType().FullName).LogError(e, "Failed to send log report");
                 }
 
                 await Task.Delay(_options.TimeToSleepBetweenBatches, _cancellationTokenSource.Token);

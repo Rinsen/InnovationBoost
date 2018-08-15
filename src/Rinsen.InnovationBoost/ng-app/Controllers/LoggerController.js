@@ -13,6 +13,8 @@
         vm.show = show;
         vm.dataLoading = false;
         vm.logs = [];
+        vm.itemsByPage = 100;
+        vm.pages = 0;
 
         function show() {
             vm.dataLoading = true;
@@ -56,6 +58,9 @@
                     log.expanded = false;
                     vm.logs.push(log);
                 });
+
+                vm.pages = Math.ceil(vm.logs.length / vm.itemsByPage);
+
                 vm.dataLoading = false;
             });
         }

@@ -25,6 +25,14 @@ namespace Rinsen.Logger
             _logs.Enqueue(new LogItem { SourceName = sourceName, EnvironmentName = _logOptions.EnvironmentName, RequestId = requestId, LogLevel = logLevel, MessageFormat = messageFormat, LogProperties = logProperties, Timestamp = DateTimeOffset.Now });
         }
 
+        public void AddLogs(IEnumerable<LogItem> logs)
+        {
+            foreach (var logItem in logs)
+            {
+                _logs.Enqueue(logItem);
+            }
+        }
+
         public IEnumerable<LogItem> GetReportedLogs()
         {
             if (_logs.IsEmpty)

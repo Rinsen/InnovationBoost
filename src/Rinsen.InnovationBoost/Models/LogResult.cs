@@ -35,11 +35,12 @@ namespace Rinsen.InnovationBoost.Models
         {
             get
             {
+                var message = _log.MessageFormat;
                 foreach (var property in _log.LogProperties)
                 {
-                    return _log.MessageFormat.Replace($"{{{property.Name}}}", property.Value);
+                    message = message.Replace($"{{{property.Name}}}", property.Value);
                 }
-                return MessageFormat;
+                return message;
             }
         }
 

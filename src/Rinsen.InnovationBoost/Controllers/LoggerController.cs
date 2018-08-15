@@ -74,7 +74,7 @@ namespace Rinsen.InnovationBoost.Controllers
 
             var logViews = await _logReader.GetLogsAsync(searchModel.From, searchModel.To, searchModel.LogApplications, searchModel.LogEnvironments, searchModel.LogSources, searchModel.LogLevels);
 
-            return logViews.Select(log => new LogResult(log));
+            return logViews.Select(log => new LogResult(log)).OrderByDescending(m => m.Timestamp);
         }
 
         private async Task<IEnumerable<SelectionLogEnvironment>> GetLogEnvironments()

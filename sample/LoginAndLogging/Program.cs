@@ -25,9 +25,9 @@ namespace LoginAndLogging
                 .ConfigureLogging((hostingContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConsole()
-                        .AddFilter("Microsoft", LogLevel.Debug)
-                        .AddFilter("System", LogLevel.Debug)
-                        .AddFilter("LoggerSample", LogLevel.Debug)
+                        .AddFilter("Microsoft", LogLevel.Warning)
+                        .AddFilter("System", LogLevel.Warning)
+                        .AddFilter("LoggerSample", LogLevel.Information)
                         .AddRinsenLogger(hostingContext.Configuration, hostingContext.HostingEnvironment.EnvironmentName);
                 })
                 .UseStartup<Startup>()

@@ -43,7 +43,7 @@ namespace Rinsen.IdentityProvider.Token
             }
             try
             {
-                var validationUrl = Options.IdentityServiceUrl + "/api/v1/Identity/Get" +
+                var validationUrl = Options.IdentityServiceUrl + "/Identity/Get" +
                         QueryString.Create(new[]
                         {
                             new KeyValuePair<string, string>(Options.TokenParameterName, authorizationToken),
@@ -81,8 +81,10 @@ namespace Rinsen.IdentityProvider.Token
 
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentiy);
                 var authTicket = new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties { IsPersistent = externalIdentity.Expiration }, TokenDefaults.AuthenticationScheme);
+
+                Logger.LogInformation("AuthenticationScheme: {AuthenticationScheme} challenge succeded for {UserId}", TokenDefaults.AuthenticationScheme, externalIdentity.IdentityId);
+
                 return HandleRequestResult.Success(authTicket);
-                
             }
             catch (Exception e)
             {

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 
 namespace LoginAndLogging.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -13,19 +15,30 @@ namespace LoginAndLogging.Controllers
             _logger = logger;
         }
         // GET: /<controller>/
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var id = 1;
-            _logger.LogDebug("Display index {id}", id);
+            _logger.LogInformation("Display index {id}", id);
 
             return View();
         }
 
+        public IActionResult Index2()
+        {
+            var id = 1;
+            _logger.LogInformation("Logged in user {Name}", User.Identity.Name);
+
+            return View();
+        }
+
+        [AllowAnonymous]
         public IActionResult Error()
         {
             return View();
         }
 
+        [AllowAnonymous]
         // GET: /<controller>/
         public IActionResult GetError()
         {

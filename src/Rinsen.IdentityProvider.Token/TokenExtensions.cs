@@ -40,7 +40,7 @@ namespace Rinsen.IdentityProvider.Token
                         options.ClaimsIssuer = RinsenIdentityConstants.RinsenIdentityProvider;
                         options.ApplicationName = configuration["Rinsen:ApplicationName"];
                         options.ApplicationKey = configuration["Rinsen:ApplicationKey"];
-                        options.IdentityServiceUrl = configuration["Rinsen:IdentityProvider:BaseUrl"];
+                        options.IdentityServiceUrl = configuration["Rinsen:InnovationBoost"];
                         options.Events = new RemoteAuthenticationEvents
                         {
                             OnTicketReceived = async context =>

@@ -2,11 +2,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider;
+using Rinsen.IdentityProvider.Contracts;
+using Rinsen.IdentityProvider.Contracts.v1;
 using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.ExternalApplications;
 using Rinsen.IdentityProvider.LocalAccounts;
 using Rinsen.InnovationBoost.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -18,16 +22,19 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly IExternalApplicationService _externalApplicationService;
         private readonly IIdentityService _identityService;
         private readonly ILocalAccountService _localAccountService;
+        private readonly IIdentityAttributeStorage _identityAttributeStorage;
 
         public IdentityController(ILoginService loginService,
             IExternalApplicationService externalApplicationService,
             IIdentityService identityService,
-            ILocalAccountService localAccountService)
+            ILocalAccountService localAccountService,
+            IIdentityAttributeStorage identityAttributeStorage)
         {
             _loginService = loginService;
             _externalApplicationService = externalApplicationService;
             _identityService = identityService;
             _localAccountService = localAccountService;
+            _identityAttributeStorage = identityAttributeStorage;
         }
 
         [HttpGet] 
@@ -146,6 +153,44 @@ namespace Rinsen.InnovationBoost.Controllers
             }
 
             return string.Empty;
+        }
+
+        public async Task<ExternalIdentity> Get(string authToken, string applicationKey)
+        {
+            var token = await _externalApplicationService.GetTokenAsync(authToken, applicationKey);
+            var identity = await _identityService.GetIdentityAsync(token.IdentityId);
+            var extensions = await GetIdentityAttributesAsExternsions(identity);
+
+            var externalIdentity = new ExternalIdentity
+            {
+                GivenName = identity.GivenName,
+                IdentityId = identity.IdentityId,
+                Surname = identity.Surname,
+                Email = identity.Email,
+                PhoneNumber = identity.PhoneNumber,
+                Issuer = RinsenIdentityConstants.RinsenIdentityProvider,
+                Expiration = token.Expiration,
+                CorrelationId = token.CorrelationId,
+                Extensions = extensions
+            };
+
+            await _externalApplicationService.LogExportedExternalIdentity(externalIdentity, token.ExternalApplicationId);
+
+            return externalIdentity;
+        }
+
+        private async Task<List<Extension>> GetIdentityAttributesAsExternsions(Identity identity)
+        {
+            var identityAttributes = await _identityAttributeStorage.GetIdentityAttributesAsync(identity.IdentityId);
+
+            var extensions = new List<Extension>();
+
+            if (identityAttributes.Any(attr => attr.Attribute == "Administrator"))
+            {
+                extensions.Add(new Extension { Type = RinsenIdentityConstants.Role, Value = RinsenIdentityConstants.Administrator });
+            }
+
+            return extensions;
         }
     }
 }

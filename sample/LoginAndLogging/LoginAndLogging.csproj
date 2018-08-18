@@ -10,7 +10,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Rinsen.IdentityProvider.Token\Rinsen.IdentityProvider.Token.csproj" />
     <ProjectReference Include="..\..\src\Rinsen.Logger\Rinsen.Logger.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Home\Index2.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
   </ItemGroup>
 
 </Project>

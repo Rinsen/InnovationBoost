@@ -1,10 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>0.2.10-beta</VersionPrefix>
+    <Version>0.2.11-beta</Version>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Rinsen.Logger</AssemblyName>
     <PackageId>Rinsen.Logger</PackageId>
+    <Title>Logger Asp.Net Core</Title>
+    <Author>Fredrik Rinsén</Author>
+    <Authors>Fredrik Rinsén</Authors>
+    <Owners>Fredrik Rinsén</Owners>
+    <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Rinsen/InnovationBoost</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Rinsen/InnovationBoost</RepositoryUrl>
+    <PackageReleaseNotes>Adapted for the new InnovationBoost concept</PackageReleaseNotes>
+    <IncludeSymbols>True</IncludeSymbols>
+    <Description>Package for logging stuff</Description>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

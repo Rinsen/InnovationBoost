@@ -1,0 +1,38 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Rinsen.IdentityProvider.Token</id>
+    <version>0.2.1</version>
+    <title>Rinsen Identity Provider Token</title>
+    <authors>Fredrik Rinsén</authors>
+    <owners>Fredrik Rinsén</owners>
+    <licenseUrl>
+      http://opensource.org/licenses/MIT
+    </licenseUrl>
+    <projectUrl>
+      https://github.com/Rinsen/InnovationBoost
+    </projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Identity provider for single sign on with Tokens from IdentityProviderWeb</description>
+    <releaseNotes>
+      0.2.1 Adapted for the new InnovationBoost concept
+      0.2.0 A lot of refactorings on how distributed identities is handled to give support for future single sign out
+      0.1.8 Added an extension method for default configurations for Token and Cookie Auth together 
+      0.1.7 Updated to aspnet core 2.0 with some large refactorings and enhancements
+      0.1.6 asp net core 1.2
+      0.1.5 asp net core 1.1
+      0.1.4 Extensions for more customizable identitys
+    </releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>aspnetcore identity rinsen</tags>
+  </metadata>
+  <files>
+    <file src="\src\Rinsen.IdentityProvider.Token\bin\Release\netstandard2.0\Rinsen.IdentityProvider.Token.dll" target="lib\netstandard2.0" />
+    <file src="\src\Rinsen.IdentityProvider.Token\bin\Release\netstandard2.0\Rinsen.IdentityProvider.Token.pdb" target="lib\netstandard2.0" />
+    <file src="\src\Rinsen.IdentityProvider.Token\bin\Release\netstandard2.0\Rinsen.IdentityProvider.Token.deps.json" target="lib\netstandard2.0" />
+    <file src="\src\Rinsen.IdentityProvider.Token\bin\Release\netstandard2.0\Rinsen.IdentityProvider.Core.dll" target="lib\netstandard2.0" />
+    <file src="\src\Rinsen.IdentityProvider.Token\bin\Release\netstandard2.0\Rinsen.IdentityProvider.Core.pdb" target="lib\netstandard2.0" />
+    <file src="\src\Rinsen.IdentityProvider.Token\bin\Release\netstandard2.0\Rinsen.IdentityProvider.Contracts.dll" target="lib\netstandard2.0" />
+    <file src="\src\Rinsen.IdentityProvider.Token\bin\Release\netstandard2.0\Rinsen.IdentityProvider.Contracts.pdb" target="lib\netstandard2.0" />
+  </files>
+</package>

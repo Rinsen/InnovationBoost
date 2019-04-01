@@ -39,12 +39,22 @@ namespace Rinsen.InnovationBoost.Controllers
 
         [HttpGet] 
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string externalUrl, string host, string applicationName)
+        public async Task<IActionResult> Login(string externalUrl, string host, string applicationName, string returnUrl)
         {
-            var model = new LoginModel { ExternalUrl = externalUrl, Host = host, ApplicationName = applicationName };
+            var model = new LoginModel { ExternalUrl = externalUrl, Host = host, ApplicationName = applicationName, ReturnUrl = returnUrl };
 
             if (User.Identity.IsAuthenticated)
             {
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    if (!Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        throw new UnauthorizedAccessException($"Only local redirects is allowed");
+                    }
+
+                    return Redirect(returnUrl);
+                }
+
                 model.RedirectUrl = await RedirectToLocalOrTrustedExternalHostOnlyAsync(applicationName, externalUrl, host);
             }
 
@@ -64,6 +74,16 @@ namespace Rinsen.InnovationBoost.Controllers
                 {
                     // Set loged in user to the one just created as this only will be provided at next request by the framework
                     HttpContext.User = result.Principal;
+
+                    if (!string.IsNullOrEmpty(model.ReturnUrl))
+                    {
+                        if (!Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            throw new UnauthorizedAccessException($"Only local redirects is allowed");
+                        }
+
+                        return Redirect(model.ReturnUrl);
+                    }
 
                     model.RedirectUrl = await RedirectToLocalOrTrustedExternalHostOnlyAsync(model.ApplicationName, model.ExternalUrl, model.Host);
                 }

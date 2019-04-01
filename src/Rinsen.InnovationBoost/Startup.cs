@@ -1,3 +1,5 @@
+﻿using System.IdentityModel.Tokens.Jwt;
+using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Rinsen.DatabaseInstaller;
 using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.Core;
+using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.InnovationBoost.Installation;
 using Rinsen.Messaging;
 
@@ -33,17 +36,22 @@ namespace Rinsen.InnovationBoost
             }
             services.AddRinsenIdentity(options => options.ConnectionString = Configuration["Rinsen:ConnectionString"]);
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminsOnly", policy => policy.RequireClaim("http://rinsen.se/Administrator"));
+            });
+
+            services.AddIdentityServer()
+                .AddDeveloperSigningCredential()
+                .AddClientStore<IdentityServiceClientStore>()
+                .AddResourceStore<IdentityServerResourceStore>();
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
                     options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]));
                     options.LoginPath = "/Identity/Login";
                 });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminsOnly", policy => policy.RequireClaim("http://rinsen.se/Administrator"));
-            });
 
             services.Remove(new ServiceDescriptor(typeof(ILoginService), typeof(LoginService), ServiceLifetime.Scoped));
 
@@ -61,7 +69,7 @@ namespace Rinsen.InnovationBoost
         {
             if (_env.IsDevelopment())
             {
-                app.UseBrowserLink();
+                //app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
 
                 app.UseDatabaseInstaller(options =>
@@ -74,14 +82,16 @@ namespace Rinsen.InnovationBoost
             {
                 app.UseExceptionHandler("/Error");
             }
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
 
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
+            app.UseIdentityServer();
 
+            app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",

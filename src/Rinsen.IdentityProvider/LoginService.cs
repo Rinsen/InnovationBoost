@@ -77,6 +77,7 @@ namespace Rinsen.IdentityProvider
                 new Claim(ClaimTypes.Surname, identity.Surname, ClaimValueTypes.String, "RinsenIdentityProvider"),
                 new Claim(ClaimTypes.Expiration, rememberMe.ToString(), ClaimValueTypes.String, "RinsenIdentityProvider"),
                 new Claim(ClaimTypes.SerialNumber, Guid.NewGuid().ToString(), ClaimValueTypes.String, "RinsenIdentityProvider"),
+                new Claim("sub", identity.IdentityId.ToString(), ClaimValueTypes.String, "RinsenIdentityProvider")
             };
 
             await AddApplicationSpecificClaimsAsync(claims);

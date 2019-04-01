@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h1>User</h1>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <h2>Is Authenticated</h2>
+            <h3>Claims</h3>
+            <dl>
+                @foreach (var claim in User.Claims)
+                {
+                    <dt>@claim.Type</dt>
+                    <dd>@claim.Value</dd>
+                }
+            </dl>
+        }
+        else
+        {
+            <h2>Is Not Authenticated</h2>
+        }
+
+
+    </div>
+</div>

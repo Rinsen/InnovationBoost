@@ -42,7 +42,7 @@ namespace Rinsen.IdentityProvider.Core
 
             if (session == default(Session))
             {
-                return default(AuthenticationTicket);
+                return default;
             }
 
             var ticket = _ticketSerializer.Deserialize(session.SerializedTicket);

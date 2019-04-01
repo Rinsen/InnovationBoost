@@ -19,5 +19,7 @@ namespace Rinsen.InnovationBoost.Models
         public string ExternalUrl { get; set; }
         public bool InvalidEmailOrPassword { get; set; }
         public string RedirectUrl { get; set; }
+        public string ReturnUrl { get; set; }
+
     }
 }

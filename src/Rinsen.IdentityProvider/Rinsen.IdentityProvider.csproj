@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="IdentityServer4" Version="2.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Rinsen.IdentityProvider.Contracts\Rinsen.IdentityProvider.Contracts.csproj" />
     <ProjectReference Include="..\Rinsen.IdentityProvider.Core\Rinsen.IdentityProvider.Core.csproj" />
   </ItemGroup>

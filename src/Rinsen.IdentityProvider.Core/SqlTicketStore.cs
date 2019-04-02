@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using IdentityModel;
 
 namespace Rinsen.IdentityProvider.Core
 {
@@ -11,7 +12,6 @@ namespace Rinsen.IdentityProvider.Core
     {
         private readonly TicketSerializer _ticketSerializer = new TicketSerializer();
         private readonly ISessionStorage _sessionStorage;
-        private readonly RandomNumberGenerator CryptoRandom = RandomNumberGenerator.Create();
 
         public SqlTicketStore(ISessionStorage sessionStorage)
         {
@@ -52,13 +52,9 @@ namespace Rinsen.IdentityProvider.Core
 
         public async Task<string> StoreAsync(AuthenticationTicket ticket)
         {
-            var bytes = new byte[32];
-            CryptoRandom.GetBytes(bytes);
-            var sessionId = Base64UrlTextEncoder.Encode(bytes);
-
             var session = new Session
             {
-                SessionId = sessionId,
+                SessionId = ticket.Principal.GetClaimStringValue(JwtClaimTypes.SessionId),
                 IdentityId = ticket.Principal.GetClaimGuidValue(ClaimTypes.NameIdentifier),
                 CorrelationId = ticket.Principal.GetClaimGuidValue(ClaimTypes.SerialNumber),
                 LastAccess = DateTimeOffset.Now,

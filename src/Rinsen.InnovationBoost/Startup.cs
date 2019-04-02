@@ -44,7 +44,8 @@ namespace Rinsen.InnovationBoost
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
                 .AddClientStore<IdentityServiceClientStore>()
-                .AddResourceStore<IdentityServerResourceStore>();
+                .AddResourceStore<IdentityServerResourceStore>()
+                .AddPersistedGrantStore<IdentityServerPersistedGrantStore>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -52,10 +53,6 @@ namespace Rinsen.InnovationBoost
                     options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]));
                     options.LoginPath = "/Identity/Login";
                 });
-
-            services.Remove(new ServiceDescriptor(typeof(ILoginService), typeof(LoginService), ServiceLifetime.Scoped));
-
-            services.AddScoped<ILoginService, IdentityWebLoginService>();
 
             services.AddRinsenMessaging();
 

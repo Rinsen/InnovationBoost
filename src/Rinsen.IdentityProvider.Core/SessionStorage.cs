@@ -89,11 +89,11 @@ namespace Rinsen.IdentityProvider.Core
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                using (var command = new SqlCommand(_getSql, connection))
+                using (var command = new SqlCommand(_deleteSql, connection))
                 {
                     command.Parameters.Add(new SqlParameter("@SessionId", sessionId));
                     connection.Open();
-                    await command.ExecuteNonQueryAsync();
+                    var count = await command.ExecuteNonQueryAsync();
                 }
             }
         }

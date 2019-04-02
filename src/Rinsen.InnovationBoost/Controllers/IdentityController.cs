@@ -68,7 +68,7 @@ namespace Rinsen.InnovationBoost.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _loginService.LoginAsync(model.Email, model.Password, model.RememberMe);
+                var result = await _loginService.LoginAsync(model.Email, model.Password, Request.Host.Value, model.RememberMe);
 
                 if (result.Succeeded)
                 {
@@ -122,7 +122,7 @@ namespace Rinsen.InnovationBoost.Controllers
 
                     if (createLocalAccountResult.Succeeded)
                     {
-                        var loginResult = await _loginService.LoginAsync(model.Email, model.Password, false);
+                        var loginResult = await _loginService.LoginAsync(model.Email, model.Password, Request.Host.Value, false);
 
                         if (loginResult.Succeeded)
                         {

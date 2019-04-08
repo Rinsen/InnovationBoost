@@ -10,6 +10,8 @@ namespace Rinsen.IdentityProvider.IdentityServer
 {
     public class IdentityServiceClientStore : IClientStore
     {
+        // https://id4withclients.readthedocs.io/en/latest/id4/ID4Database/DatabaseDiagramID4.html
+
         public Task<Client> FindClientByIdAsync(string clientId)
         {
             switch (clientId)

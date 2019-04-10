@@ -27,7 +27,7 @@ namespace LoginAndLogging.Controllers
         public IActionResult Index2()
         {
             var id = 1;
-            _logger.LogInformation("Logged in user {Name}", User.Identity.Name);
+            _logger.LogInformation("Logged in user {Name} with id {Id}", User.Identity.Name, id);
 
             return View();
         }

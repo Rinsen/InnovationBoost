@@ -3,6 +3,7 @@ using Rinsen.IdentityProvider.ExternalApplications;
 using Rinsen.IdentityProvider.LocalAccounts;
 using Rinsen.IdentityProvider.Core;
 using System;
+using Rinsen.IdentityProvider.IdentityServer;
 
 namespace Rinsen.IdentityProvider
 {
@@ -29,6 +30,7 @@ namespace Rinsen.IdentityProvider
             services.AddScoped<ITokenStorage, TokenStorage>();
             services.AddScoped<IIdentityAccessor, IdentityAccessService>();
             services.AddScoped<IIdentityAttributeStorage, IdentityAttributeStorage>();
+            services.AddTransient<IdentityServerClientBusiness, IdentityServerClientBusiness>();
 
             services.AddRinsenAuthentication();
         }

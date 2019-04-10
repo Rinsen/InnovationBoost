@@ -61,6 +61,9 @@ namespace Rinsen.InnovationBoost
             services.AddDbContext<MessageDbContext>(options =>
                 options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
 
+            services.AddDbContext<IdentityServerDbContext>(options =>
+                options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
+
             services.AddMvc();
         }
 

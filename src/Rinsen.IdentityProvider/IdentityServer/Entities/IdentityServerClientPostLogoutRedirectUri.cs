@@ -4,7 +4,12 @@ using System.Text;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerClientPostLogoutDerdirectUri
+    public class IdentityServerClientPostLogoutRedirectUri
     {
+        public int Id { get; set; }
+
+        public int ClientId { get; set; }
+
+        public string PostLogoutRedirectUri { get; set; }
     }
 }

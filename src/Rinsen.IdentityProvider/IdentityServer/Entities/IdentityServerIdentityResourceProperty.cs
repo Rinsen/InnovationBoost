@@ -4,7 +4,15 @@ using System.Text;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    class IdentityServerIdentityClaim
+    public class IdentityServerIdentityResourceProperty
     {
+        public int Id { get; set; }
+
+        public int IdentityResourceId { get; set; }
+
+        public string Key { get; set; }
+
+        public string Value { get; set; }
+
     }
 }

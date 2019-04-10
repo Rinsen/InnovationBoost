@@ -12,7 +12,7 @@
     <Content Include="bundleconfig2.json2" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="3.10.6" />
+    <PackageReference Include="IdentityModel" Version="3.10.7" />
     <PackageReference Include="IdentityServer4" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Rinsen.DatabaseInstaller" Version="0.4.3" />

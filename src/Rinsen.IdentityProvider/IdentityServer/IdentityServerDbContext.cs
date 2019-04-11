@@ -80,7 +80,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 .HasKey(m => m.Id);
 
             modelBuilder.Entity<IdentityServerApiResourceScope>()
-                .HasMany(m => m.UserClaims)
+                .HasMany(m => m.Claims)
                 .WithOne()
                 .HasForeignKey(m => m.ApiResourceScopeId)
                 .IsRequired();

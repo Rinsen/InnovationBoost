@@ -17,6 +17,7 @@ using Rinsen.DatabaseInstaller;
 using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.IdentityServer;
+using Rinsen.IdentityProvider.Installation.IdentityServer;
 using Rinsen.InnovationBoost.Installation;
 using Rinsen.Messaging;
 
@@ -69,6 +70,9 @@ namespace Rinsen.InnovationBoost
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
         {
+            var a = new IdentityServerTableInstallation();
+            var script = a.UpCommands;
+
             if (_env.IsDevelopment())
             {
                 //app.UseBrowserLink();
@@ -78,6 +82,7 @@ namespace Rinsen.InnovationBoost
                 {
                     options.DatabaseVersions.Add(new CreateTables());
                     options.DatabaseVersions.Add(new CreateSettingsTable());
+                    options.DatabaseVersions.Add(new IdentityServerTableInstallation());
                 });
             }
             else
@@ -151,3 +156,4 @@ namespace Rinsen.InnovationBoost
         }
     }
 }
+

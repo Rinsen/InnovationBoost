@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Con
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Core", "src\Rinsen.IdentityProvider.Core\Rinsen.IdentityProvider.Core.csproj", "{11037521-A2F0-46F8-9557-116C4B6518D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Installation", "src\Rinsen.IdentityProvider.Installation\Rinsen.IdentityProvider.Installation.csproj", "{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Token", "src\Rinsen.IdentityProvider.Token\Rinsen.IdentityProvider.Token.csproj", "{6790C595-180B-4E16-B7D9-0139873EC6CA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.InnovationBoost", "src\Rinsen.InnovationBoost\Rinsen.InnovationBoost.csproj", "{392560C2-D3BA-4F31-95C7-87FE13427C25}"
@@ -41,7 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoginAndLogging", "sample\LoginAndLogging\LoginAndLogging.csproj", "{0DFC8BF6-B4BA-4ACF-8EC4-C5BAE3C774DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdConnectSample", "sample\OpenIdConnectSample\OpenIdConnectSample.csproj", "{25EC882B-26AD-416D-8729-37B0F4998BA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdConnectSample", "sample\OpenIdConnectSample\OpenIdConnectSample.csproj", "{25EC882B-26AD-416D-8729-37B0F4998BA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,10 +59,6 @@ Global
 		{11037521-A2F0-46F8-9557-116C4B6518D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11037521-A2F0-46F8-9557-116C4B6518D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11037521-A2F0-46F8-9557-116C4B6518D3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6790C595-180B-4E16-B7D9-0139873EC6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6790C595-180B-4E16-B7D9-0139873EC6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6790C595-180B-4E16-B7D9-0139873EC6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -105,7 +99,6 @@ Global
 		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{239961DA-23C0-4310-B597-9FBFDDF1063E} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{11037521-A2F0-46F8-9557-116C4B6518D3} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
-		{DF3B0E48-A398-44B2-B091-1D5DCA9FB71F} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{6790C595-180B-4E16-B7D9-0139873EC6CA} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{392560C2-D3BA-4F31-95C7-87FE13427C25} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{3B91405A-959D-4291-A681-BFF647EF664C} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}

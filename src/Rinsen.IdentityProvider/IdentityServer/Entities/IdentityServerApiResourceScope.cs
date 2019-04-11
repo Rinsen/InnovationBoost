@@ -20,6 +20,6 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
 
         public bool ShowInDiscoveryDocument { get; set; }
 
-        public List<IdentityServerApiResourceScopeClaim> UserClaims { get; set; }
+        public List<IdentityServerApiResourceScopeClaim> Claims { get; set; }
     }
 }

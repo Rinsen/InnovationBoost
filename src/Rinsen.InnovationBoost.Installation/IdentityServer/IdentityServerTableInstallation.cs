@@ -20,8 +20,8 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             var identityServerApiResourcesTable = dbChangeList.AddNewTable<IdentityServerApiResource>();
 
             identityServerApiResourcesTable.AddAutoIncrementColumn(m => m.Id);
-            identityServerApiResourcesTable.AddColumn(m => m.Description, 1000);
-            identityServerApiResourcesTable.AddColumn(m => m.DisplayName, 200);
+            identityServerApiResourcesTable.AddColumn(m => m.Description, 1000).Null();
+            identityServerApiResourcesTable.AddColumn(m => m.DisplayName, 200).Null();
             identityServerApiResourcesTable.AddColumn(m => m.Enabled);
             identityServerApiResourcesTable.AddColumn(m => m.Name, 200);
             identityServerApiResourcesTable.AddColumn(m => m.Created);
@@ -37,8 +37,8 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             var identityServerApiResourceScopesTable = dbChangeList.AddNewTable<IdentityServerApiResourceScope>();
             identityServerApiResourceScopesTable.AddAutoIncrementColumn(m => m.Id);
             identityServerApiResourceScopesTable.AddColumn(m => m.ApiResourceId).ForeignKey<IdentityServerApiResource>(m => m.Id);
-            identityServerApiResourceScopesTable.AddColumn(m => m.Description, 1000);
-            identityServerApiResourceScopesTable.AddColumn(m => m.DisplayName, 200);
+            identityServerApiResourceScopesTable.AddColumn(m => m.Description, 1000).Null();
+            identityServerApiResourceScopesTable.AddColumn(m => m.DisplayName, 200).Null();
             identityServerApiResourceScopesTable.AddColumn(m => m.Emphasize);
             identityServerApiResourceScopesTable.AddColumn(m => m.Name, 200);
             identityServerApiResourceScopesTable.AddColumn(m => m.Required);
@@ -56,7 +56,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             var identityServerApiResourceSecretsTable = dbChangeList.AddNewTable<IdentityServerApiResourceSecret>();
             identityServerApiResourceSecretsTable.AddAutoIncrementColumn(m => m.Id);
             identityServerApiResourceSecretsTable.AddColumn(m => m.ApiResourceId).ForeignKey<IdentityServerApiResource>(m => m.Id);
-            identityServerApiResourceSecretsTable.AddColumn(m => m.Description, 1000);
+            identityServerApiResourceSecretsTable.AddColumn(m => m.Description, 1000).Null();
             identityServerApiResourceSecretsTable.AddColumn(m => m.Expiration);
             identityServerApiResourceSecretsTable.AddColumn(m => m.Type, 200);
             identityServerApiResourceSecretsTable.AddColumn(m => m.Value, 2000);
@@ -77,20 +77,21 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             identityServerClientsTable.AddColumn(m => m.AlwaysSendClientClaims);
             identityServerClientsTable.AddColumn(m => m.AuthorizationCodeLifetime);
             identityServerClientsTable.AddColumn(m => m.BackChannelLogoutSessionRequired);
-            identityServerClientsTable.AddColumn(m => m.BackChannelLogoutUri, 2000);
+            identityServerClientsTable.AddColumn(m => m.BackChannelLogoutUri, 2000).Null();
             identityServerClientsTable.AddColumn(m => m.ClientClaimsPrefix, 250);
             identityServerClientsTable.AddColumn(m => m.ClientName, 250);
-            identityServerClientsTable.AddColumn(m => m.ClientUri, 2000);
-            identityServerClientsTable.AddColumn(m => m.Description, 1000);
+            identityServerClientsTable.AddColumn(m => m.ClientUri, 2000).Null();
+            identityServerClientsTable.AddColumn(m => m.ConsentLifetime);
+            identityServerClientsTable.AddColumn(m => m.Description, 1000).Null();
             identityServerClientsTable.AddColumn(m => m.DeviceCodeLifetime);
             identityServerClientsTable.AddColumn(m => m.Enabled);
             identityServerClientsTable.AddColumn(m => m.EnableLocalLogin);
             identityServerClientsTable.AddColumn(m => m.FrontChannelLogoutSessionRequired);
-            identityServerClientsTable.AddColumn(m => m.FrontChannelLogoutUri, 2000);
+            identityServerClientsTable.AddColumn(m => m.FrontChannelLogoutUri, 2000).Null();
             identityServerClientsTable.AddColumn(m => m.IdentityTokenLifetime);
             identityServerClientsTable.AddColumn(m => m.IncludeJwtId);
-            identityServerClientsTable.AddColumn(m => m.LogoUri, 2000);
-            identityServerClientsTable.AddColumn(m => m.PairWiseSubjectSalt, 250);
+            identityServerClientsTable.AddColumn(m => m.LogoUri, 2000).Null();
+            identityServerClientsTable.AddColumn(m => m.PairWiseSubjectSalt, 250).Null();
             identityServerClientsTable.AddColumn(m => m.ProtocolType, 250);
             identityServerClientsTable.AddColumn(m => m.RefreshTokenExpiration);
             identityServerClientsTable.AddColumn(m => m.RefreshTokenUsage);
@@ -99,7 +100,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             identityServerClientsTable.AddColumn(m => m.RequirePkce);
             identityServerClientsTable.AddColumn(m => m.SlidingRefreshTokenLifetime);
             identityServerClientsTable.AddColumn(m => m.UpdateAccessTokenClaimsOnRefresh);
-            identityServerClientsTable.AddColumn(m => m.UserCodeType, 250);
+            identityServerClientsTable.AddColumn(m => m.UserCodeType, 250).Null();
             identityServerClientsTable.AddColumn(m => m.UserSsoLifetime);
             identityServerClientsTable.AddColumn(m => m.Created);
             identityServerClientsTable.AddColumn(m => m.Updated);
@@ -150,17 +151,17 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             var identityServerClientSecretsTable = dbChangeList.AddNewTable<IdentityServerClientSecret>();
             identityServerClientSecretsTable.AddAutoIncrementColumn(m => m.Id);
             identityServerClientSecretsTable.AddColumn(m => m.ClientId).ForeignKey<IdentityServerClient>(m => m.Id);
-            identityServerClientSecretsTable.AddColumn(m => m.Description, 1000);
+            identityServerClientSecretsTable.AddColumn(m => m.Description, 1000).Null();
             identityServerClientSecretsTable.AddColumn(m => m.Expiration);
-            identityServerClientSecretsTable.AddColumn(m => m.Type, 250);
+            identityServerClientSecretsTable.AddColumn(m => m.Type, 250).Null();
             identityServerClientSecretsTable.AddColumn(m => m.Value, 2000);
             identityServerClientSecretsTable.AddColumn(m => m.Created);
             identityServerClientSecretsTable.AddColumn(m => m.Updated);
 
             var identityServerIdentityResourcesTable = dbChangeList.AddNewTable<IdentityServerIdentityResource>();
             identityServerIdentityResourcesTable.AddAutoIncrementColumn(m => m.Id);
-            identityServerIdentityResourcesTable.AddColumn(m => m.Description, 1000);
-            identityServerIdentityResourcesTable.AddColumn(m => m.DisplayName, 200);
+            identityServerIdentityResourcesTable.AddColumn(m => m.Description, 1000).Null();
+            identityServerIdentityResourcesTable.AddColumn(m => m.DisplayName, 200).Null();
             identityServerIdentityResourcesTable.AddColumn(m => m.Emphasize);
             identityServerIdentityResourcesTable.AddColumn(m => m.Enabled);
             identityServerIdentityResourcesTable.AddColumn(m => m.Name, 200);
@@ -191,7 +192,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             identityServerPersistedGrantsTable.AddColumn(m => m.Data);
             identityServerPersistedGrantsTable.AddColumn(m => m.Expiration);
             identityServerPersistedGrantsTable.AddColumn(m => m.Key, 250);
-            identityServerPersistedGrantsTable.AddColumn(m => m.SubjectId, 250);
+            identityServerPersistedGrantsTable.AddColumn(m => m.SubjectId, 250).Null();
             identityServerPersistedGrantsTable.AddColumn(m => m.Type, 250);
         }
     }
@@ -211,8 +212,8 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
 //drop table IdentityServerClientRedirectUris
 //drop table IdentityServerClientScopes
 //drop table IdentityServerClientSecrets
+//drop table IdentityServerPersistedGrants
 //drop table IdentityServerClients
 //drop table IdentityServerIdentityResourceClaims
 //drop table IdentityServerIdentityResourcePropertys
 //drop table IdentityServerIdentityResources
-//drop table IdentityServerPersistedGrants

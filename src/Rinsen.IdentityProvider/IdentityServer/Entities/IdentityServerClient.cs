@@ -65,7 +65,9 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
         public string LogoUri { get; set; }
         
         public bool RequireConsent { get; set; }
-        
+
+        public int? ConsentLifetime { get; set; }
+
         public bool RequirePkce { get; set; }
         
         public bool AllowPlainTextPkce { get; set; }

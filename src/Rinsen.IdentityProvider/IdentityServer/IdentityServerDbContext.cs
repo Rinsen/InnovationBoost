@@ -204,20 +204,24 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
+            SetCreatedUpdatedAndTimestampOnSave();
+
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
                
         private void SetCreatedUpdatedAndTimestampOnSave()
         {
+            var saveStartTime = DateTimeOffset.Now;
+
             foreach (var entry in ChangeTracker.Entries().Where(e => e.Entity is ICreatedAndUpdatedTimestamp && e.State == EntityState.Added))
             {
-                ((ICreatedAndUpdatedTimestamp)entry.Entity).Created = DateTimeOffset.Now;
-                ((ICreatedAndUpdatedTimestamp)entry.Entity).Updated = DateTimeOffset.Now;
+                ((ICreatedAndUpdatedTimestamp)entry.Entity).Created = saveStartTime;
+                ((ICreatedAndUpdatedTimestamp)entry.Entity).Updated = saveStartTime;
             }
 
             foreach (var entry in ChangeTracker.Entries().Where(e => e.Entity is ICreatedAndUpdatedTimestamp && e.State == EntityState.Modified))
             {
-                ((ICreatedAndUpdatedTimestamp)entry.Entity).Updated = DateTimeOffset.Now;
+                ((ICreatedAndUpdatedTimestamp)entry.Entity).Updated = saveStartTime;
             }
         }
     }

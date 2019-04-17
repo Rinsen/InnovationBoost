@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IdentityServer4;
 using IdentityServer4.Models;
+using Microsoft.EntityFrameworkCore;
 using Rinsen.IdentityProvider.IdentityServer.Entities;
 
 namespace Rinsen.IdentityProvider.IdentityServer
@@ -24,9 +26,19 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         }
 
-        public Task<IdentityServerClient> GetClient(string clientStringId)
+        public Task<IdentityServerClient> GetClient(string clientId)
         {
-            throw new NotImplementedException();
+            var client = _identityServerDbContext.IdentityServerClients.Where(m => m.ClientId == clientId)
+                .Include(m => m.AllowedCorsOrigins)
+                .Include(m => m.AllowedGrantTypes)
+                .Include(m => m.AllowedScopes)
+                .Include(m => m.Claims)
+                .Include(m => m.ClientSecrets)
+                .Include(m => m.IdentityProviderRestrictions)
+                .Include(m => m.PostLogoutRedirectUris)
+                .Include(m => m.RedirectUris).FirstOrDefaultAsync();
+
+            return client;
         }
 
         public async Task CreateTestData()
@@ -75,6 +87,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 ClientName = exampleClient.ClientName,
                 ClientSecrets = new List<IdentityServerClientSecret>(),
                 ClientUri = exampleClient.ClientUri,
+                ConsentLifetime = exampleClient.ConsentLifetime,
                 Description = exampleClient.Description,
                 DeviceCodeLifetime = exampleClient.DeviceCodeLifetime,
                 Enabled = exampleClient.Enabled,
@@ -99,6 +112,14 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 UserCodeType = exampleClient.UserCodeType,
                 UserSsoLifetime = exampleClient.UserSsoLifetime
             };
+
+            client.AllowedCorsOrigins.AddRange(exampleClient.AllowedCorsOrigins.Select(aco => new IdentityServerClientCorsOrigin { Origin = aco }));
+            client.AllowedGrantTypes.AddRange(exampleClient.AllowedGrantTypes.Select(agt => new IdentityServerClientGrantType { GrantType = agt }));
+            client.AllowedScopes.AddRange(exampleClient.AllowedScopes.Select(s => new IdentityServerClientScope { Scope = s }));
+            client.Claims.AddRange(exampleClient.Claims.Select(s => new IdentityServerClientClaim { Type = s.Type, Value = s.Value }));
+            client.ClientSecrets.AddRange(exampleClient.ClientSecrets.Select(s => new IdentityServerClientSecret { Description = s.Description, Expiration = s.Expiration, Type = s.Type, Value = s.Value }));
+            client.IdentityProviderRestrictions.AddRange(exampleClient.IdentityProviderRestrictions.Select(s => new IdentityServerClientIdpRestriction { Provider = s }));
+            client.PostLogoutRedirectUris.AddRange(exampleClient.PostLogoutRedirectUris.Select(s => new IdentityServerClientPostLogoutRedirectUri { PostLogoutRedirectUri = s }));
 
             _identityServerDbContext.IdentityServerClients.Add(client);
 

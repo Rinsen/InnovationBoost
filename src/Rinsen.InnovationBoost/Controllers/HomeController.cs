@@ -24,7 +24,14 @@ namespace Rinsen.InnovationBoost.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            await _identityServerClientBusiness.CreateTestData();
+            var client = await _identityServerClientBusiness.GetClient("mvc");
+
+            if (client == default)
+            {
+                await _identityServerClientBusiness.CreateTestData();
+
+                client = await _identityServerClientBusiness.GetClient("mvc");
+            }
 
             return View();
         }

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rinsen.IdentityProvider.IdentityServer.Entities;
 
@@ -190,6 +193,32 @@ namespace Rinsen.IdentityProvider.IdentityServer
             modelBuilder.Entity<IdentityServerPersistedGrant>()
                 .HasKey(m => m.Id);
 
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            SetCreatedUpdatedAndTimestampOnSave();
+
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+               
+        private void SetCreatedUpdatedAndTimestampOnSave()
+        {
+            foreach (var entry in ChangeTracker.Entries().Where(e => e.Entity is ICreatedAndUpdatedTimestamp && e.State == EntityState.Added))
+            {
+                ((ICreatedAndUpdatedTimestamp)entry.Entity).Created = DateTimeOffset.Now;
+                ((ICreatedAndUpdatedTimestamp)entry.Entity).Updated = DateTimeOffset.Now;
+            }
+
+            foreach (var entry in ChangeTracker.Entries().Where(e => e.Entity is ICreatedAndUpdatedTimestamp && e.State == EntityState.Modified))
+            {
+                ((ICreatedAndUpdatedTimestamp)entry.Entity).Updated = DateTimeOffset.Now;
+            }
         }
     }
 }

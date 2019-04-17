@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerIdentityResource
+    public class IdentityServerIdentityResource : ICreatedAndUpdatedTimestamp
     {
         public int Id { get; set; }
 
@@ -21,6 +21,10 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
         public bool Emphasize { get; set; }
 
         public bool ShowInDiscoveryDocument { get; set; }
+
+        public DateTimeOffset Created { get; set; }
+
+        public DateTimeOffset Updated { get; set; }
 
         public List<IdentityServerIdentityResourceClaim> Claims { get; set; }
 

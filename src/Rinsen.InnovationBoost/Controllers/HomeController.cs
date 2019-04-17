@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rinsen.IdentityProvider.IdentityServer;
@@ -12,6 +13,8 @@ namespace Rinsen.InnovationBoost.Controllers
         public HomeController(IdentityServerClientBusiness identityServerClientBusiness)
         {
             _identityServerClientBusiness = identityServerClientBusiness;
+
+            
         }
         //public HomeController(ILogger<HomeController> logger)
         //{
@@ -19,8 +22,10 @@ namespace Rinsen.InnovationBoost.Controllers
         //}
 
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            await _identityServerClientBusiness.CreateTestData();
+
             return View();
         }
 

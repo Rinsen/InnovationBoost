@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerApiResourceScope
+    public class IdentityServerApiResourceScope : ICreatedAndUpdatedTimestamp
     {
         public int Id { get; set; }
 
@@ -19,6 +20,10 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
         public bool Emphasize { get; set; }
 
         public bool ShowInDiscoveryDocument { get; set; }
+
+        public DateTimeOffset Created { get; set; }
+
+        public DateTimeOffset Updated { get; set; }
 
         public List<IdentityServerApiResourceScopeClaim> Claims { get; set; }
     }

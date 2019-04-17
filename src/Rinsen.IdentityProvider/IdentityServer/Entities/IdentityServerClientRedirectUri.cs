@@ -4,12 +4,16 @@ using System.Text;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerClientRedirectUri
+    public class IdentityServerClientRedirectUri : ICreatedAndUpdatedTimestamp
     {
         public int Id { get; set; }
 
         public int ClientId { get; set; }
 
         public string RedirectUri { get; set; }
+
+        public DateTimeOffset Created { get; set; }
+
+        public DateTimeOffset Updated { get; set; }
     }
 }

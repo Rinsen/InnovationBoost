@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using IdentityServer4.Models;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerClient
+    public class IdentityServerClient : ICreatedAndUpdatedTimestamp
     {
         public bool AllowOfflineAccess { get; set; }
         
@@ -78,6 +79,10 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
         public string BackChannelLogoutUri { get; set; }
         
         public bool AllowRememberConsent { get; set; }
+
+        public DateTimeOffset Created { get; set; }
+
+        public DateTimeOffset Updated { get; set; }
 
         public List<IdentityServerClientCorsOrigin> AllowedCorsOrigins { get; set; }
 

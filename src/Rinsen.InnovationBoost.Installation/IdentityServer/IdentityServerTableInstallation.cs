@@ -18,7 +18,6 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
         public override void AddDbChanges(List<IDbChange> dbChangeList)
         {
             var identityServerApiResourcesTable = dbChangeList.AddNewTable<IdentityServerApiResource>();
-
             identityServerApiResourcesTable.AddAutoIncrementColumn(m => m.Id);
             identityServerApiResourcesTable.AddColumn(m => m.Description, 1000).Null();
             identityServerApiResourcesTable.AddColumn(m => m.DisplayName, 200).Null();
@@ -112,6 +111,13 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             identityServerClientClaimsTable.AddColumn(m => m.Value, 250);
             identityServerClientClaimsTable.AddColumn(m => m.Created);
             identityServerClientClaimsTable.AddColumn(m => m.Updated);
+
+            var identityServerClientCorsTable = dbChangeList.AddNewTable<IdentityServerClientCorsOrigin>();
+            identityServerClientCorsTable.AddAutoIncrementColumn(m => m.Id);
+            identityServerClientCorsTable.AddColumn(m => m.ClientId).ForeignKey<IdentityServerClient>(m => m.Id);
+            identityServerClientCorsTable.AddColumn(m => m.Origin, 2000);
+            identityServerClientCorsTable.AddColumn(m => m.Created);
+            identityServerClientCorsTable.AddColumn(m => m.Updated);
 
             var identityServerClientGrantTypesTable = dbChangeList.AddNewTable<IdentityServerClientGrantType>();
             identityServerClientGrantTypesTable.AddAutoIncrementColumn(m => m.Id);

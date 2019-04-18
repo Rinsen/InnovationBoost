@@ -94,26 +94,16 @@ namespace Rinsen.IdentityProvider.IdentityServer
             modelBuilder.Entity<IdentityServerApiResourceSecret>()
                 .HasKey(m => m.Id);
 
-            modelBuilder.Entity<IdentityServerClient>()
-                .HasKey(m => m.Id);
-
-            modelBuilder.Entity<IdentityServerClient>()
-                .HasMany(m => m.Claims)
-                .WithOne()
-                .HasForeignKey(m => m.ClientId)
-                .IsRequired();
-
-            modelBuilder.Entity<IdentityServerClient>()
-                .HasMany(m => m.AllowedCorsOrigins)
-                .WithOne()
-                .HasForeignKey(m => m.ClientId)
-                .IsRequired();
-
-            modelBuilder.Entity<IdentityServerClient>()
-                .HasMany(m => m.AllowedGrantTypes)
-                .WithOne()
-                .HasForeignKey(m => m.ClientId)
-                .IsRequired();
+            modelBuilder.Entity<IdentityServerClient>(clients =>
+            {
+                clients.HasKey(m => m.Id);
+                clients.Property(m => m.AccessTokenType).HasColumnType("tinyint");
+                clients.Property(m => m.RefreshTokenUsage).HasColumnType("tinyint");
+                clients.Property(m => m.RefreshTokenExpiration).HasColumnType("tinyint");
+                clients.HasMany(m => m.Claims).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
+                clients.HasMany(m => m.AllowedCorsOrigins).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
+                clients.HasMany(m => m.AllowedGrantTypes).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
+            });
 
             modelBuilder.Entity<IdentityServerClient>()
                 .HasMany(m => m.AllowedScopes)

@@ -212,6 +212,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
 //drop table IdentityServerApiResourceSecrets
 //drop table IdentityServerApiResources
 //drop table IdentityServerClientClaims
+//drop table IdentityServerClientCorsOrigin
 //drop table IdentityServerClientGrantTypes
 //drop table IdentityServerClientIdpRestrictions
 //drop table IdentityServerClientPostLogoutRedirectUris

@@ -4,7 +4,7 @@ using IdentityServer4.Models;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerClient : ICreatedAndUpdatedTimestamp
+    public class IdentityServerClient : ICreatedAndUpdatedTimestamp, IObjectWithState
     {
         public bool AllowOfflineAccess { get; set; }
         
@@ -86,6 +86,8 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
 
         public DateTimeOffset Updated { get; set; }
 
+        public ObjectState State { get; set; }
+
         public List<IdentityServerClientCorsOrigin> AllowedCorsOrigins { get; set; }
 
         public List<IdentityServerClientGrantType> AllowedGrantTypes { get; set; }
@@ -101,6 +103,5 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
         public List<IdentityServerClientPostLogoutRedirectUri> PostLogoutRedirectUris { get; set; }
 
         public List<IdentityServerClientRedirectUri> RedirectUris { get; set; }
-
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
+using Rinsen.IdentityProvider.Contracts;
 using Rinsen.IdentityProvider.IdentityServer.Entities;
 
 namespace Rinsen.IdentityProvider.IdentityServer
@@ -22,13 +24,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         public Task<List<IdentityServerClient>> GetClients()
         {
-            throw new NotImplementedException();
-
-        }
-
-        public Task<IdentityServerClient> GetClient(string clientId)
-        {
-            var client = _identityServerDbContext.IdentityServerClients.Where(m => m.ClientId == clientId)
+            return _identityServerDbContext.IdentityServerClients
                 .Include(m => m.AllowedCorsOrigins)
                 .Include(m => m.AllowedGrantTypes)
                 .Include(m => m.AllowedScopes)
@@ -36,9 +32,95 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 .Include(m => m.ClientSecrets)
                 .Include(m => m.IdentityProviderRestrictions)
                 .Include(m => m.PostLogoutRedirectUris)
-                .Include(m => m.RedirectUris).FirstOrDefaultAsync();
+                .Include(m => m.RedirectUris).ToListAsync();
+        }
+
+        public async Task<Client> GetClient(string clientId)
+        {
+            var identityServerClient = await GetIdentityServerClient(clientId);
+
+            var client = new Client
+            {
+                AbsoluteRefreshTokenLifetime = identityServerClient.AbsoluteRefreshTokenLifetime,
+                AccessTokenLifetime = identityServerClient.AccessTokenLifetime,
+                AccessTokenType = identityServerClient.AccessTokenType,
+                AllowAccessTokensViaBrowser = identityServerClient.AllowAccessTokensViaBrowser,
+                AllowOfflineAccess = identityServerClient.AllowOfflineAccess,
+                AllowPlainTextPkce = identityServerClient.AllowPlainTextPkce,
+                AllowRememberConsent = identityServerClient.AllowRememberConsent,
+                AlwaysIncludeUserClaimsInIdToken = identityServerClient.AlwaysIncludeUserClaimsInIdToken,
+                AlwaysSendClientClaims = identityServerClient.AlwaysSendClientClaims,
+                AuthorizationCodeLifetime = identityServerClient.AuthorizationCodeLifetime,
+                BackChannelLogoutSessionRequired = identityServerClient.BackChannelLogoutSessionRequired,
+                BackChannelLogoutUri = identityServerClient.BackChannelLogoutUri,
+                ClientClaimsPrefix = identityServerClient.ClientClaimsPrefix,
+                ClientId = identityServerClient.ClientId,
+                ClientName = identityServerClient.ClientName,
+                ClientUri = identityServerClient.ClientUri,
+                ConsentLifetime = identityServerClient.ConsentLifetime,
+                Description = identityServerClient.Description,
+                DeviceCodeLifetime = identityServerClient.DeviceCodeLifetime,
+                Enabled = identityServerClient.Enabled,
+                EnableLocalLogin = identityServerClient.EnableLocalLogin,
+                FrontChannelLogoutSessionRequired = identityServerClient.FrontChannelLogoutSessionRequired,
+                FrontChannelLogoutUri = identityServerClient.FrontChannelLogoutUri,
+                IdentityTokenLifetime = identityServerClient.IdentityTokenLifetime,
+                IncludeJwtId = identityServerClient.IncludeJwtId,
+                LogoUri = identityServerClient.LogoUri,
+                PairWiseSubjectSalt = identityServerClient.PairWiseSubjectSalt,
+                ProtocolType = identityServerClient.ProtocolType,
+                RefreshTokenExpiration = identityServerClient.RefreshTokenExpiration,
+                RefreshTokenUsage = identityServerClient.RefreshTokenUsage,
+                RequireClientSecret = identityServerClient.RequireClientSecret,
+                RequireConsent = identityServerClient.RequireConsent,
+                RequirePkce = identityServerClient.RequirePkce,
+                SlidingRefreshTokenLifetime = identityServerClient.SlidingRefreshTokenLifetime,
+                UpdateAccessTokenClaimsOnRefresh = identityServerClient.UpdateAccessTokenClaimsOnRefresh,
+                UserCodeType = identityServerClient.UserCodeType,
+                UserSsoLifetime = identityServerClient.UserSsoLifetime
+            };
+
+            client.AllowedCorsOrigins = identityServerClient.AllowedCorsOrigins.Select(aco => aco.Origin).ToArray();
+            client.AllowedGrantTypes= identityServerClient.AllowedGrantTypes.Select(agt => agt.GrantType ).ToArray();
+            client.AllowedScopes = identityServerClient.AllowedScopes.Select(s => s.Scope).ToArray();
+            client.Claims = identityServerClient.Claims.Select(s => new Claim(s.Type, s.Value, RinsenIdentityConstants.RinsenIdentityProvider)).ToArray();
+            client.ClientSecrets = identityServerClient.ClientSecrets.Select(s => new Secret { Description = s.Description, Expiration = s.Expiration.HasValue ? s.Expiration.Value.DateTime : (DateTime?)null, Type = s.Type, Value = s.Value }).ToArray();
+            client.IdentityProviderRestrictions = identityServerClient.IdentityProviderRestrictions.Select(s => s.Provider).ToArray();
+            client.PostLogoutRedirectUris = identityServerClient.PostLogoutRedirectUris.Select(s => s.PostLogoutRedirectUri).ToArray();
 
             return client;
+        }
+
+        public Task<IdentityServerClient> GetIdentityServerClient(string clientId)
+        {
+            var client = _identityServerDbContext.IdentityServerClients
+                .Include(m => m.AllowedCorsOrigins)
+                .Include(m => m.AllowedGrantTypes)
+                .Include(m => m.AllowedScopes)
+                .Include(m => m.Claims)
+                .Include(m => m.ClientSecrets)
+                .Include(m => m.IdentityProviderRestrictions)
+                .Include(m => m.PostLogoutRedirectUris)
+                .Include(m => m.RedirectUris).FirstOrDefaultAsync(m => m.ClientId == clientId);
+
+            return client;
+        }
+
+        public Task UpdateClient(IdentityServerClient identityServerClient)
+        {
+            return _identityServerDbContext.SaveAnnotatedGraph(identityServerClient);
+        }
+
+        public async Task CreateNewClient(string clientId, string clientName, string description)
+        {
+            var exampleClient = new Client
+            {
+                ClientId = clientId,
+                ClientName = clientName,
+                Description = description
+            };
+
+            await SaveClient(exampleClient);
         }
 
         public async Task CreateTestData()
@@ -63,7 +145,11 @@ namespace Rinsen.IdentityProvider.IdentityServer
                             IdentityServerConstants.StandardScopes.Profile
                         }
             };
+            await SaveClient(exampleClient);
+        }
 
+        private async Task SaveClient(Client exampleClient)
+        {
             var client = new IdentityServerClient
             {
                 AbsoluteRefreshTokenLifetime = exampleClient.AbsoluteRefreshTokenLifetime,
@@ -124,8 +210,6 @@ namespace Rinsen.IdentityProvider.IdentityServer
             _identityServerDbContext.IdentityServerClients.Add(client);
 
             await _identityServerDbContext.SaveChangesAsync();
-
         }
-
     }
 }

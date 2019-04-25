@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Rinsen.IdentityProvider.Contracts;
+using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.LocalAccounts;
 using System;
 using System.Collections.Generic;
@@ -17,22 +18,24 @@ namespace Rinsen.IdentityProvider
     public class LoginService : ILoginService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly RandomStringGenerator _randomStringGenerator;
         private readonly IIdentityService _identityService;
         private readonly ILogger<LoginService> _log;
         private readonly ILocalAccountService _localAccountService;
         private readonly IIdentityAttributeStorage _identityAttributeStorage;
-        private readonly RandomNumberGenerator CryptoRandom = RandomNumberGenerator.Create();
 
         public LoginService(ILocalAccountService localAccountService,
             IIdentityService identityService,
             IIdentityAttributeStorage identityAttributeStorage,
-            IHttpContextAccessor httpContextAccessor, 
+            IHttpContextAccessor httpContextAccessor,
+            RandomStringGenerator randomStringGenerator, 
             ILogger<LoginService> log)
         {
             _localAccountService = localAccountService;
             _identityService = identityService;
             _identityAttributeStorage = identityAttributeStorage;
             _httpContextAccessor = httpContextAccessor;
+            _randomStringGenerator = randomStringGenerator;
             _log = log;
         }
 
@@ -76,9 +79,7 @@ namespace Rinsen.IdentityProvider
 
         private async Task<List<Claim>> GetClaimsForIdentityAsync(Identity identity, string host, bool rememberMe)
         {
-            var bytes = new byte[32];
-            CryptoRandom.GetBytes(bytes);
-            var sessionId = Base64UrlTextEncoder.Encode(bytes);
+            var sessionId = _randomStringGenerator.GetRandomString(32);
 
             var claims = new List<Claim>
             {

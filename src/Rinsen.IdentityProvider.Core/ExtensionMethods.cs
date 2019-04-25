@@ -94,6 +94,7 @@ namespace Rinsen.IdentityProvider.Core
         {
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IIdentityAccessor, IdentityAccessService>();
+            services.TryAddSingleton<RandomStringGenerator, RandomStringGenerator>();
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerPersistedGrant
+    public class IdentityServerPersistedGrant : IObjectWithState
     {
         public int Id { get; set; }
 
@@ -19,5 +19,7 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
         public DateTimeOffset? Expiration { get; set; }
         
         public string Data { get; set; }
+
+        public ObjectState State { get; set; }
     }
 }

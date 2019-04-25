@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerApiResourceScope : ICreatedAndUpdatedTimestamp
+    public class IdentityServerApiResourceScope : ICreatedAndUpdatedTimestamp, IObjectWithState
     {
         public int Id { get; set; }
 
@@ -24,6 +24,8 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
         public DateTimeOffset Created { get; set; }
 
         public DateTimeOffset Updated { get; set; }
+
+        public ObjectState State { get; set; }
 
         public List<IdentityServerApiResourceScopeClaim> Claims { get; set; }
     }

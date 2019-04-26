@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,7 @@ namespace Rinsen.InnovationBoost.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var client = await _identityServerClientBusiness.GetIdentityServerClient("testclient");
@@ -34,17 +36,43 @@ namespace Rinsen.InnovationBoost.Controllers
                 client = await _identityServerClientBusiness.GetIdentityServerClient("testclient");
             }
 
-            var disconnectedClientGraph = JsonConvert.DeserializeObject<IdentityServerClient>(JsonConvert.SerializeObject(client));
+            
 
-            var secret = _randomStringGenerator.GetRandomString(60);
+            ViewBag.Data = JsonConvert.SerializeObject(client); ;
 
-            disconnectedClientGraph.ClientSecrets.Add(new IdentityServerClientSecret
-            {
-                Expiration = null,
-                State = ObjectState.Added,
-                Type = IdentityServer4.IdentityServerConstants.SecretTypes.SharedSecret,
-                Value = secret.Sha256()
-            });
+            //var secret = _randomStringGenerator.GetRandomString(60);
+
+            //disconnectedClientGraph.ClientSecrets.Add(new IdentityServerClientSecret
+            //{
+            //    Expiration = null,
+            //    State = ObjectState.Added,
+            //    Type = IdentityServer4.IdentityServerConstants.SecretTypes.SharedSecret,
+            //    Value = secret.Sha256()
+            //});
+
+            //await _identityServerClientBusiness.UpdateClient(disconnectedClientGraph);
+
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Index(string data)
+        {
+            
+            var disconnectedClientGraph = JsonConvert.DeserializeObject<IdentityServerClient>(data);
+
+            //var secret = _randomStringGenerator.GetRandomString(60);
+
+            //disconnectedClientGraph.ClientSecrets.Add(new IdentityServerClientSecret
+            //{
+            //    Expiration = null,
+            //    State = ObjectState.Added,
+            //    Type = IdentityServer4.IdentityServerConstants.SecretTypes.SharedSecret,
+            //    Value = secret.Sha256()
+            //});
+
+            disconnectedClientGraph.ClientSecrets.First().State = ObjectState.Deleted;
 
             await _identityServerClientBusiness.UpdateClient(disconnectedClientGraph);
 

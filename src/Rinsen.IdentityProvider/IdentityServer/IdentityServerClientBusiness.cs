@@ -106,6 +106,21 @@ namespace Rinsen.IdentityProvider.IdentityServer
             return client;
         }
 
+        public Task<List<IdentityServerClient>> GetIdentityServerClients()
+        {
+            var clients = _identityServerDbContext.IdentityServerClients
+                .Include(m => m.AllowedCorsOrigins)
+                .Include(m => m.AllowedGrantTypes)
+                .Include(m => m.AllowedScopes)
+                .Include(m => m.Claims)
+                .Include(m => m.ClientSecrets)
+                .Include(m => m.IdentityProviderRestrictions)
+                .Include(m => m.PostLogoutRedirectUris)
+                .Include(m => m.RedirectUris).ToListAsync();
+
+            return clients;
+        }
+
         public Task UpdateClient(IdentityServerClient identityServerClient)
         {
             return _identityServerDbContext.SaveAnnotatedGraph(identityServerClient);

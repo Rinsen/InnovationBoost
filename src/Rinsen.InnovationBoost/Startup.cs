@@ -20,6 +20,7 @@ using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.IdentityProvider.Installation.IdentityServer;
 using Rinsen.InnovationBoost.Installation;
 using Rinsen.Messaging;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Rinsen.InnovationBoost
 {
@@ -40,15 +41,21 @@ namespace Rinsen.InnovationBoost
             if (_env.IsDevelopment())
             {
                 services.AddDatabaseInstaller(Configuration["Rinsen:ConnectionString"]);
+
+                // Register the Swagger generator, defining 1 or more Swagger documents
+                services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                });
             }
             services.AddRinsenIdentity(options => options.ConnectionString = Configuration["Rinsen:ConnectionString"]);
+
+            ConfigureIdentityServer(services);
 
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminsOnly", policy => policy.RequireClaim("http://rinsen.se/Administrator"));
             });
-
-            ConfigureIdentityServer(services);
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -65,7 +72,7 @@ namespace Rinsen.InnovationBoost
             services.AddDbContext<IdentityServerDbContext>(options =>
                 options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
 
-            services.AddMvc();
+            services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
         }
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
@@ -84,6 +91,17 @@ namespace Rinsen.InnovationBoost
                     options.DatabaseVersions.Add(new CreateSettingsTable());
                     options.DatabaseVersions.Add(new IdentityServerTableInstallation());
                 });
+
+                // Enable middleware to serve generated Swagger as a JSON endpoint.
+                app.UseSwagger();
+
+                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+                // specifying the Swagger JSON endpoint.
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                });
+
             }
             else
             {

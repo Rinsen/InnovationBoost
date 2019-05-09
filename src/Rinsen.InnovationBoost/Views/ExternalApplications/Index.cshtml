@@ -20,12 +20,11 @@
     }
 </style>
 <div class="container-fluid" data-ng-controller="ExternalApplicationsController as vm">
-    <h1>External applications</h1>
     <div data-ng-if="vm.createFailed" class="alert alert-danger alert-dismissible ng-cloak" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <strong>Create failed!</strong> We have no way of telling you why right know
     </div>
-    <div class="row table-menu">
+    <div class="row">
         <div class="col-sm-12">
             <div data-ng-if="vm.mode.read">
                 <button class="btn btn-default" data-ng-click="vm.startCreateNew()" data-ng-disabled="vm.loading">Create</button>
@@ -44,34 +43,35 @@
             <table class="table table-striped ng-cloak">
                 <thead>
                     <tr>
-                        <th><a ng-click="vm.order('active')">Active</a><span class="sortorder" ng-show="vm.predicate === 'active'" ng-class="{reverse:vm.reverse}"></span></th>
                         <th><a ng-click="vm.order('name')">Name</a><span class="sortorder" ng-show="vm.predicate === 'name'" ng-class="{reverse:vm.reverse}"></span></th>
                         <th>Application Key</th>
+                        <th><a ng-click="vm.order('active')">Active</a><span class="sortorder" ng-show="vm.predicate === 'active'" ng-class="{reverse:vm.reverse}"></span></th>
                         @*<th><a ng-click="vm.order('activeUntil')">Active until</a><span class="sortorder" ng-show="vm.predicate === 'activeUntil'" ng-class="{reverse:vm.reverse}"></span></th>*@
                     </tr>
                 </thead>
                 <tbody>
                     <tr data-ng-if="vm.mode.create" class="form-group">
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn" data-ng-class="{'btn-danger': !vm.active, 'btn-default': vm.active}" data-ng-click="vm.active = false">No</button>
-                                <button type="button" class="btn" data-ng-class="{'btn-default': !vm.active, 'btn-success': vm.active}" data-ng-click="vm.active = true">Yes</button>
-                            </div>
-                        </td>
                         <td><label for="name" class="sr-only">Name</label><input id="name" type="text" data-ng-model="vm.name" class="form-control" /></td>
                         <td><label for="applicationkey" class="sr-only">Generated application key</label><input id="applicationkey" type="text" class="form-control" value="Server generated" disabled /></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn" data-ng-class="{'btn-default': !vm.active, 'btn-success': vm.active}" data-ng-click="vm.active = true">Yes</button>
+                                <button type="button" class="btn" data-ng-class="{'btn-danger': !vm.active, 'btn-default': vm.active}" data-ng-click="vm.active = false">No</button>
+                            </div>
+                        </td>
                         @*<td><label for="activeuntil" class="sr-only">Active until</label><input id="activeuntil" type="date" data-ng-model="vm.activeUntil" class="form-control" /></td>*@
                     </tr>
                     <tr data-ng-repeat="externalApplication in vm.externalApplications | orderBy:vm.predicate:vm.reverse">
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn" data-ng-class="{'btn-danger': !externalApplication.active, 'btn-default': externalApplication.active}" data-ng-click="vm.deactivate(externalApplication.externalApplicationId)" data-ng-disabled="vm.stateChange">No</button>
-                                <button type="button" class="btn" data-ng-class="{'btn-default': !externalApplication.active, 'btn-success': externalApplication.active}" data-ng-click="vm.activate(externalApplication.externalApplicationId)" data-ng-disabled="vm.stateChange">Yes</button>
-                            </div>
-                        </td>
+
                         <td>{{externalApplication.name}}</td>
                         <td><span class="text-nowrap">{{externalApplication.applicationKey}}</span></td>
                         @*<td>{{externalApplication.activeUntil | date:'yyyy-MM-dd'}}</td>*@
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn" data-ng-class="{'btn-default': !externalApplication.active, 'btn-success': externalApplication.active}" data-ng-click="vm.activate(externalApplication.externalApplicationId)" data-ng-disabled="vm.stateChange">Yes</button>
+                                <button type="button" class="btn" data-ng-class="{'btn-danger': !externalApplication.active, 'btn-default': externalApplication.active}" data-ng-click="vm.deactivate(externalApplication.externalApplicationId)" data-ng-disabled="vm.stateChange">No</button>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>

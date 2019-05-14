@@ -27,9 +27,11 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(403)]
         public async Task<ActionResult<List<IdentityServerClient>>> GetAll()
         {
-            var identityServerClient = await _identityServerClientBusiness.GetIdentityServerClients();
+            var identityServerClients = await _identityServerClientBusiness.GetIdentityServerClients();
 
-            return identityServerClient;
+            identityServerClients.ForEach(c => c.ClientSecrets.ForEach(s => s.Value = "****"));
+
+            return identityServerClients;
         }
 
         [HttpGet("{id}", Name = "GetClient")]
@@ -42,6 +44,8 @@ namespace Rinsen.InnovationBoost.ApiControllers
 
             if (identityServerClient == default(IdentityServerClient))
                 return NotFound();
+
+            identityServerClient.ClientSecrets.ForEach(s => s.Value = "****");
 
             return identityServerClient;
         }

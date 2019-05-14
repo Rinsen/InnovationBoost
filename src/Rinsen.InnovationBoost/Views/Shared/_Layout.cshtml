@@ -78,7 +78,9 @@
                     @if (User.HasClaim(c => c.Type == Rinsen.IdentityProvider.Contracts.RinsenClaimTypes.Administrator && c.Value == "True"))
                     {
                         @Html.MenuItem("Logger")
+                        @Html.MenuItem("Identity Server", "IdentityServer")
                         @Html.MenuItem("External Applications", "ExternalApplications")
+
                     }
 
                 </ul>

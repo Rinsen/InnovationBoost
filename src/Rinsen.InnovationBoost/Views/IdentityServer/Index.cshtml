@@ -1,0 +1,260 @@
+﻿@{
+    ViewBag.NgAppName = "app";
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_Angular");}
+}
+
+<style>
+    .sortorder:after {
+        content: '\25b2';
+    }
+
+    .sortorder.reverse:after {
+        content: '\25bc';
+    }
+
+    .table-menu {
+        margin-top: 2em;
+    }
+</style>
+<div class="container-fluid ng-cloak" data-ng-controller="IdentityServerController as vm">
+    <div class="row" data-ng-hide="vm.selectedClient !== null">
+        <div class="col-sm-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Client Id</th>
+                        <th>Active</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-ng-repeat="client in vm.clients">
+                        <td><a data-ng-click="vm.selectClient(client)">{{client.clientName}}</a></td>
+                        <td><span class="text-nowrap">{{client.clientId}}</span></td>
+                        <td>{{client.enabled}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div data-ng-if="vm.selectedClient !== null">
+        <div class="row">
+            <div class="col-sm-12">
+                <h1>{{vm.selectedClient.clientName}}</h1>
+                <button data-ng-click="vm.saveClient()">Save</button>
+                <button data-ng-click="vm.selectedClient = null">Cancel</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'General'}"><a data-ng-click="vm.selectedTab = 'General'">General</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedCorsOrigins'}"><a data-ng-click="vm.selectedTab = 'AllowedCorsOrigins'">Allowed Cors Origins</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedScopes'}"><a data-ng-click="vm.selectedTab = 'AllowedScopes'">Allowed Scopes</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedGrants'}"><a data-ng-click="vm.selectedTab = 'AllowedGrants'">Allowed Grants</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Claims'}"><a data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'ClientSecrets'}"><a data-ng-click="vm.selectedTab = 'ClientSecrets'">Client Secrets</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'IdentityProviderRestrictions'}"><a data-ng-click="vm.selectedTab = 'IdentityProviderRestrictions'">Identity Provider Restrictions</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'PostLogoutRedirectUris'}"><a data-ng-click="vm.selectedTab = 'PostLogoutRedirectUris'">Post Logout Redirect Uris</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'RedirectUris'}"><a data-ng-click="vm.selectedTab = 'RedirectUris'">Redirect Uris</a></li>
+                </ul>
+                <div class="row" data-ng-show="vm.selectedTab === 'General'">
+                    <form>
+                        <div class="col-sm-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="{{vm.selectedClient.allowOfflineAccess}}">Allow offline Access
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="identityTokenLifetime">Identity Token Lifetime</label>
+                                <input type="text" class="form-control" id="identityTokenLifetime" value="{{vm.selectedClient.identityTokenLifetime}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="accessTokenLifetime">Access Token Lifetime</label>
+                                <input type="text" class="form-control" id="accessTokenLifetime" value="{{vm.selectedClient.accessTokenLifetime}}">
+                            </div>
+                        </div>
+                            
+                        <div class="col-sm-6">
+
+                        </div>
+                    </form>
+                    
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'AllowedCorsOrigins'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Origin</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="allowedCorsOrigin in vm.selectedClient.allowedCorsOrigins">
+                                    <td><input class="form-control" type="text" data-ng-model="allowedCorsOrigin.origin" data-ng-change="allowedCorsOrigin.status = 3"/></td>
+                                    <td>{{allowedCorsOrigin.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{allowedCorsOrigin.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'AllowedScopes'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Scope</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="allowedScope in vm.selectedClient.allowedScopes">
+                                    <td><input class="form-control" type="text" data-ng-model="allowedScope.scope" data-ng-change="allowedScope.status = 3" /></td>
+                                    <td>{{allowedScope.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{allowedScope.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'AllowedGrants'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Grant Type</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="allowedGrantType in vm.selectedClient.allowedGrantTypes">
+                                    <td><input class="form-control" type="text" data-ng-model="allowedGrantTypes.grantType" data-ng-change="allowedGrantTypes.status = 3" /></td>
+                                    <td>{{allowedGrantType.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{allowedGrantType.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'Claims'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="claim in vm.selectedClient.claims">
+                                    <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="claim.status = 3" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="claim.value" data-ng-change="claim.status = 3" /></td>
+                                    <td>{{claim.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{claim.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'ClientSecrets'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Secret</th>
+                                    <th>Description</th>
+                                    <th>Expiration</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="clientSecret in vm.selectedClient.clientSecrets">
+                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.type" data-ng-change="clientSecret.status = 3" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.value" data-ng-change="clientSecret.status = 3" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.description" data-ng-change="clientSecret.status = 3" /></td>
+                                    <td><input class="form-control" type="datetime-local" data-ng-model="clientSecret.expiration" data-ng-change="clientSecret.status = 3" /></td>
+                                    <td>{{clientSecret.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{clientSecret.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'IdentityProviderRestrictions'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Provider</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="identityProviderRestriction in vm.selectedClient.identityProviderRestrictions">
+                                    <td><input class="form-control" type="text" data-ng-model="identityProviderRestriction.provider" data-ng-change="identityProviderRestriction.status = 3" /></td>
+                                    <td>{{identityProviderRestriction.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{identityProviderRestriction.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'PostLogoutRedirectUris'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Post Logout Redirect Uri</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="postLogoutRedirectUri in vm.selectedClient.postLogoutRedirectUris">
+                                    <td><input class="form-control" type="text" data-ng-model="postLogoutRedirectUri.postLogoutRedirectUri" data-ng-change="postLogoutRedirectUri.status = 3" /></td>
+                                    <td>{{postLogoutRedirectUri.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{postLogoutRedirectUri.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'RedirectUris'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Origin</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="redirectUri in vm.selectedClient.redirectUris">
+                                    <td><input class="form-control" type="text" data-ng-model="redirectUri.redirectUri" data-ng-change="redirectUri.status = 3" /></td>
+                                    <td>{{redirectUri.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{redirectUri.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

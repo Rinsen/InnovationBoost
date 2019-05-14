@@ -51,7 +51,7 @@
             }
 
             vm.mode.activateCreate();
-        }
+        };
 
         vm.createNew = function () {
             vm.createFailed = false;
@@ -60,7 +60,7 @@
                 name: vm.name,
                 active: vm.active,
                 activeUntil: vm.activeUntil
-            }
+            };
 
             externalApplicationsService.create(externalApplicationToCreate)
                 .then(function (response) {
@@ -79,17 +79,17 @@
                         vm.loading = false;
                         vm.createFailed = true;
                     });
-        }
+        };
 
         vm.cancelNew = function () {
             vm.mode.activateRead();
             vm.createFailed = false;
-        }
+        };
 
         vm.order = function (predicate) {
             vm.reverse = vm.predicate === predicate ? !vm.reverse : false;
             vm.predicate = predicate;
-        }
+        };
 
         vm.activate = function (id) {
             vm.externalApplications.forEach(function (externalApplication) {
@@ -112,7 +112,7 @@
                 }
 
             });
-        }
+        };
 
         vm.deactivate = function (id) {
             vm.externalApplications.forEach(function (externalApplication) {
@@ -134,7 +134,7 @@
                 }
 
             });
-        }
+        };
 
         activate();
     }

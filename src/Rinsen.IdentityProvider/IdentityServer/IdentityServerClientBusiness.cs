@@ -123,6 +123,11 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         public Task UpdateClient(IdentityServerClient identityServerClient)
         {
+            foreach (var secret in identityServerClient.ClientSecrets.Where(s => s.Value != "****"))
+            {
+                secret.Value = secret.Value.Sha256();
+            }
+
             return _identityServerDbContext.SaveAnnotatedGraph(identityServerClient);
         }
 

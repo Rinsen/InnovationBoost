@@ -47,7 +47,7 @@ gulp.task("clean:css", function (cb) {
     rimraf(webRootPaths.concatCssDest, cb);
 });
 
-gulp.task("clean", ["clean:js", "clean:css"]);
+gulp.task("clean", gulp.parallel("clean:js", "clean:css"));
 
 gulp.task("min:js", function () {
     return gulp.src([webRootPaths.js, "!" + webRootPaths.minJs], { base: "." })
@@ -104,6 +104,6 @@ gulp.task("debug:ngApp", function () {
         .pipe(gulp.dest("./wwwroot/js/debug/"));
 });
 
-gulp.task("3rdparty", ["bootstrap", "angular", "jQuery", "istevenMultiSelect", "smartTable"]);
+gulp.task("3rdparty", gulp.parallel("bootstrap", "angular", "jQuery", "istevenMultiSelect", "smartTable"));
 
-gulp.task("min", ["min:js", "min:css"]);
+gulp.task("min", gulp.parallel("min:js", "min:css"));

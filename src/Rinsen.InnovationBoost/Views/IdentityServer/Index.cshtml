@@ -18,6 +18,15 @@
     .table-menu {
         margin-top: 2em;
     }
+    .new-item {
+        background-color: #caf9d7 !important;
+    }
+    .updated-item {
+        background-color: #f9efca !important;
+    }
+    .deleted-item {
+        background-color: #f9caca !important;
+    }
 </style>
 <div class="container-fluid ng-cloak" data-ng-controller="IdentityServerController as vm">
     <div class="row" data-ng-hide="vm.selectedClient !== null">
@@ -42,7 +51,7 @@
     </div>
     <div data-ng-if="vm.selectedClient !== null">
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-12 inlineBlock">
                 <h1>{{vm.selectedClient.clientName}}</h1>
                 <button data-ng-click="vm.saveClient()">Save</button>
                 <button data-ng-click="vm.selectedClient = null">Cancel</button>
@@ -97,7 +106,8 @@
                             </thead>
                             <tbody>
                                 <tr data-ng-repeat="allowedCorsOrigin in vm.selectedClient.allowedCorsOrigins">
-                                    <td><input class="form-control" type="text" data-ng-model="allowedCorsOrigin.origin" data-ng-change="allowedCorsOrigin.status = 3"/></td>
+                                    <td><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></td>
+                                    <td><input class="form-control" type="text" data-ng-model="allowedCorsOrigin.origin" data-ng-change="allowedCorsOrigin.state = 2"/></td>
                                     <td>{{allowedCorsOrigin.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{allowedCorsOrigin.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                 </tr>
@@ -113,13 +123,21 @@
                                     <th>Scope</th>
                                     <th>Created</th>
                                     <th>Updated</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-ng-repeat="allowedScope in vm.selectedClient.allowedScopes">
-                                    <td><input class="form-control" type="text" data-ng-model="allowedScope.scope" data-ng-change="allowedScope.status = 3" /></td>
+                                <tr data-ng-repeat="allowedScope in vm.selectedClient.allowedScopes" data-ng-class="{'new-item': allowedScope.state == 1, 'updated-item': allowedScope.state == 2, 'deleted-item': allowedScope.state == 3 || allowedScope.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="allowedScope.scope" data-ng-change="vm.setModified(allowedScope)" /></td>
                                     <td>{{allowedScope.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{allowedScope.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(allowedScope)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.allowedScope" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewAllowedScope()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -137,7 +155,7 @@
                             </thead>
                             <tbody>
                                 <tr data-ng-repeat="allowedGrantType in vm.selectedClient.allowedGrantTypes">
-                                    <td><input class="form-control" type="text" data-ng-model="allowedGrantTypes.grantType" data-ng-change="allowedGrantTypes.status = 3" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="allowedGrantTypes.grantType" data-ng-change="allowedGrantTypes.state = 2" /></td>
                                     <td>{{allowedGrantType.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{allowedGrantType.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                 </tr>
@@ -158,8 +176,8 @@
                             </thead>
                             <tbody>
                                 <tr data-ng-repeat="claim in vm.selectedClient.claims">
-                                    <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="claim.status = 3" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="claim.value" data-ng-change="claim.status = 3" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="claim.state = 2" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="claim.value" data-ng-change="claim.state = 2" /></td>
                                     <td>{{claim.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{claim.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                 </tr>
@@ -182,10 +200,10 @@
                             </thead>
                             <tbody>
                                 <tr data-ng-repeat="clientSecret in vm.selectedClient.clientSecrets">
-                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.type" data-ng-change="clientSecret.status = 3" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.value" data-ng-change="clientSecret.status = 3" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.description" data-ng-change="clientSecret.status = 3" /></td>
-                                    <td><input class="form-control" type="datetime-local" data-ng-model="clientSecret.expiration" data-ng-change="clientSecret.status = 3" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.type" data-ng-change="clientSecret.state = 2" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.value" data-ng-change="clientSecret.state = 2" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.description" data-ng-change="clientSecret.state = 2" /></td>
+                                    <td><input class="form-control" type="datetime-local" data-ng-model="clientSecret.expiration" data-ng-change="clientSecret.state = 2" /></td>
                                     <td>{{clientSecret.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{clientSecret.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                 </tr>
@@ -205,7 +223,7 @@
                             </thead>
                             <tbody>
                                 <tr data-ng-repeat="identityProviderRestriction in vm.selectedClient.identityProviderRestrictions">
-                                    <td><input class="form-control" type="text" data-ng-model="identityProviderRestriction.provider" data-ng-change="identityProviderRestriction.status = 3" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="identityProviderRestriction.provider" data-ng-change="identityProviderRestriction.state = 2" /></td>
                                     <td>{{identityProviderRestriction.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{identityProviderRestriction.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                 </tr>
@@ -225,7 +243,7 @@
                             </thead>
                             <tbody>
                                 <tr data-ng-repeat="postLogoutRedirectUri in vm.selectedClient.postLogoutRedirectUris">
-                                    <td><input class="form-control" type="text" data-ng-model="postLogoutRedirectUri.postLogoutRedirectUri" data-ng-change="postLogoutRedirectUri.status = 3" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="postLogoutRedirectUri.postLogoutRedirectUri" data-ng-change="postLogoutRedirectUri.state = 2" /></td>
                                     <td>{{postLogoutRedirectUri.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{postLogoutRedirectUri.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                 </tr>
@@ -245,7 +263,7 @@
                             </thead>
                             <tbody>
                                 <tr data-ng-repeat="redirectUri in vm.selectedClient.redirectUris">
-                                    <td><input class="form-control" type="text" data-ng-model="redirectUri.redirectUri" data-ng-change="redirectUri.status = 3" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="redirectUri.redirectUri" data-ng-change="redirectUri.state = 2" /></td>
                                     <td>{{redirectUri.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{redirectUri.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                 </tr>

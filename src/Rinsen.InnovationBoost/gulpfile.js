@@ -26,6 +26,7 @@ var webRootPaths = {
 
 var npmPaths = {
     bootstrap: "./node_modules/bootstrap/dist/css/*.css",
+    bootstrapfont: "./node_modules/bootstrap/fonts/*.*",
     bootstrapJs: "./node_modules/bootstrap/dist/js/bootstrap*.js*",
     angularJs: "./node_modules/angular/*.js",
     jQuery: "./node_modules/jquery/dist/jquery*.js*",
@@ -36,6 +37,7 @@ var npmPaths = {
 
 var destPaths = {
     css: webRoot + "/css/",
+    fonts: webRoot + "/fonts/",
     js: webRoot + "/js/"
 };
 
@@ -66,6 +68,9 @@ gulp.task("min:css", function () {
 gulp.task("bootstrap", function () {
     gulp.src([npmPaths.bootstrap])
         .pipe(gulp.dest(destPaths.css));
+
+    gulp.src([npmPaths.bootstrapfont])
+        .pipe(gulp.dest(destPaths.fonts));
 
     return gulp.src([npmPaths.bootstrapJs])
         .pipe(gulp.dest(destPaths.js));

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerClientGrantType : ICreatedAndUpdatedTimestamp
+    public class IdentityServerClientGrantType : ICreatedAndUpdatedTimestamp, IObjectWithState
     {
         public int Id { get; set; }
 

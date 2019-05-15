@@ -14,15 +14,52 @@
         vm.clients = [];
         vm.selectedClient = null;
         vm.selectedTab = 'General';
+        vm.create = {
+            allowedScope: ''
+        };
 
         vm.selectClient = function (client) {
-            angular.copy(client, vm.selectedClient);
+            vm.selectedClient = JSON.parse(JSON.stringify(client));
         };
 
         vm.saveClient = function () {
             identityServerClientService.saveClient(vm.selectedClient);
 
             vm.selectedClient = null;
+        };
+
+        vm.createNewAllowedScope = function () {
+            vm.selectedClient.allowedScopes.push({ scope: vm.create.allowedScope, state: 1 });
+
+            vm.create.allowedScope = '';
+        };
+
+        vm.setModified = function (object) {
+            if (object.state === 0) {
+                object.state = 1;
+            }
+        };
+
+        vm.toggleDelete = function (object) {
+            if (object.state === 3) {
+                object.state = 2;
+
+                return;
+            }
+
+            if (object.state === 1) {
+                object.state = 4;
+
+                return;
+            }
+
+            if (object.state === 4) {
+                object.state = 1;
+
+                return;
+            }
+
+            object.state = 3;
         };
 
         activate();

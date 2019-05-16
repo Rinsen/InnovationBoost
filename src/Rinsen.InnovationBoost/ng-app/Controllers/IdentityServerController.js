@@ -15,17 +15,51 @@
         vm.selectedClient = null;
         vm.selectedTab = 'General';
         vm.create = {
-            allowedScope: ''
+            allowedScope: '',
+            allowedCorsOrigin: '',
+            allowedGrantType: '',
+            claimType: '',
+            claimValue: '',
+            clientSecretType: '',
+            clientSecretValue: '',
+            clientSecretDescription: '',
+            clientSecretExpiration: '',
+            identityProviderRestriction: '',
+            postLogoutRedirectUri: '',
+            redirectUri: ''
         };
 
         vm.selectClient = function (client) {
             vm.selectedClient = JSON.parse(JSON.stringify(client));
         };
 
-        vm.saveClient = function () {
-            identityServerClientService.saveClient(vm.selectedClient);
+        vm.undoChanges = function () {
+            for (var i = 0; i < vm.clients.length; i++) {
+                if (vm.clients[i].clientId === vm.selectedClient.clientId) {
+                    vm.selectedClient = vm.clients[i];
+                }
+            }
+        };
 
-            vm.selectedClient = null;
+        vm.saveClient = function () {
+            identityServerClientService.saveClient(vm.selectedClient)
+                .then(identityServerClientService.getClient(vm.selectedClient.clientId).
+                    then(function (response)
+                    {
+                        for (var i = 0; i < vm.clients.length; i++) {
+                            if (vm.clients[i].clientId === vm.selectedClient.clientId) {
+                                vm.clients[i] = response.data;
+                            }
+                        }
+
+                        vm.selectClient(response.data);
+                    }));
+        };
+
+        vm.createNewAllowedCorsOrigin = function () {
+            vm.selectedClient.allowedCorsOrigins.push({ origin: vm.create.allowedCorsOrigin, state: 1 });
+
+            vm.create.allowedCorsOrigin = '';
         };
 
         vm.createNewAllowedScope = function () {
@@ -34,9 +68,49 @@
             vm.create.allowedScope = '';
         };
 
+        vm.createNewAllowedGrantType = function () {
+            vm.selectedClient.allowedGrantTypes.push({ grantType: vm.create.allowedGrantType, state: 1 });
+
+            vm.create.allowedGrantType = '';
+        };
+
+        vm.createNewClaim = function () {
+            vm.selectedClient.claims.push({ type: vm.create.claimType, value: vm.create.claimValue, state: 1 });
+
+            vm.create.claimType = '';
+            vm.create.claimValue = '';
+        };
+
+        vm.createNewClientSecret = function () {
+            vm.selectedClient.clientSecrets.push({ type: vm.create.clientSecretType, value: vm.create.clientSecretValue, description: vm.create.clientSecretDescription, expiration: vm.create.clientSecretExpiration, state: 1 });
+
+            vm.create.clientSecretType = '';
+            vm.create.clientSecretValue = '';
+            vm.create.clientSecretDescription = '';
+            vm.create.clientSecretExpiration = '';
+        };
+
+        vm.createNewIdentityProviderRestriction = function () {
+            vm.selectedClient.identityProviderRestrictions.push({ provider: vm.create.identityProviderRestriction, state: 1 });
+
+            vm.create.identityProviderRestriction = '';
+        };
+
+        vm.createNewPostLogoutRedirectUri = function () {
+            vm.selectedClient.postLogoutRedirectUris.push({ postLogoutRedirectUri: vm.create.postLogoutRedirectUri, state: 1 });
+
+            vm.create.postLogoutRedirectUri = '';
+        };
+
+        vm.createNewRedirectUri = function () {
+            vm.selectedClient.redirectUris.push({ redirectUri: vm.create.redirectUri, state: 1 });
+
+            vm.create.redirectUri = '';
+        };
+
         vm.setModified = function (object) {
             if (object.state === 0) {
-                object.state = 1;
+                object.state = 2;
             }
         };
 

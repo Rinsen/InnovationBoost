@@ -10,7 +10,8 @@
     function IdentityServerClientService($http) {
         var service = {
             getClients: getClients,
-            saveClient: saveClient
+            saveClient: saveClient,
+            getClient: getClient
         };
 
         return service;
@@ -21,6 +22,10 @@
 
         function saveClient(client) {
             return $http.post('api/IdentityServerClient/Update', client);
+        }
+
+        function getClient(clientId) {
+            return $http.get('api/IdentityServerClient/' + clientId);
         }
     }
 })();

@@ -11,7 +11,7 @@ using Rinsen.IdentityProvider.IdentityServer.Entities;
 namespace Rinsen.InnovationBoost.ApiControllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("IdentityServer/api/[controller]")]
     [Authorize("AdminsOnly")]
     public class IdentityServerApiResourceController : Controller
     {

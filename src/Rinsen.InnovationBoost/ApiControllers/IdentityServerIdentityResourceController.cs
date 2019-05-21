@@ -11,7 +11,7 @@ using Rinsen.IdentityProvider.IdentityServer.Entities;
 namespace Rinsen.InnovationBoost.ApiControllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("IdentityServer/api/[controller]")]
     [Authorize("AdminsOnly")]
     public class IdentityServerIdentityResourceController : Controller
     {
@@ -32,7 +32,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
             return identityServerApiResources;
         }
 
-        [HttpGet("{id}", Name = "GetApiResource")]
+        [HttpGet("{id}", Name = "GetIdentityResource")]
         [ProducesResponseType(200)]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]

@@ -8,11 +8,19 @@ namespace Rinsen.InnovationBoost.Controllers
 {
     public class IdentityServerController : Controller
     {
-        // GET: /<controller>/
-        public IActionResult Index()
+        public IActionResult Clients()
         {
             return View();
         }
 
+        public IActionResult ApiResource()
+        {
+            return View();
+        }
+
+        public IActionResult IdentityResources()
+        {
+            return View();
+        }
     }
 }

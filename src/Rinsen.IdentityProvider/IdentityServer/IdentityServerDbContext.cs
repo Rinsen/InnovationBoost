@@ -182,7 +182,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         }
 
-        public Task SaveAnnotatedGraph(IObjectWithState objectGraph)
+        public Task SaveAnnotatedGraphAsync(IObjectWithState objectGraph)
         {
             ChangeTracker.TrackGraph(
                 objectGraph,

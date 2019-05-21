@@ -1,0 +1,507 @@
+﻿@{
+    ViewBag.NgAppName = "app";
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_Angular");}
+}
+
+<style>
+    .sortorder:after {
+        content: '\25b2';
+    }
+
+    .sortorder.reverse:after {
+        content: '\25bc';
+    }
+
+    .table-menu {
+        margin-top: 2em;
+    }
+    .margin-bottom {
+        margin-bottom: .5em;
+    }
+    .new-item {
+        background-color: #caf9d7 !important;
+    }
+    .updated-item {
+        background-color: #f9efca !important;
+    }
+    .deleted-item {
+        background-color: #f9caca !important;
+    }
+</style>
+<div class="container-fluid ng-cloak" data-ng-controller="IdentityServerController as vm">
+    <div class="row" data-ng-hide="vm.selectedClient !== null">
+        <div class="col-sm-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Client Id</th>
+                        <th>Active</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-ng-repeat="client in vm.clients">
+                        <td><a data-ng-click="vm.selectClient(client)">{{client.clientName}}</a></td>
+                        <td><span class="text-nowrap">{{client.clientId}}</span></td>
+                        <td>{{client.enabled}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div data-ng-if="vm.selectedClient !== null">
+        <div class="row">
+            <div class="col-sm-12 inlineBlock">
+                <h1>{{vm.selectedClient.clientName}}</h1>
+            </div>
+        </div>
+        <div class="row margin-bottom">
+            <div class="col-sm-12">
+                <button data-ng-click="vm.saveClient()" class="btn btn-primary">Save</button>
+                <button data-ng-click="vm.undoChanges()" class="btn btn-warning">Undo</button>
+                <button data-ng-click="vm.selectedClient = null" class="btn btn-default">Close</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'General'}"><a data-ng-click="vm.selectedTab = 'General'">General</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedCorsOrigins'}"><a data-ng-click="vm.selectedTab = 'AllowedCorsOrigins'">Allowed Cors Origins</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedScopes'}"><a data-ng-click="vm.selectedTab = 'AllowedScopes'">Allowed Scopes</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedGrants'}"><a data-ng-click="vm.selectedTab = 'AllowedGrants'">Allowed Grants</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Claims'}"><a data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'ClientSecrets'}"><a data-ng-click="vm.selectedTab = 'ClientSecrets'">Client Secrets</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'IdentityProviderRestrictions'}"><a data-ng-click="vm.selectedTab = 'IdentityProviderRestrictions'">Identity Provider Restrictions</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'PostLogoutRedirectUris'}"><a data-ng-click="vm.selectedTab = 'PostLogoutRedirectUris'">Post Logout Redirect Uris</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'RedirectUris'}"><a data-ng-click="vm.selectedTab = 'RedirectUris'">Redirect Uris</a></li>
+                </ul>
+                <div class="row" data-ng-show="vm.selectedTab === 'General'">
+                    <form>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="absoluteRefreshTokenLifetime">Absolute Refresh Token Lifetime</label>
+                                <input type="text" class="form-control" id="absoluteRefreshTokenLifetime" value="{{vm.selectedClient.absoluteRefreshTokenLifetime}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="accessTokenLifetime">Access Token Lifetime</label>
+                                <input type="text" class="form-control" id="accessTokenLifetime" value="{{vm.selectedClient.accessTokenLifetime}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="accessTokenType">Access Token Type</label>
+                                <input type="text" class="form-control" id="accessTokenType" value="{{vm.selectedClient.accessTokenType}}">
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowAccessTokensViaBrowser">Allow Access Tokens Via Browser
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowOfflineAccess">Allow offline Access
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowPlainTextPkce">Allow Plain Text Pkce
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowRememberConsent">Allow Remember Consent
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.alwaysIncludeUserClaimsInIdToken">Always Include User Claims In Id Tokens
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.alwaysSendClientClaims">Always Send Client Claims
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="authorizationCodeLifetime">Authorization Code Lifetime</label>
+                                <input type="text" class="form-control" id="authorizationCodeLifetime" value="{{vm.selectedClient.authorizationCodeLifetime}}">
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.backChannelLogoutSessionRequired">Back Channel Logout Session Required
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="backChannelLogoutUri">Back Channel Logout Uri</label>
+                                <input type="text" class="form-control" id="backChannelLogoutUri" value="{{vm.selectedClient.backChannelLogoutUri}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="clientClaimsPrefix">Client Claims Prefix</label>
+                                <input type="text" class="form-control" id="clientClaimsPrefix" value="{{vm.selectedClient.clientClaimsPrefix}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="clientId">Client Id</label>
+                                <input type="text" class="form-control" id="clientId" value="{{vm.selectedClient.clientId}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="clientName">Client Name</label>
+                                <input type="text" class="form-control" id="clientName" value="{{vm.selectedClient.clientName}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="clientUri">Client Uri</label>
+                                <input type="text" class="form-control" id="clientUri" value="{{vm.selectedClient.clientUri}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="consentLifetime">ConsentLifetime</label>
+                                <input type="text" class="form-control" id="consentLifetime" value="{{vm.selectedClient.consentLifetime}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="created">Created</label>
+                                <input type="text" class="form-control" id="created" value="{{vm.selectedClient.created | date:'yyyy-MM-dd HH:mm'}}" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <input type="text" class="form-control" id="description" value="{{vm.selectedClient.description}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="deviceCodeLifetime">Device Code Lifetime</label>
+                                <input type="text" class="form-control" id="deviceCodeLifetime" value="{{vm.selectedClient.deviceCodeLifetime}}">
+                            </div>
+                            
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.enableLocalLogin">Enable Local Login
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.enabled">Enabled
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.frontChannelLogoutSessionRequired">Front Channel Logout Session Required
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="frontChannelLogoutUri">Front Channel Logout Uri</label>
+                                <input type="text" class="form-control" id="frontChannelLogoutUri" value="{{vm.selectedClient.frontChannelLogoutUri}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="identityTokenLifetime">Identity Token Lifetime</label>
+                                <input type="text" class="form-control" id="identityTokenLifetime" value="{{vm.selectedClient.identityTokenLifetime}}">
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.includeJwtId">Include Jwt Id
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="logoUri">Logo Uri</label>
+                                <input type="text" class="form-control" id="logoUri" value="{{vm.selectedClient.logoUri}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="pairWiseSubjectSalt">pairWiseSubjectSalt</label>
+                                <input type="text" class="form-control" id="pairWiseSubjectSalt" value="{{vm.selectedClient.pairWiseSubjectSalt}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="protocolType">protocolType</label>
+                                <input type="text" class="form-control" id="protocolType" value="{{vm.selectedClient.protocolType}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="refreshTokenExpiration">refreshTokenExpiration</label>
+                                <input type="text" class="form-control" id="refreshTokenExpiration" value="{{vm.selectedClient.refreshTokenExpiration}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="refreshTokenUsage">refreshTokenUsage</label>
+                                <input type="text" class="form-control" id="refreshTokenUsage" value="{{vm.selectedClient.refreshTokenUsage}}">
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.requireClientSecret">requireClientSecret
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.requireConsent">requireConsent
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.requirePkce">requirePkce
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="slidingRefreshTokenLifetime">slidingRefreshTokenLifetime</label>
+                                <input type="text" class="form-control" id="slidingRefreshTokenLifetime" value="{{vm.selectedClient.slidingRefreshTokenLifetime}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="state">state</label>
+                                <input type="text" class="form-control" id="state" value="{{vm.selectedClient.state}}">
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.updateAccessTokenClaimsOnRefresh">updateAccessTokenClaimsOnRefresh
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="updated">updated</label>
+                                <input type="text" class="form-control" id="updated" value="{{vm.selectedClient.updated | date:'yyyy-MM-dd HH:mm'}}" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="userCodeType">userCodeType</label>
+                                <input type="text" class="form-control" id="userCodeType" value="{{vm.selectedClient.userCodeType}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="userSsoLifetime">userSsoLifetime</label>
+                                <input type="text" class="form-control" id="userSsoLifetime" value="{{vm.selectedClient.userSsoLifetime}}">
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'AllowedCorsOrigins'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Origin</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="allowedCorsOrigin in vm.selectedClient.allowedCorsOrigins" data-ng-class="{'new-item': allowedCorsOrigins.state == 1, 'updated-item': allowedCorsOrigins.state == 2, 'deleted-item': allowedCorsOrigins.state == 3 || allowedCorsOrigins.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="allowedCorsOrigin.origin" data-ng-change="vm.setModified(allowedCorsOrigin)" /></td>
+                                    <td>{{allowedCorsOrigin.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{allowedCorsOrigin.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(allowedCorsOrigin)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.allowedCorsOrigin" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewAllowedCorsOrigin()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'AllowedScopes'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Scope</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="allowedScope in vm.selectedClient.allowedScopes" data-ng-class="{'new-item': allowedScope.state == 1, 'updated-item': allowedScope.state == 2, 'deleted-item': allowedScope.state == 3 || allowedScope.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="allowedScope.scope" data-ng-change="vm.setModified(allowedScope)" /></td>
+                                    <td>{{allowedScope.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{allowedScope.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(allowedScope)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.allowedScope" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewAllowedScope()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'AllowedGrants'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Grant Type</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="allowedGrantType in vm.selectedClient.allowedGrantTypes" data-ng-class="{'new-item': allowedGrantType.state == 1, 'updated-item': allowedGrantType.state == 2, 'deleted-item': allowedGrantType.state == 3 || allowedGrantType.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="allowedGrantTypes.grantType" data-ng-change="vm.setModified(allowedGrantTypes)" /></td>
+                                    <td>{{allowedGrantType.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{allowedGrantType.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(allowedGrantType)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.allowedGrantType" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewAllowedGrantType()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'Claims'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="claim in vm.selectedClient.claims" data-ng-class="{'new-item': claim.state == 1, 'updated-item': claim.state == 2, 'deleted-item': claim.state == 3 || claim.state == 4 }">
+
+                                    <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="vm.setModified(claim)" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="claim.value" data-ng-change="vm.setModified(claim)" /></td>
+                                    <td>{{claim.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{claim.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(claim)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.claimType" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.claimValue" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewClaim()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'ClientSecrets'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Secret</th>
+                                    <th>Description</th>
+                                    <th>Expiration</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="clientSecret in vm.selectedClient.clientSecrets" data-ng-class="{'new-item': clientSecret.state == 1, 'updated-item': clientSecret.state == 2, 'deleted-item': clientSecret.state == 3 || clientSecret.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.type" data-ng-change="vm.setModified(clientSecret)" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.value" data-ng-change="vm.setModified(clientSecret)" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="clientSecret.description" data-ng-change="vm.setModified(clientSecret)" /></td>
+                                    <td><input class="form-control" type="datetime-local" data-ng-model="clientSecret.expiration" data-ng-change="vm.setModified(clientSecret)" /></td>
+                                    <td>{{clientSecret.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{clientSecret.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(clientSecret)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.clientSecretType" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.clientSecretValue" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.clientSecretDescription" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.clientSecretExpiration" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewClientSecret()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'IdentityProviderRestrictions'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Provider</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="identityProviderRestriction in vm.selectedClient.identityProviderRestrictions" data-ng-class="{'new-item': identityProviderRestriction.state == 1, 'updated-item': identityProviderRestriction.state == 2, 'deleted-item': identityProviderRestriction.state == 3 || identityProviderRestriction.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="identityProviderRestriction.provider" data-ng-change="vm.setModified(identityProviderRestriction)" /></td>
+                                    <td>{{identityProviderRestriction.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{identityProviderRestriction.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(identityProviderRestriction)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.identityProviderRestriction" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewIdentityProviderRestriction()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'PostLogoutRedirectUris'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Post Logout Redirect Uri</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="postLogoutRedirectUri in vm.selectedClient.postLogoutRedirectUris" data-ng-class="{'new-item': postLogoutRedirectUri.state == 1, 'updated-item': postLogoutRedirectUri.state == 2, 'deleted-item': postLogoutRedirectUri.state == 3 || postLogoutRedirectUri.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="postLogoutRedirectUri.postLogoutRedirectUri" data-ng-change="vm.setModified(postLogoutRedirectUri)" /></td>
+                                    <td>{{postLogoutRedirectUri.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{postLogoutRedirectUri.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(postLogoutRedirectUri)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.postLogoutRedirectUri" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewPostLogoutRedirectUri()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" data-ng-show="vm.selectedTab === 'RedirectUris'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Origin</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="redirectUri in vm.selectedClient.redirectUris" data-ng-class="{'new-item': redirectUri.state == 1, 'updated-item': redirectUri.state == 2, 'deleted-item': redirectUri.state == 3 || redirectUri.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="redirectUri.redirectUri" data-ng-change="vm.setModified(redirectUri)" /></td>
+                                    <td>{{redirectUri.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{redirectUri.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(redirectUri)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.redirectUri" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewRedirectUri()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

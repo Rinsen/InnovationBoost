@@ -12,7 +12,7 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
 
         public string Description { get; set; }
 
-        public DateTimeOffset Expiration { get; set; }
+        public DateTimeOffset? Expiration { get; set; }
 
         public string Type { get; set; }
 

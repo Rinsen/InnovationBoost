@@ -10,39 +10,41 @@ namespace Rinsen.IdentityProvider.IdentityServer
 {
     public class IdentityServerResourceStore : IResourceStore
     {
+        private readonly IdentityServerIdentityResourceBusiness _identityServerIdentityResourceBusiness;
+        private readonly IdentityServerApiResourceBusiness _identityServerApiResourceBusiness;
+
+        public IdentityServerResourceStore(IdentityServerIdentityResourceBusiness identityServerIdentityResourceBusiness,
+            IdentityServerApiResourceBusiness identityServerApiResourceBustiness)
+        {
+            _identityServerIdentityResourceBusiness = identityServerIdentityResourceBusiness;
+            _identityServerApiResourceBusiness = identityServerApiResourceBustiness;
+        }
+
         public Task<ApiResource> FindApiResourceAsync(string name)
         {
-            throw new NotImplementedException();
+            return _identityServerApiResourceBusiness.GetApiResourceAsync(name);
         }
 
         public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
-            return Task.FromResult(Enumerable.Empty<ApiResource>());
+            throw new NotImplementedException();
         }
 
         public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
-            return Task.FromResult<IEnumerable<IdentityResource>>(new List<IdentityResource>
-            {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
-            });
+            throw new NotImplementedException();
         }
 
-        public Task<Resources> GetAllResourcesAsync()
+        public async Task<Resources> GetAllResourcesAsync()
         {
-            return Task.FromResult(new Resources
+            var apiResources = await _identityServerApiResourceBusiness.GetApiResourcesAsync();
+            var identityResources = await _identityServerIdentityResourceBusiness.GetIdentityResourcesAsync();
+
+            return new Resources
             {
-                IdentityResources = new List<IdentityResource>
-                {
-                    new IdentityResources.OpenId(),
-                    new IdentityResources.Profile()
-                }
-                //ApiResources = new List<ApiResource>
-                //{
-                    
-                //}
-            });
+                IdentityResources = identityResources,
+                ApiResources = apiResources
+            };
         }
     }
 }

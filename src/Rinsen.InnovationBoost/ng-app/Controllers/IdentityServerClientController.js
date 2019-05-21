@@ -3,14 +3,13 @@
 
     angular
         .module('app')
-        .controller('IdentityServerController', IdentityServerController);
+        .controller('IdentityServerClientController', IdentityServerClientController);
 
-    IdentityServerController.$inject = ['$location', 'IdentityServerClientService'];
+    IdentityServerClientController.$inject = ['IdentityServerClientService'];
 
-    function IdentityServerController($location, identityServerClientService) {
+    function IdentityServerClientController(identityServerClientService) {
         /* jshint validthis:true */
         var vm = this;
-        vm.title = 'IdentityServerController';
         vm.clients = [];
         vm.selectedClient = null;
         vm.selectedTab = 'General';

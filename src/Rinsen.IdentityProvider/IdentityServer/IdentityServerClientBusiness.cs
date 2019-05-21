@@ -128,7 +128,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 secret.Value = secret.Value.Sha256();
             }
 
-            return _identityServerDbContext.SaveAnnotatedGraph(identityServerClient);
+            return _identityServerDbContext.SaveAnnotatedGraphAsync(identityServerClient);
         }
 
         public async Task CreateNewClient(string clientId, string clientName, string description)

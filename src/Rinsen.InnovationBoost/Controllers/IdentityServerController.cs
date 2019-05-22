@@ -13,7 +13,7 @@ namespace Rinsen.InnovationBoost.Controllers
             return View();
         }
 
-        public IActionResult ApiResource()
+        public IActionResult ApiResources()
         {
             return View();
         }

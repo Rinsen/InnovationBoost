@@ -275,7 +275,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-ng-repeat="allowedCorsOrigin in vm.selectedClient.allowedCorsOrigins" data-ng-class="{'new-item': allowedCorsOrigins.state == 1, 'updated-item': allowedCorsOrigins.state == 2, 'deleted-item': allowedCorsOrigins.state == 3 || allowedCorsOrigins.state == 4 }">
+                                <tr data-ng-repeat="allowedCorsOrigin in vm.selectedClient.allowedCorsOrigins" data-ng-class="{'new-item': allowedCorsOrigin.state == 1, 'updated-item': allowedCorsOrigin.state == 2, 'deleted-item': allowedCorsOrigin.state == 3 || allowedCorsOrigin.state == 4 }">
                                     <td><input class="form-control" type="text" data-ng-model="allowedCorsOrigin.origin" data-ng-change="vm.setModified(allowedCorsOrigin)" /></td>
                                     <td>{{allowedCorsOrigin.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{allowedCorsOrigin.updated | date:'yyyy-MM-dd HH:mm'}}</td>

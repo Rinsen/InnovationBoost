@@ -13,11 +13,11 @@ namespace Rinsen.InnovationBoost.ApiControllers
     [ApiController]
     [Route("IdentityServer/api/[controller]")]
     [Authorize("AdminsOnly")]
-    public class IdentityServerClientController : Controller
+    public class ClientController : Controller
     {
         private readonly IdentityServerClientBusiness _identityServerClientBusiness;
 
-        public IdentityServerClientController(IdentityServerClientBusiness identityServerClientBusiness)
+        public ClientController(IdentityServerClientBusiness identityServerClientBusiness)
         {
             _identityServerClientBusiness = identityServerClientBusiness;
         }

@@ -17,15 +17,15 @@
         return service;
 
         function getClients() {
-            return $http.get('api/IdentityServerClient');
+            return $http.get('api/Client');
         }
 
         function saveClient(client) {
-            return $http.post('api/IdentityServerClient/Update', client);
+            return $http.post('api/Client/Update', client);
         }
 
         function getClient(clientId) {
-            return $http.get('api/IdentityServerClient/' + clientId);
+            return $http.get('api/Client/' + clientId);
         }
     }
 })();

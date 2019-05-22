@@ -17,15 +17,15 @@
         return service;
 
         function getIdentityResources() {
-            return $http.get('api/IdentityServerIdentityResource');
+            return $http.get('api/IdentityResource');
         }
 
         function saveIdentityResource(client) {
-            return $http.post('api/IdentityServerIdentityResource/Update', client);
+            return $http.post('api/IdentityResource/Update', client);
         }
 
         function getIdentityResource(clientId) {
-            return $http.get('api/IdentityServerIdentityResource/' + clientId);
+            return $http.get('api/IdentityResource/' + clientId);
         }
     }
 })();

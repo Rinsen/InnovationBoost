@@ -22,7 +22,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             identityServerApiResourcesTable.AddColumn(m => m.Description, 1000).Null();
             identityServerApiResourcesTable.AddColumn(m => m.DisplayName, 200).Null();
             identityServerApiResourcesTable.AddColumn(m => m.Enabled);
-            identityServerApiResourcesTable.AddColumn(m => m.Name, 200);
+            identityServerApiResourcesTable.AddColumn(m => m.Name, 200).Unique("UX_IdentityServerApiResources_Name");
             identityServerApiResourcesTable.AddColumn(m => m.Created);
             identityServerApiResourcesTable.AddColumn(m => m.Updated);
 
@@ -39,7 +39,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             identityServerApiResourceScopesTable.AddColumn(m => m.Description, 1000).Null();
             identityServerApiResourceScopesTable.AddColumn(m => m.DisplayName, 200).Null();
             identityServerApiResourceScopesTable.AddColumn(m => m.Emphasize);
-            identityServerApiResourceScopesTable.AddColumn(m => m.Name, 200);
+            identityServerApiResourceScopesTable.AddColumn(m => m.Name, 200).Unique("UX_IdentityServerApiResourceScopes_Name"); ;
             identityServerApiResourceScopesTable.AddColumn(m => m.Required);
             identityServerApiResourceScopesTable.AddColumn(m => m.ShowInDiscoveryDocument);
             identityServerApiResourceScopesTable.AddColumn(m => m.Created);
@@ -64,7 +64,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
 
             var identityServerClientsTable = dbChangeList.AddNewTable<IdentityServerClient>();
             identityServerClientsTable.AddAutoIncrementColumn(m => m.Id);
-            identityServerClientsTable.AddColumn(m => m.ClientId, 200).Unique("UQ_IdentityServerClients_ClientId");
+            identityServerClientsTable.AddColumn(m => m.ClientId, 200).Unique("UX_IdentityServerClients_ClientId");
             identityServerClientsTable.AddColumn(m => m.AbsoluteRefreshTokenLifetime);
             identityServerClientsTable.AddColumn(m => m.AccessTokenLifetime);
             identityServerClientsTable.AddColumn(m => m.AccessTokenType);
@@ -170,7 +170,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             identityServerIdentityResourcesTable.AddColumn(m => m.DisplayName, 200).Null();
             identityServerIdentityResourcesTable.AddColumn(m => m.Emphasize);
             identityServerIdentityResourcesTable.AddColumn(m => m.Enabled);
-            identityServerIdentityResourcesTable.AddColumn(m => m.Name, 200);
+            identityServerIdentityResourcesTable.AddColumn(m => m.Name, 200).Unique("UX_IdentityServerIdentityResources_Name");
             identityServerIdentityResourcesTable.AddColumn(m => m.Required);
             identityServerIdentityResourcesTable.AddColumn(m => m.ShowInDiscoveryDocument);
             identityServerIdentityResourcesTable.AddColumn(m => m.Created);

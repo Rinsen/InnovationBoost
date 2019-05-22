@@ -14,12 +14,18 @@ namespace Rinsen.InnovationBoost.Controllers
     public class HomeController : Controller
     {
         private readonly IdentityServerClientBusiness _identityServerClientBusiness;
+        private readonly IdentityServerApiResourceBusiness _identityServerApiResourceBusiness;
+        private readonly IdentityServerIdentityResourceBusiness _identityServerIdentityResourceBusiness;
         private readonly RandomStringGenerator _randomStringGenerator;
 
         public HomeController(IdentityServerClientBusiness identityServerClientBusiness,
+            IdentityServerApiResourceBusiness identityServerApiResourceBusiness,
+            IdentityServerIdentityResourceBusiness identityServerIdentityResourceBusiness,
             RandomStringGenerator randomStringGenerator)
         {
             _identityServerClientBusiness = identityServerClientBusiness;
+            _identityServerApiResourceBusiness = identityServerApiResourceBusiness;
+            _identityServerIdentityResourceBusiness = identityServerIdentityResourceBusiness;
             _randomStringGenerator = randomStringGenerator;
         }
 
@@ -32,25 +38,21 @@ namespace Rinsen.InnovationBoost.Controllers
             if (client == default)
             {
                 await _identityServerClientBusiness.CreateNewClient("testclient", "Test Client", "Client for testing EF");
-
-                client = await _identityServerClientBusiness.GetIdentityServerClient("testclient");
             }
 
-            
+            var apiResource = await _identityServerApiResourceBusiness.GetApiResourceAsync("testresource");
 
-            ViewBag.Data = JsonConvert.SerializeObject(client); ;
+            if (apiResource == default)
+            {
+                await _identityServerApiResourceBusiness.CreateNewApiResource("testapiresource", "Test Api Resource", "Api Resource for testing EF");
+            }
 
-            //var secret = _randomStringGenerator.GetRandomString(60);
+            var identityResource = await _identityServerIdentityResourceBusiness.GetIdentityServerIdentityResourceAsync("testapiresource");
 
-            //disconnectedClientGraph.ClientSecrets.Add(new IdentityServerClientSecret
-            //{
-            //    Expiration = null,
-            //    State = ObjectState.Added,
-            //    Type = IdentityServer4.IdentityServerConstants.SecretTypes.SharedSecret,
-            //    Value = secret.Sha256()
-            //});
-
-            //await _identityServerClientBusiness.UpdateClient(disconnectedClientGraph);
+            if (identityResource == default)
+            {
+                await _identityServerIdentityResourceBusiness.CreateNewIdentityResourceAsync("testidentityresource", "Test Identity Resource", "Identity Resource for testing EF");
+            }
 
             return View();
         }

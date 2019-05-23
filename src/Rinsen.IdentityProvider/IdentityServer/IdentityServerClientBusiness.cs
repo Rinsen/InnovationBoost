@@ -121,7 +121,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
             return clients;
         }
 
-        public Task UpdateClient(IdentityServerClient identityServerClient)
+        public Task<int> UpdateClient(IdentityServerClient identityServerClient)
         {
             foreach (var secret in identityServerClient.ClientSecrets.Where(s => s.Value != "****"))
             {

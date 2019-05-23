@@ -40,14 +40,14 @@ namespace Rinsen.InnovationBoost.Controllers
                 await _identityServerClientBusiness.CreateNewClient("testclient", "Test Client", "Client for testing EF");
             }
 
-            var apiResource = await _identityServerApiResourceBusiness.GetApiResourceAsync("testresource");
+            var apiResource = await _identityServerApiResourceBusiness.GetApiResourceAsync("testapiresource");
 
             if (apiResource == default)
             {
                 await _identityServerApiResourceBusiness.CreateNewApiResource("testapiresource", "Test Api Resource", "Api Resource for testing EF");
             }
 
-            var identityResource = await _identityServerIdentityResourceBusiness.GetIdentityServerIdentityResourceAsync("testapiresource");
+            var identityResource = await _identityServerIdentityResourceBusiness.GetIdentityServerIdentityResourceAsync("testidentityresource");
 
             if (identityResource == default)
             {

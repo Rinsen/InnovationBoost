@@ -62,6 +62,14 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             identityServerApiResourceSecretsTable.AddColumn(m => m.Created);
             identityServerApiResourceSecretsTable.AddColumn(m => m.Updated);
 
+            var identityServerApiResourcePropertiesTable = dbChangeList.AddNewTable<IdentityServerApiResourceProperty>("IdentityServerApiResourceProperties");
+            identityServerApiResourcePropertiesTable.AddAutoIncrementColumn(m => m.Id);
+            identityServerApiResourcePropertiesTable.AddColumn(m => m.ApiResourceId).ForeignKey<IdentityServerApiResource>(m => m.Id);
+            identityServerApiResourcePropertiesTable.AddColumn(m => m.Key, 250);
+            identityServerApiResourcePropertiesTable.AddColumn(m => m.Value, 250);
+            identityServerApiResourcePropertiesTable.AddColumn(m => m.Created);
+            identityServerApiResourcePropertiesTable.AddColumn(m => m.Updated);
+
             var identityServerClientsTable = dbChangeList.AddNewTable<IdentityServerClient>();
             identityServerClientsTable.AddAutoIncrementColumn(m => m.Id);
             identityServerClientsTable.AddColumn(m => m.ClientId, 200).Unique("UX_IdentityServerClients_ClientId");
@@ -183,7 +191,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
             identityServerIdentityResourceClaimsTable.AddColumn(m => m.Created);
             identityServerIdentityResourceClaimsTable.AddColumn(m => m.Updated);
 
-            var identityServerIdentityResourcePropertiesTable = dbChangeList.AddNewTable<IdentityServerIdentityResourceProperty>();
+            var identityServerIdentityResourcePropertiesTable = dbChangeList.AddNewTable<IdentityServerIdentityResourceProperty>("IdentityServerIdentityResourceProperties");
             identityServerIdentityResourcePropertiesTable.AddAutoIncrementColumn(m => m.Id);
             identityServerIdentityResourcePropertiesTable.AddColumn(m => m.IdentityResourceId).ForeignKey<IdentityServerIdentityResource>(m => m.Id);
             identityServerIdentityResourcePropertiesTable.AddColumn(m => m.Key, 250);
@@ -210,6 +218,7 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
 //drop table IdentityServerApiResourceScopeClaims
 //drop table IdentityServerApiResourceScopes
 //drop table IdentityServerApiResourceSecrets
+//drop table IdentityServerApiResourceProperties
 //drop table IdentityServerApiResources
 //drop table IdentityServerClientClaims
 //drop table IdentityServerClientCorsOrigin
@@ -222,5 +231,5 @@ namespace Rinsen.IdentityProvider.Installation.IdentityServer
 //drop table IdentityServerPersistedGrants
 //drop table IdentityServerClients
 //drop table IdentityServerIdentityResourceClaims
-//drop table IdentityServerIdentityResourcePropertys
+//drop table IdentityServerIdentityResourceProperties
 //drop table IdentityServerIdentityResources

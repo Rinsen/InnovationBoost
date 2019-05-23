@@ -42,17 +42,22 @@
 
         vm.saveClient = function () {
             identityServerClientService.saveClient(vm.selectedClient)
-                .then(identityServerClientService.getClient(vm.selectedClient.clientId).
-                    then(function (response)
-                    {
-                        for (var i = 0; i < vm.clients.length; i++) {
-                            if (vm.clients[i].clientId === vm.selectedClient.clientId) {
-                                vm.clients[i] = response.data;
-                            }
-                        }
+                .then(function (saveResponse) {
+                    if (saveResponse.status === 200) {
+                        identityServerClientService.getClient(vm.selectedClient.clientId).
+                            then(function (response) {
+                                for (var i = 0; i < vm.clients.length; i++) {
+                                    if (vm.clients[i].clientId === vm.selectedClient.clientId) {
+                                        vm.clients[i] = response.data;
+                                    }
+                                }
 
-                        vm.selectClient(response.data);
-                    }));
+                                vm.selectClient(response.data);
+                            });
+                    } else {
+                        vm.selectedClient = null;
+                    }
+                });
         };
 
         vm.createNewAllowedCorsOrigin = function () {

@@ -58,18 +58,21 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         public async Task CreateNewIdentityResourceAsync(string name, string displayName, string description)
         {
-            await _identityServerDbContext.IdentityServerApiResources.AddAsync(new IdentityServerApiResource
+            await _identityServerDbContext.IdentityServerIdentityResources.AddAsync(new IdentityServerIdentityResource
             {
                 Description = description,
                 DisplayName = displayName,
                 Name = name,
-                Enabled = true
+                Enabled = true,
+                ShowInDiscoveryDocument = true,
+                Emphasize = false,
+                Required = false
             });
 
             await _identityServerDbContext.SaveChangesAsync();
         }
 
-        public Task UpdateIdentityResourceAsync(IdentityServerIdentityResource identityServerIdentityResource)
+        public Task<int> UpdateIdentityResourceAsync(IdentityServerIdentityResource identityServerIdentityResource)
         {
             return _identityServerDbContext.SaveAnnotatedGraphAsync(identityServerIdentityResource);
         }

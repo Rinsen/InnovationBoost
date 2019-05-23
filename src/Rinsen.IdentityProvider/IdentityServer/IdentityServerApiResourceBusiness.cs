@@ -28,7 +28,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 .ToListAsync();
         }
 
-        public Task<IdentityServerApiResource> GetIdentityServerApiResource(string name)
+        public Task<IdentityServerApiResource> GetIdentityServerApiResourceAsync(string name)
         {
             return _identityServerDbContext.IdentityServerApiResources
                 .Include(m => m.Scopes)
@@ -40,7 +40,12 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         public async Task<ApiResource> GetApiResourceAsync(string name)
         {
-            var identityServerApiResource = await GetIdentityServerApiResource(name);
+            var identityServerApiResource = await GetIdentityServerApiResourceAsync(name);
+
+            if (identityServerApiResource == default)
+            {
+                return null;
+            }
 
             var apiResource = MapApiResourceFromIdentityServerApiResource(identityServerApiResource);
 
@@ -94,7 +99,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
             await _identityServerDbContext.SaveChangesAsync();
         }
 
-        public Task UpdateApiResource(IdentityServerApiResource identityServerApiResource)
+        public Task<int> UpdateApiResource(IdentityServerApiResource identityServerApiResource)
         {
             return _identityServerDbContext.SaveAnnotatedGraphAsync(identityServerApiResource);
         }

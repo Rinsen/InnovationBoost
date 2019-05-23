@@ -28,5 +28,7 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
 
         public List<IdentityServerApiResourceClaim> Claims { get; set; }
 
+        public List<IdentityServerApiResourceProperty> Properties { get; set; }
+
     }
 }

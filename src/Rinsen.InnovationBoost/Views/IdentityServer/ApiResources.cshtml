@@ -45,7 +45,7 @@
                 </thead>
                 <tbody>
                     <tr data-ng-repeat="apiResource in vm.apiResources">
-                        <td><a data-ng-click="vm.selectIdentityResource(apiResource)">{{apiResource.name}}</a></td>
+                        <td><a data-ng-click="vm.selectApiResource(apiResource)">{{apiResource.name}}</a></td>
                         <td><span class="text-nowrap">{{apiResource.displayName}}</span></td>
                         <td><span class="text-nowrap">{{apiResource.description}}</span></td>
                         <td>{{apiResource.enabled}}</td>
@@ -80,22 +80,22 @@
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label for="name">Name</label>
-                                <input type="text" class="form-control" id="name" value="{{vm.selectedApiResource.name}}">
+                                <input type="text" class="form-control" id="name" data-ng-model="vm.selectedApiResource.name" data-ng-change="vm.setModified(vm.selectedApiResource)">
                             </div>
                             <div class="form-group">
                                 <label for="displayName">Display Name</label>
-                                <input type="text" class="form-control" id="displayName" value="{{vm.selectedApiResource.displayName}}">
+                                <input type="text" class="form-control" id="displayName" data-ng-model="vm.selectedApiResource.displayName" data-ng-change="vm.setModified(vm.selectedApiResource)">
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedApiResource.enabled">Enabled
+                                    <input type="checkbox" data-ng-model="vm.selectedApiResource.enabled" data-ng-change="vm.setModified(vm.selectedApiResource)">Enabled
                                 </label>
                             </div>
                             <div class="form-group">
                                 <label for="description">Description</label>
-                                <input type="text" class="form-control" id="description" value="{{vm.selectedApiResource.description}}">
+                                <input type="text" class="form-control" id="description" data-ng-model="vm.selectedApiResource.description" data-ng-change="vm.setModified(vm.selectedApiResource)">
                             </div>
                         </div>
                     </form>

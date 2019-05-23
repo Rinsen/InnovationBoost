@@ -31,16 +31,23 @@
 
         vm.saveApiResource = function () {
             identityServerApiResourceService.saveApiResource(vm.selectedApiResource)
-                .then(identityServerApiResourceService.getApiResource(vm.selectedApiResource.name).
-                    then(function (response) {
-                        for (var i = 0; i < vm.apiResources.length; i++) {
-                            if (vm.apiResources[i].name === vm.selectedApiResource.name) {
-                                vm.apiResources[i] = response.data;
-                            }
-                        }
+                .then(function (saveResponse) {
+                    if (saveResponse.status === 200) {
+                        identityServerApiResourceService.getApiResource(vm.selectedApiResource.name).
+                            then(function (response) {
+                                for (var i = 0; i < vm.apiResources.length; i++) {
+                                    if (vm.apiResources[i].name === vm.selectedApiResource.name) {
+                                        vm.apiResources[i] = response.data;
+                                    }
+                                }
 
-                        vm.selectApiResource(response.data);
-                    }));
+                                vm.selectApiResource(response.data);
+                            });
+                    }
+                    else {
+                        vm.selectedApiResource = null;
+                    }
+                });
         };
 
         vm.setModified = function (object) {

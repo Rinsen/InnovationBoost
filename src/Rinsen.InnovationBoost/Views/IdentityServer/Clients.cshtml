@@ -83,78 +83,78 @@
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label for="absoluteRefreshTokenLifetime">Absolute Refresh Token Lifetime</label>
-                                <input type="text" class="form-control" id="absoluteRefreshTokenLifetime" value="{{vm.selectedClient.absoluteRefreshTokenLifetime}}">
+                                <input type="text" class="form-control" id="absoluteRefreshTokenLifetime" data-ng-model="vm.selectedClient.absoluteRefreshTokenLifetime" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="accessTokenLifetime">Access Token Lifetime</label>
-                                <input type="text" class="form-control" id="accessTokenLifetime" value="{{vm.selectedClient.accessTokenLifetime}}">
+                                <input type="text" class="form-control" id="accessTokenLifetime" data-ng-model="vm.selectedClient.accessTokenLifetime" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="accessTokenType">Access Token Type</label>
-                                <input type="text" class="form-control" id="accessTokenType" value="{{vm.selectedClient.accessTokenType}}">
+                                <input type="text" class="form-control" id="accessTokenType" data-ng-model="vm.selectedClient.accessTokenType" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowAccessTokensViaBrowser">Allow Access Tokens Via Browser
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowAccessTokensViaBrowser" data-ng-change="vm.setModified(vm.selectedClient)">Allow Access Tokens Via Browser
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowOfflineAccess">Allow offline Access
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowOfflineAccess" data-ng-change="vm.setModified(vm.selectedClient)">Allow offline Access
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowPlainTextPkce">Allow Plain Text Pkce
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowPlainTextPkce" data-ng-change="vm.setModified(vm.selectedClient)">Allow Plain Text Pkce
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowRememberConsent">Allow Remember Consent
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.allowRememberConsent" data-ng-change="vm.setModified(vm.selectedClient)">Allow Remember Consent
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.alwaysIncludeUserClaimsInIdToken">Always Include User Claims In Id Tokens
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.alwaysIncludeUserClaimsInIdToken" data-ng-change="vm.setModified(vm.selectedClient)">Always Include User Claims In Id Tokens
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.alwaysSendClientClaims">Always Send Client Claims
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.alwaysSendClientClaims" data-ng-change="vm.setModified(vm.selectedClient)">Always Send Client Claims
                                 </label>
                             </div>
                             <div class="form-group">
                                 <label for="authorizationCodeLifetime">Authorization Code Lifetime</label>
-                                <input type="text" class="form-control" id="authorizationCodeLifetime" value="{{vm.selectedClient.authorizationCodeLifetime}}">
+                                <input type="text" class="form-control" id="authorizationCodeLifetime" data-ng-model="vm.selectedClient.authorizationCodeLifetime" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.backChannelLogoutSessionRequired">Back Channel Logout Session Required
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.backChannelLogoutSessionRequired" data-ng-change="vm.setModified(vm.selectedClient)">Back Channel Logout Session Required
                                 </label>
                             </div>
                             <div class="form-group">
                                 <label for="backChannelLogoutUri">Back Channel Logout Uri</label>
-                                <input type="text" class="form-control" id="backChannelLogoutUri" value="{{vm.selectedClient.backChannelLogoutUri}}">
+                                <input type="text" class="form-control" id="backChannelLogoutUri" data-ng-model="vm.selectedClient.backChannelLogoutUri" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="clientClaimsPrefix">Client Claims Prefix</label>
-                                <input type="text" class="form-control" id="clientClaimsPrefix" value="{{vm.selectedClient.clientClaimsPrefix}}">
+                                <input type="text" class="form-control" id="clientClaimsPrefix" data-ng-model="vm.selectedClient.clientClaimsPrefix" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="clientId">Client Id</label>
-                                <input type="text" class="form-control" id="clientId" value="{{vm.selectedClient.clientId}}">
+                                <input type="text" class="form-control" id="clientId" data-ng-model="vm.selectedClient.clientId" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="clientName">Client Name</label>
-                                <input type="text" class="form-control" id="clientName" value="{{vm.selectedClient.clientName}}">
+                                <input type="text" class="form-control" id="clientName" data-ng-model="vm.selectedClient.clientName" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="clientUri">Client Uri</label>
-                                <input type="text" class="form-control" id="clientUri" value="{{vm.selectedClient.clientUri}}">
+                                <input type="text" class="form-control" id="clientUri" data-ng-model="vm.selectedClient.clientUri" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="consentLifetime">ConsentLifetime</label>
-                                <input type="text" class="form-control" id="consentLifetime" value="{{vm.selectedClient.consentLifetime}}">
+                                <input type="text" class="form-control" id="consentLifetime" data-ng-model="vm.selectedClient.consentLifetime" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="created">Created</label>
@@ -162,89 +162,89 @@
                             </div>
                             <div class="form-group">
                                 <label for="description">Description</label>
-                                <input type="text" class="form-control" id="description" value="{{vm.selectedClient.description}}">
+                                <input type="text" class="form-control" id="description" data-ng-model="vm.selectedClient.description" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="deviceCodeLifetime">Device Code Lifetime</label>
-                                <input type="text" class="form-control" id="deviceCodeLifetime" value="{{vm.selectedClient.deviceCodeLifetime}}">
+                                <input type="text" class="form-control" id="deviceCodeLifetime" data-ng-model="vm.selectedClient.deviceCodeLifetime" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             
                         </div>
                         <div class="col-sm-6">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.enableLocalLogin">Enable Local Login
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.enableLocalLogin" data-ng-change="vm.setModified(vm.selectedClient)">Enable Local Login
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.enabled">Enabled
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.enabled" data-ng-change="vm.setModified(vm.selectedClient)">Enabled
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.frontChannelLogoutSessionRequired">Front Channel Logout Session Required
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.frontChannelLogoutSessionRequired" data-ng-change="vm.setModified(vm.selectedClient)">Front Channel Logout Session Required
                                 </label>
                             </div>
                             <div class="form-group">
                                 <label for="frontChannelLogoutUri">Front Channel Logout Uri</label>
-                                <input type="text" class="form-control" id="frontChannelLogoutUri" value="{{vm.selectedClient.frontChannelLogoutUri}}">
+                                <input type="text" class="form-control" id="frontChannelLogoutUri" data-ng-model="vm.selectedClient.frontChannelLogoutUri" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="identityTokenLifetime">Identity Token Lifetime</label>
-                                <input type="text" class="form-control" id="identityTokenLifetime" value="{{vm.selectedClient.identityTokenLifetime}}">
+                                <input type="text" class="form-control" id="identityTokenLifetime" data-ng-model="vm.selectedClient.identityTokenLifetime" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.includeJwtId">Include Jwt Id
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.includeJwtId" data-ng-change="vm.setModified(vm.selectedClient)">Include Jwt Id
                                 </label>
                             </div>
                             <div class="form-group">
                                 <label for="logoUri">Logo Uri</label>
-                                <input type="text" class="form-control" id="logoUri" value="{{vm.selectedClient.logoUri}}">
+                                <input type="text" class="form-control" id="logoUri" data-ng-model="vm.selectedClient.logoUri" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="pairWiseSubjectSalt">pairWiseSubjectSalt</label>
-                                <input type="text" class="form-control" id="pairWiseSubjectSalt" value="{{vm.selectedClient.pairWiseSubjectSalt}}">
+                                <input type="text" class="form-control" id="pairWiseSubjectSalt" data-ng-model="vm.selectedClient.pairWiseSubjectSalt" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="protocolType">protocolType</label>
-                                <input type="text" class="form-control" id="protocolType" value="{{vm.selectedClient.protocolType}}">
+                                <input type="text" class="form-control" id="protocolType" data-ng-model="vm.selectedClient.protocolType" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="refreshTokenExpiration">refreshTokenExpiration</label>
-                                <input type="text" class="form-control" id="refreshTokenExpiration" value="{{vm.selectedClient.refreshTokenExpiration}}">
+                                <input type="text" class="form-control" id="refreshTokenExpiration" data-ng-model="vm.selectedClient.refreshTokenExpiration" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="refreshTokenUsage">refreshTokenUsage</label>
-                                <input type="text" class="form-control" id="refreshTokenUsage" value="{{vm.selectedClient.refreshTokenUsage}}">
+                                <input type="text" class="form-control" id="refreshTokenUsage" data-ng-model="vm.selectedClient.refreshTokenUsage" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.requireClientSecret">requireClientSecret
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.requireClientSecret" data-ng-change="vm.setModified(vm.selectedClient)">requireClientSecret
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.requireConsent">requireConsent
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.requireConsent" data-ng-change="vm.setModified(vm.selectedClient)">requireConsent
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.requirePkce">requirePkce
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.requirePkce" data-ng-change="vm.setModified(vm.selectedClient)">requirePkce
                                 </label>
                             </div>
                             <div class="form-group">
                                 <label for="slidingRefreshTokenLifetime">slidingRefreshTokenLifetime</label>
-                                <input type="text" class="form-control" id="slidingRefreshTokenLifetime" value="{{vm.selectedClient.slidingRefreshTokenLifetime}}">
+                                <input type="text" class="form-control" id="slidingRefreshTokenLifetime" data-ng-model="vm.selectedClient.slidingRefreshTokenLifetime" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="state">state</label>
-                                <input type="text" class="form-control" id="state" value="{{vm.selectedClient.state}}">
+                                <input type="text" class="form-control" id="state" data-ng-model="vm.selectedClient.state" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedClient.updateAccessTokenClaimsOnRefresh">updateAccessTokenClaimsOnRefresh
+                                    <input type="checkbox" data-ng-model="vm.selectedClient.updateAccessTokenClaimsOnRefresh" data-ng-change="vm.setModified(vm.selectedClient)">updateAccessTokenClaimsOnRefresh
                                 </label>
                             </div>
                             <div class="form-group">
@@ -253,11 +253,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="userCodeType">userCodeType</label>
-                                <input type="text" class="form-control" id="userCodeType" value="{{vm.selectedClient.userCodeType}}">
+                                <input type="text" class="form-control" id="userCodeType" data-ng-model="vm.selectedClient.userCodeType" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                             <div class="form-group">
                                 <label for="userSsoLifetime">userSsoLifetime</label>
-                                <input type="text" class="form-control" id="userSsoLifetime" value="{{vm.selectedClient.userSsoLifetime}}">
+                                <input type="text" class="form-control" id="userSsoLifetime" data-ng-model="vm.selectedClient.userSsoLifetime" data-ng-change="vm.setModified(vm.selectedClient)">
                             </div>
                         </div>
                     </form>

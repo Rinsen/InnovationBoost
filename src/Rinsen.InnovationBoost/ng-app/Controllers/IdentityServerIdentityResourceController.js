@@ -34,16 +34,24 @@
 
         vm.saveIdentityResource = function () {
             identityServerIdentityResourceService.saveIdentityResource(vm.selectedIdentityResource)
-                .then(identityServerIdentityResourceService.getIdentityResource(vm.selectedIdentityResource.name).
-                    then(function (response) {
-                        for (var i = 0; i < vm.identityResources.length; i++) {
-                            if (vm.identityResources[i].name === vm.selectedIdentityResource.name) {
-                                vm.identityResources[i] = response.data;
-                            }
-                        }
+                .then(function (saveResponse) {
+                    if (saveResponse.status === 200) {
+                        identityServerIdentityResourceService.getIdentityResource(vm.selectedIdentityResource.name).
+                            then(function (response) {
+                                for (var i = 0; i < vm.identityResources.length; i++) {
+                                    if (vm.identityResources[i].name === vm.selectedIdentityResource.name) {
+                                        vm.identityResources[i] = response.data;
+                                    }
+                                }
 
-                        vm.selectIdentityResource(response.data);
-                    }));
+                                vm.selectIdentityResource(response.data);
+                            });
+                    }
+                    else {
+                        vm.selectedIdentityResource = null;
+                    }
+                    
+                });
         };
 
         vm.createNewClaim = function () {

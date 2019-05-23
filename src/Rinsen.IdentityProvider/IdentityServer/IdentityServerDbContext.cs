@@ -62,6 +62,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 apiResources.HasMany(m => m.ApiSecrets).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired();
                 apiResources.HasMany(m => m.Claims).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired();
                 apiResources.HasMany(m => m.Scopes).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired();
+                apiResources.HasMany(m => m.Properties).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired();
             });
 
             modelBuilder.Entity<IdentityServerApiResourceClaim>(apiResourceClaims =>
@@ -87,6 +88,12 @@ namespace Rinsen.IdentityProvider.IdentityServer
             {
                 apiResourceSecret.HasKey(m => m.Id);
                 apiResourceSecret.Ignore(m => m.State);
+            });
+
+            modelBuilder.Entity<IdentityServerApiResourceProperty>(properties =>
+            {
+                properties.HasKey(m => m.Id);
+                properties.Ignore(m => m.State);
             });
 
             modelBuilder.Entity<IdentityServerClient>(clients =>
@@ -182,7 +189,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         }
 
-        public Task SaveAnnotatedGraphAsync(IObjectWithState objectGraph)
+        public Task<int> SaveAnnotatedGraphAsync(IObjectWithState objectGraph)
         {
             ChangeTracker.TrackGraph(
                 objectGraph,

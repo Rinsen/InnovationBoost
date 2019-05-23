@@ -83,36 +83,36 @@
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label for="name">Name</label>
-                                <input type="text" class="form-control" id="name" value="{{vm.selectedApiResource.name}}">
+                                <input type="text" class="form-control" id="name" data-ng-model="vm.selectedIdentityResource.name" data-ng-change="vm.setModified(vm.selectedIdentityResource)">
                             </div>
                             <div class="form-group">
                                 <label for="displayName">Display Name</label>
-                                <input type="text" class="form-control" id="displayName" value="{{vm.selectedApiResource.displayName}}">
+                                <input type="text" class="form-control" id="displayName" data-ng-model="vm.selectedIdentityResource.displayName" data-ng-change="vm.setModified(vm.selectedIdentityResource)">
                             </div>
                             <div class="form-group">
                                 <label for="description">Description</label>
-                                <input type="text" class="form-control" id="description" value="{{vm.selectedApiResource.description}}">
+                                <input type="text" class="form-control" id="description" data-ng-model="vm.selectedIdentityResource.description" data-ng-change="vm.setModified(vm.selectedIdentityResource)">
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedApiResource.enabled">Enabled
+                                    <input type="checkbox" data-ng-model="vm.selectedIdentityResource.enabled" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Enabled
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedApiResource.required">Required
+                                    <input type="checkbox" data-ng-model="vm.selectedIdentityResource.required" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Required
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedApiResource.emphasize">Emphasize
+                                    <input type="checkbox" data-ng-model="vm.selectedIdentityResource.emphasize" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Emphasize
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedApiResource.showInDiscoveryDocument">Show In Discovery Document
+                                    <input type="checkbox" data-ng-model="vm.selectedIdentityResource.showInDiscoveryDocument" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Show In Discovery Document
                                 </label>
                             </div>
                         </div>

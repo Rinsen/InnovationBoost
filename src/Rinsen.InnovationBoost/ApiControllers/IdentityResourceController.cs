@@ -50,7 +50,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        [Route("~/api/[controller]/Create")]
+        [Route("~/IdentityServer/api/[controller]/Create")]
         public async Task<ActionResult<IdentityServerIdentityResource>> Create([Required]string name, [Required]string displayName, [Required]string description)
         {
             await _identityServerIdentityResourceBusiness.CreateNewIdentityResourceAsync(name, displayName, description);
@@ -65,7 +65,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        [Route("~/api/[controller]/Update")]
+        [Route("~/IdentityServer/api/[controller]/Update")]
         public async Task<ActionResult> Update([Required]IdentityServerIdentityResource identityServerIdentityResource)
         {
             await _identityServerIdentityResourceBusiness.UpdateIdentityResourceAsync(identityServerIdentityResource);

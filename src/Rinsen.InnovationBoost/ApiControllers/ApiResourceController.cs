@@ -38,7 +38,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<IdentityServerApiResource>> GetById(string id)
         {
-            var identityServerApiResource = await _identityServerApiResourceBusiness.GetIdentityServerApiResource(id);
+            var identityServerApiResource = await _identityServerApiResourceBusiness.GetIdentityServerApiResourceAsync(id);
 
             if (identityServerApiResource == default(IdentityServerApiResource))
                 return NotFound();
@@ -50,12 +50,12 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        [Route("~/api/[controller]/Create")]
+        [Route("~/IdentityServer/api/[controller]/Create")]
         public async Task<ActionResult<IdentityServerApiResource>> Create([Required]string name, [Required]string displayName, [Required]string description)
         {
             await _identityServerApiResourceBusiness.CreateNewApiResource(name, displayName, description);
 
-            var identityServerApiResource = await _identityServerApiResourceBusiness.GetIdentityServerApiResource(name);
+            var identityServerApiResource = await _identityServerApiResourceBusiness.GetIdentityServerApiResourceAsync(name);
 
             return CreatedAtAction(nameof(GetById),
                new { id = name }, identityServerApiResource);
@@ -65,7 +65,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        [Route("~/api/[controller]/Update")]
+        [Route("~/IdentityServer/api/[controller]/Update")]
         public async Task<ActionResult> Update([Required]IdentityServerApiResource identityServerApiResource)
         {
             await _identityServerApiResourceBusiness.UpdateApiResource(identityServerApiResource);

@@ -25,6 +25,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                     .ThenInclude(scope => scope.Claims)
                 .Include(m => m.ApiSecrets)
                 .Include(m => m.Claims)
+                .Include(m => m.Properties)
                 .ToListAsync();
         }
 
@@ -35,6 +36,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                     .ThenInclude(scope => scope.Claims)
                 .Include(m => m.ApiSecrets)
                 .Include(m => m.Claims)
+                .Include(m => m.Properties)
                 .FirstOrDefaultAsync(ar => ar.Name == name);
         }
 

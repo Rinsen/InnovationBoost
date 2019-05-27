@@ -62,7 +62,7 @@
         };
 
         vm.createNewProperty = function () {
-            vm.selectedIdentityResource.properties.push({ type: vm.create.propertyKey, value: vm.create.propertyValue, state: 1 });
+            vm.selectedIdentityResource.properties.push({ key: vm.create.propertyKey, value: vm.create.propertyValue, state: 1 });
 
             vm.create.propertyKey = '';
             vm.create.propertyValue = '';

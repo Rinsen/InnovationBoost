@@ -74,6 +74,8 @@
                     <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'ApiSecrets'}"><a data-ng-click="vm.selectedTab = 'ApiSecrets'">Api Secrets</a></li>
                     <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Claims'}"><a data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
                     <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Scopes'}"><a data-ng-click="vm.selectedTab = 'Scopes'">Scopes</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'ScopeClaims'}"><a data-ng-click="vm.selectedTab = 'ScopeClaims'">Scope Claims</a></li>
+                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Properties'}"><a data-ng-click="vm.selectedTab = 'Properties'">Properties</a></li>
                 </ul>
                 <div class="row" data-ng-show="vm.selectedTab === 'General'">
                     <form>
@@ -86,6 +88,10 @@
                                 <label for="displayName">Display Name</label>
                                 <input type="text" class="form-control" id="displayName" data-ng-model="vm.selectedApiResource.displayName" data-ng-change="vm.setModified(vm.selectedApiResource)">
                             </div>
+                            <div class="form-group">
+                                <label for="created">Created</label>
+                                <input type="text" class="form-control" id="created" value="{{vm.selectedApiResource.created | date:'yyyy-MM-dd HH:mm'}}" disabled>
+                            </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="checkbox">
@@ -96,6 +102,10 @@
                             <div class="form-group">
                                 <label for="description">Description</label>
                                 <input type="text" class="form-control" id="description" data-ng-model="vm.selectedApiResource.description" data-ng-change="vm.setModified(vm.selectedApiResource)">
+                            </div>
+                            <div class="form-group">
+                                <label for="updated">Updated</label>
+                                <input type="text" class="form-control" id="updated" value="{{vm.selectedApiResource.updated | date:'yyyy-MM-dd HH:mm'}}" disabled>
                             </div>
                         </div>
                     </form>
@@ -115,7 +125,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-ng-repeat="apiSecret in vm.selectedIdentityResource.apiSecrets" data-ng-class="{'new-item': apiSecret.state == 1, 'updated-item': apiSecret.state == 2, 'deleted-item': apiSecret.state == 3 || apiSecret.state == 4 }">
+                                <tr data-ng-repeat="apiSecret in vm.selectedApiResource.apiSecrets" data-ng-class="{'new-item': apiSecret.state == 1, 'updated-item': apiSecret.state == 2, 'deleted-item': apiSecret.state == 3 || apiSecret.state == 4 }">
                                     <td><input class="form-control" type="text" data-ng-model="apiSecret.description" data-ng-change="vm.setModified(apiSecret)" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="apiSecret.expiration" data-ng-change="vm.setModified(apiSecret)" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="apiSecret.type" data-ng-change="vm.setModified(apiSecret)" /></td>
@@ -125,11 +135,13 @@
                                     <td><span data-ng-click="vm.toggleDelete(apiSecret)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
                                 </tr>
                                 <tr>
-                                    <td><input class="form-control" type="text" data-ng-model="vm.create.claimType" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="vm.create.claimValue" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretDescription" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretExpiration" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretType" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretValue" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewClaim()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><span data-ng-click="vm.createNewApiSecret()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -141,24 +153,21 @@
                             <thead>
                                 <tr>
                                     <th>Type</th>
-                                    <th>Value</th>
                                     <th>Created</th>
                                     <th>Updated</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-ng-repeat="claim in vm.selectedIdentityResource.claims" data-ng-class="{'new-item': claim.state == 1, 'updated-item': claim.state == 2, 'deleted-item': claim.state == 3 || claim.state == 4 }">
+                                <tr data-ng-repeat="claim in vm.selectedApiResource.claims" data-ng-class="{'new-item': claim.state == 1, 'updated-item': claim.state == 2, 'deleted-item': claim.state == 3 || claim.state == 4 }">
 
                                     <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="vm.setModified(claim)" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="claim.value" data-ng-change="vm.setModified(claim)" /></td>
                                     <td>{{claim.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{claim.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td><span data-ng-click="vm.toggleDelete(claim)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.claimType" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="vm.create.claimValue" /></td>
                                     <td></td>
                                     <td></td>
                                     <td><span data-ng-click="vm.createNewClaim()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
@@ -180,7 +189,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-ng-repeat="claim in vm.selectedIdentityResource.claims" data-ng-class="{'new-item': claim.state == 1, 'updated-item': claim.state == 2, 'deleted-item': claim.state == 3 || claim.state == 4 }">
+                                <tr data-ng-repeat="claim in vm.selectedApiResource.claims" data-ng-class="{'new-item': claim.state == 1, 'updated-item': claim.state == 2, 'deleted-item': claim.state == 3 || claim.state == 4 }">
 
                                     <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="vm.setModified(claim)" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="claim.value" data-ng-change="vm.setModified(claim)" /></td>
@@ -189,11 +198,70 @@
                                     <td><span data-ng-click="vm.toggleDelete(claim)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
                                 </tr>
                                 <tr>
-                                    <td><input class="form-control" type="text" data-ng-model="vm.create.claimType" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="vm.create.claimValue" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.scopeType" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.scopeValue" /></td>
                                     <td></td>
                                     <td></td>
                                     <td><span data-ng-click="vm.createNewClaim()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @*<div class="row" data-ng-show="vm.selectedTab === 'ScopeClaims'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="claim in vm.selectedApiResource.claims" data-ng-class="{'new-item': claim.state == 1, 'updated-item': claim.state == 2, 'deleted-item': claim.state == 3 || claim.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="vm.setModified(claim)" /></td>
+                                    <td>{{claim.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{claim.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(claim)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.claimType" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewClaim()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>*@
+                <div class="row" data-ng-show="vm.selectedTab === 'Properties'">
+                    <div class="col-sm-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Value</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="property in vm.selectedApiResource.properties" data-ng-class="{'new-item': property.state == 1, 'updated-item': property.state == 2, 'deleted-item': property.state == 3 || property.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="property.key" data-ng-change="vm.setModified(property)" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="property.value" data-ng-change="vm.setModified(property)" /></td>
+                                    <td>{{property.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{property.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(property)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.propertyKey" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.propertyValue" /></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><span data-ng-click="vm.createNewProperty()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -27,11 +27,13 @@ namespace Rinsen.InnovationBoost
     public class Startup
     {
         private readonly IHostingEnvironment _env;
+        private readonly ILoggerFactory _loggerFactory;
 
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
             _env = env;
+            _loggerFactory = loggerFactory;
         }
 
         public IConfiguration Configuration { get; }
@@ -70,7 +72,8 @@ namespace Rinsen.InnovationBoost
                 options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
 
             services.AddDbContext<IdentityServerDbContext>(options =>
-                options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
+                options.UseLoggerFactory(_loggerFactory)
+                .UseSqlServer(Configuration["Rinsen:ConnectionString"]));
 
             services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
         }

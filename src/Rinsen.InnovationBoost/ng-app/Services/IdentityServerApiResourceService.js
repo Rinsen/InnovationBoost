@@ -10,7 +10,7 @@
     function IdentityServerApiResourceService($http) {
         var service = {
             getApiResources: getApiResources,
-            saveApiResources: saveApiResources,
+            saveApiResource: saveApiResource,
             getApiResource: getApiResource
         };
 
@@ -20,7 +20,7 @@
             return $http.get('api/ApiResource');
         }
 
-        function saveApiResources(client) {
+        function saveApiResource(client) {
             return $http.post('api/ApiResource/Update', client);
         }
 

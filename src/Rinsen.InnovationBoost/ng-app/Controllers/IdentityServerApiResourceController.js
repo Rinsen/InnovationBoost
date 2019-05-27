@@ -14,7 +14,14 @@
         vm.selectedApiResource = null;
         vm.selectedTab = 'General';
         vm.create = {
-            example: ''
+            apiSecretDescription: '',
+            apiSecretExpiration: '',
+            apiSecretType: '',
+            apiSecretValue: '',
+            claimType: '',
+            claimValue: '',
+            propertyKey: '',
+            propertyValue: ''
         };
 
         vm.selectApiResource = function (apiResource) {
@@ -48,6 +55,29 @@
                         vm.selectedApiResource = null;
                     }
                 });
+        };
+
+        vm.createNewApiSecret = function () {
+            vm.selectedApiResource.apiSecrets.push({ description: vm.create.apiSecretDescription, expiration: vm.create.apiSecretExpiration, type: vm.create.apiSecretType, value: vm.create.apiSecretValue, state: 1 });
+
+            vm.create.apiSecretDescription = '';
+            vm.create.apiSecretExpiration = '';
+            vm.create.apiSecretType = '';
+            vm.create.apiSecretValue = '';
+        };
+
+        vm.createNewClaim = function () {
+            vm.selectedApiResource.claims.push({ type: vm.create.claimType, value: vm.create.claimValue, state: 1 });
+
+            vm.create.claimType = '';
+            vm.create.claimValue = '';
+        };
+
+        vm.createNewProperty = function () {
+            vm.selectedApiResource.properties.push({ key: vm.create.propertyKey, value: vm.create.propertyValue, state: 1 });
+
+            vm.create.propertyKey = '';
+            vm.create.propertyValue = '';
         };
 
         vm.setModified = function (object) {

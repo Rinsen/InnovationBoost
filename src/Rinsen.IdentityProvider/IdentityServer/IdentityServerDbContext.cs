@@ -92,6 +92,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
             modelBuilder.Entity<IdentityServerApiResourceProperty>(properties =>
             {
+                properties.ToTable("IdentityServerApiResourceProperties");
                 properties.HasKey(m => m.Id);
                 properties.Ignore(m => m.State);
             });

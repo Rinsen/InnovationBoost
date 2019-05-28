@@ -181,28 +181,40 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Type</th>
-                                    <th>Value</th>
+                                    <th>Name</th>
+                                    <th>Display Name</th>
+                                    <th>Description</th>
+                                    <th>Required</th>
+                                    <th>Emphasize</th>
+                                    <th>Show In Discovery Document</th>
                                     <th>Created</th>
                                     <th>Updated</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-ng-repeat="claim in vm.selectedApiResource.claims" data-ng-class="{'new-item': claim.state == 1, 'updated-item': claim.state == 2, 'deleted-item': claim.state == 3 || claim.state == 4 }">
-
-                                    <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="vm.setModified(claim)" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="claim.value" data-ng-change="vm.setModified(claim)" /></td>
-                                    <td>{{claim.created | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td>{{claim.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(claim)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                <tr data-ng-repeat="scope in vm.selectedApiResource.scopes" data-ng-class="{'new-item': scope.state == 1, 'updated-item': scope.state == 2, 'deleted-item': scope.state == 3 || scope.state == 4 }">
+                                    <td><input class="form-control" type="text" data-ng-model="scope.name" data-ng-change="vm.setModified(scope)" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="scope.displayName" data-ng-change="vm.setModified(scope)" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="scope.description" data-ng-change="vm.setModified(scope)" /></td>
+                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="scope.required" data-ng-change="vm.setModified(scope)">Enabled</label></div></td>
+                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="scope.emphasize" data-ng-change="vm.setModified(scope)">Emphasize</label></div></td>
+                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="scope.showInDiscoveryDocument" data-ng-change="vm.setModified(scope)">Show In Discovery Document</label></div></td>
+                                    <td>{{scope.created | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td>{{scope.updated | date:'yyyy-MM-dd HH:mm'}}</td>
+                                    <td><span data-ng-click="vm.toggleDelete(scope)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
                                 </tr>
                                 <tr>
-                                    <td><input class="form-control" type="text" data-ng-model="vm.create.scopeType" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="vm.create.scopeValue" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.scopeName" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.scopeDisplayName" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.scopeDescription" /></td>
+                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="vm.create.scopeRequired">Enabled</label></div></td>
+                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="vm.create.scopeEmphasize">Emphasize</label></div></td>
+                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="vm.create.scopeShowInDiscoveryDocument">Show In Discovery Document</label></div></td>
+                                    
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewClaim()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><span data-ng-click="vm.createNewScope()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
                                 </tr>
                             </tbody>
                         </table>

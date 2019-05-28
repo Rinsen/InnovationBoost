@@ -21,7 +21,13 @@
             claimType: '',
             claimValue: '',
             propertyKey: '',
-            propertyValue: ''
+            propertyValue: '',
+            scopeName: '',
+            scopeDisplayName: '',
+            scopeDescription: '',
+            scopeRequired: false,
+            scopeEmphasize: false,
+            scopeShowInDiscoveryDocument: false
         };
 
         vm.selectApiResource = function (apiResource) {
@@ -71,6 +77,17 @@
 
             vm.create.claimType = '';
             vm.create.claimValue = '';
+        };
+
+        vm.createNewScope = function () {
+            vm.selectedApiResource.scopes.push({ name: vm.create.scopeName, displayName: vm.create.scopeDisplayName, description: vm.create.scopeDescription, emphasize: vm.create.scopeEmphasize, required: vm.create.scopeRequired, showInDiscoveryDocument: vm.create.scopeShowInDiscoveryDocument, state: 1 });
+
+            vm.create.scopeName = '';
+            vm.create.scopeDisplayName = '';
+            vm.create.scopeDescription = '';
+            vm.create.scopeRequired = false;
+            vm.create.scopeEmphasize = false;
+            vm.create.scopeShowInDiscoveryDocument = false;
         };
 
         vm.createNewProperty = function () {

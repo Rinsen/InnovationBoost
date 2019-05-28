@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Rinsen.IdentityProvider.IdentityServer.Entities
 {
-    public class IdentityServerClientCorsOrigin : ICreatedAndUpdatedTimestamp
+    public class IdentityServerClientCorsOrigin : ICreatedAndUpdatedTimestamp, IObjectWithState
     {
         public int Id { get; set; }
 

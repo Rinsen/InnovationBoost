@@ -31,53 +31,8 @@ namespace Rinsen.InnovationBoost.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var client = await _identityServerClientBusiness.GetIdentityServerClient("testclient");
-
-            if (client == default)
-            {
-                await _identityServerClientBusiness.CreateNewClient("testclient", "Test Client", "Client for testing EF");
-            }
-
-            var apiResource = await _identityServerApiResourceBusiness.GetApiResourceAsync("testapiresource");
-
-            if (apiResource == default)
-            {
-                await _identityServerApiResourceBusiness.CreateNewApiResource("testapiresource", "Test Api Resource", "Api Resource for testing EF");
-            }
-
-            var identityResource = await _identityServerIdentityResourceBusiness.GetIdentityServerIdentityResourceAsync("testidentityresource");
-
-            if (identityResource == default)
-            {
-                await _identityServerIdentityResourceBusiness.CreateNewIdentityResourceAsync("testidentityresource", "Test Identity Resource", "Identity Resource for testing EF");
-            }
-
-            return View();
-        }
-
-        [AllowAnonymous]
-        [HttpPost]
-        public async Task<IActionResult> Index(string data)
-        {
-            
-            var disconnectedClientGraph = JsonConvert.DeserializeObject<IdentityServerClient>(data);
-
-            //var secret = _randomStringGenerator.GetRandomString(60);
-
-            //disconnectedClientGraph.ClientSecrets.Add(new IdentityServerClientSecret
-            //{
-            //    Expiration = null,
-            //    State = ObjectState.Added,
-            //    Type = IdentityServer4.IdentityServerConstants.SecretTypes.SharedSecret,
-            //    Value = secret.Sha256()
-            //});
-
-            disconnectedClientGraph.ClientSecrets.First().State = ObjectState.Deleted;
-
-            await _identityServerClientBusiness.UpdateClient(disconnectedClientGraph);
-
             return View();
         }
 

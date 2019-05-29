@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.IdentityProvider.IdentityServer.Entities;
+using Rinsen.InnovationBoost.Models;
 
 namespace Rinsen.InnovationBoost.ApiControllers
 {
@@ -46,19 +47,30 @@ namespace Rinsen.InnovationBoost.ApiControllers
             return identityServerIdentityResource;
         }
 
+        [HttpDelete("{id}", Name = "DeleteIdentityResource")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult> Delete(string id)
+        {
+            await _identityServerIdentityResourceBusiness.DeleteIdentityServerIdentityResourceAsync(id);
+
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [Route("~/IdentityServer/api/[controller]/Create")]
-        public async Task<ActionResult<IdentityServerIdentityResource>> Create([Required]string name, [Required]string displayName, [Required]string description)
+        public async Task<ActionResult<IdentityServerIdentityResource>> Create([Required]CreateIdentityResource createIdentityResource)
         {
-            await _identityServerIdentityResourceBusiness.CreateNewIdentityResourceAsync(name, displayName, description);
+            await _identityServerIdentityResourceBusiness.CreateNewIdentityResourceAsync(createIdentityResource.Name, createIdentityResource.DisplayName, createIdentityResource.Description);
 
-            var identityServerApiResource = await _identityServerIdentityResourceBusiness.GetIdentityServerIdentityResourceAsync(name);
+            var identityServerApiResource = await _identityServerIdentityResourceBusiness.GetIdentityServerIdentityResourceAsync(createIdentityResource.Name);
 
             return CreatedAtAction(nameof(GetById),
-               new { id = name }, identityServerApiResource);
+               new { id = createIdentityResource.Name }, identityServerApiResource);
         }
 
         [HttpPost]

@@ -32,7 +32,10 @@ var npmPaths = {
     jQuery: "./node_modules/jquery/dist/jquery*.js*",
     istevenMultiSelectCss: "./node_modules/isteven-angular-multiselect/*.css",
     istevenMultiSelectJs: "./node_modules/isteven-angular-multiselect/*.js",
-    smartTableJs: "./node_modules/angular-smart-table/dist/*.js*"
+    smartTableJs: "./node_modules/angular-smart-table/dist/*.js*",
+    toastrJs: "./node_modules/toastr/toastr.js",
+    toastrJsMin: "./node_modules/toastr/build/*.js*",
+    toastrCss: "./node_modules/toastr/build/*.css*"
 };
 
 var destPaths = {
@@ -104,11 +107,22 @@ gulp.task("smartTable", function () {
         .pipe(gulp.dest(destPaths.js));
 });
 
+gulp.task("toastr", function () {
+    gulp.src([npmPaths.toastrJs])
+        .pipe(gulp.dest(destPaths.js));
+
+    gulp.src([npmPaths.toastrJsMin])
+        .pipe(gulp.dest(destPaths.js));
+
+    return gulp.src([npmPaths.toastrCss])
+        .pipe(gulp.dest(destPaths.css));
+});
+
 gulp.task("debug:ngApp", function () {
     return gulp.src("./ng-app/**/*.js")
         .pipe(gulp.dest("./wwwroot/js/debug/"));
 });
 
-gulp.task("3rdparty", gulp.parallel("bootstrap", "angular", "jQuery", "istevenMultiSelect", "smartTable"));
+gulp.task("3rdparty", gulp.parallel("bootstrap", "angular", "jQuery", "istevenMultiSelect", "smartTable", "toastr"));
 
 gulp.task("min", gulp.parallel("min:js", "min:css"));

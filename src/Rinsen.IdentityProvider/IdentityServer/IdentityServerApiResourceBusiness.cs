@@ -40,6 +40,21 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 .FirstOrDefaultAsync(ar => ar.Name == name);
         }
 
+        public async Task DeleteIdentityServerApiResourceAsync(string name)
+        {
+            var apiResource = await _identityServerDbContext.IdentityServerApiResources
+                .Include(m => m.Scopes)
+                    .ThenInclude(scope => scope.Claims)
+                .Include(m => m.ApiSecrets)
+                .Include(m => m.Claims)
+                .Include(m => m.Properties)
+                .FirstOrDefaultAsync(ar => ar.Name == name);
+
+            _identityServerDbContext.IdentityServerApiResources.Remove(apiResource);
+
+            await _identityServerDbContext.SaveChangesAsync();
+        }
+
         public async Task<ApiResource> GetApiResourceAsync(string name)
         {
             var identityServerApiResource = await GetIdentityServerApiResourceAsync(name);

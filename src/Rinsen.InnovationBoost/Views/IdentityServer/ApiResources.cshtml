@@ -41,6 +41,7 @@
                         <th>Display Name</th>
                         <th>Description</th>
                         <th>Active</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +50,14 @@
                         <td><span class="text-nowrap">{{apiResource.displayName}}</span></td>
                         <td><span class="text-nowrap">{{apiResource.description}}</span></td>
                         <td>{{apiResource.enabled}}</td>
+                        <td><span data-ng-click="vm.deleteApiResource(apiResource)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                    </tr>
+                    <tr>
+                        <td><input class="form-control" type="text" data-ng-model="vm.create.apiResourceName" /></td>
+                        <td><input class="form-control" type="text" data-ng-model="vm.create.apiResourceDisplayName" /></td>
+                        <td><input class="form-control" type="text" data-ng-model="vm.create.apiResourceDescription" /></td>
+                        <td></td>
+                        <td><span data-ng-click="vm.createNewApiResource()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
                     </tr>
                 </tbody>
             </table>
@@ -62,9 +71,9 @@
         </div>
         <div class="row margin-bottom">
             <div class="col-sm-12">
-                <button data-ng-click="vm.saveApiResource()" class="btn btn-primary">Save</button>
-                <button data-ng-click="vm.undoChanges()" class="btn btn-warning">Undo</button>
-                <button data-ng-click="vm.selectedApiResource = null" class="btn btn-default">Close</button>
+                <button data-ng-click="vm.saveApiResource()" class="btn btn-primary" data-ng-disabled="vm.saving">Save</button>
+                <button data-ng-click="vm.undoChanges()" class="btn btn-warning" data-ng-disabled="vm.saving">Undo</button>
+                <button data-ng-click="vm.selectedApiResource = null" class="btn btn-default" data-ng-disabled="vm.saving">Close</button>
             </div>
         </div>
         <div class="row">
@@ -116,9 +125,9 @@
                             <thead>
                                 <tr>
                                     <th>Description</th>
-                                    <th>Expiration</th>
                                     <th>Type</th>
                                     <th>Value</th>
+                                    <th>Expiration</th>
                                     <th>Created</th>
                                     <th>Updated</th>
                                     <th></th>
@@ -127,18 +136,18 @@
                             <tbody>
                                 <tr data-ng-repeat="apiSecret in vm.selectedApiResource.apiSecrets" data-ng-class="{'new-item': apiSecret.state == 1, 'updated-item': apiSecret.state == 2, 'deleted-item': apiSecret.state == 3 || apiSecret.state == 4 }">
                                     <td><input class="form-control" type="text" data-ng-model="apiSecret.description" data-ng-change="vm.setModified(apiSecret)" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="apiSecret.expiration" data-ng-change="vm.setModified(apiSecret)" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="apiSecret.type" data-ng-change="vm.setModified(apiSecret)" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="apiSecret.value" data-ng-change="vm.setModified(apiSecret)" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="apiSecret.expiration" data-ng-change="vm.setModified(apiSecret)" /></td>
                                     <td>{{apiSecret.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{apiSecret.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td><span data-ng-click="vm.toggleDelete(apiSecret)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretDescription" /></td>
-                                    <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretExpiration" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretType" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretValue" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretExpiration" /></td>
                                     <td></td>
                                     <td></td>
                                     <td><span data-ng-click="vm.createNewApiSecret()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.IdentityProvider.IdentityServer.Entities;
+using Rinsen.InnovationBoost.Models;
 
 namespace Rinsen.InnovationBoost.ApiControllers
 {
@@ -46,19 +47,30 @@ namespace Rinsen.InnovationBoost.ApiControllers
             return identityServerApiResource;
         }
 
+        [HttpDelete("{id}", Name = "DeleteApiResource")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult> Delete(string id)
+        {
+            await _identityServerApiResourceBusiness.DeleteIdentityServerApiResourceAsync(id);
+
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [Route("~/IdentityServer/api/[controller]/Create")]
-        public async Task<ActionResult<IdentityServerApiResource>> Create([Required]string name, [Required]string displayName, [Required]string description)
+        public async Task<ActionResult<IdentityServerApiResource>> Create([Required]CreateApiResource createApiResource)
         {
-            await _identityServerApiResourceBusiness.CreateNewApiResource(name, displayName, description);
+            await _identityServerApiResourceBusiness.CreateNewApiResource(createApiResource.Name, createApiResource.DisplayName, createApiResource.Description);
 
-            var identityServerApiResource = await _identityServerApiResourceBusiness.GetIdentityServerApiResourceAsync(name);
+            var identityServerApiResource = await _identityServerApiResourceBusiness.GetIdentityServerApiResourceAsync(createApiResource.Name);
 
             return CreatedAtAction(nameof(GetById),
-               new { id = name }, identityServerApiResource);
+               new { id = createApiResource.Name }, identityServerApiResource);
         }
 
         [HttpPost]

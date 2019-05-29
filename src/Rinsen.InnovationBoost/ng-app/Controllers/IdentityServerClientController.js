@@ -13,6 +13,7 @@
         vm.clients = [];
         vm.selectedClient = null;
         vm.selectedTab = 'General';
+        vm.saving = false;
         vm.create = {
             allowedScope: '',
             allowedCorsOrigin: '',
@@ -25,7 +26,10 @@
             clientSecretExpiration: '',
             identityProviderRestriction: '',
             postLogoutRedirectUri: '',
-            redirectUri: ''
+            redirectUri: '',
+            clientId: '',
+            clientName: '',
+            clientDescription: ''
         };
 
         vm.selectClient = function (client) {
@@ -36,11 +40,15 @@
             for (var i = 0; i < vm.clients.length; i++) {
                 if (vm.clients[i].clientId === vm.selectedClient.clientId) {
                     vm.selectedClient = vm.clients[i];
+
+                    toastr.success("Undo comleted");
                 }
             }
         };
 
         vm.saveClient = function () {
+            vm.saving = true;
+
             identityServerClientService.saveClient(vm.selectedClient)
                 .then(function (saveResponse) {
                     if (saveResponse.status === 200) {
@@ -53,11 +61,60 @@
                                 }
 
                                 vm.selectClient(response.data);
+
+                                toastr.success("Saved");
+                                vm.saving = false;
                             });
                     } else {
                         vm.selectedClient = null;
+
+                        toastr.error("Failed");
+                        vm.saving = false;
                     }
                 });
+        };
+
+        vm.createNewClient = function () {
+            vm.saving = true;
+
+            identityServerClientService.createClient(vm.create.clientId, vm.create.clientName, vm.create.clientDescription)
+                .then(function (saveResponse) {
+                    if (saveResponse.status === 201) {
+                        vm.clients.push(saveResponse.data);
+
+                        toastr.success("Saved");
+                        vm.saving = false;
+
+                        vm.create.clientId = '';
+                        vm.create.clientName = '';
+                        vm.create.clientDescription = '';
+                    }
+                    else {
+                        toastr.error("Failed");
+                        vm.saving = false;
+                    }
+                },
+                    function (response) {
+                        toastr.error("Failed");
+                        vm.saving = false;
+                    });
+        };
+
+        vm.deleteClient = function (client) {
+            if (window.confirm("Delete " + client.clientName)) {
+                identityServerClientService.deleteClient(client.clientId)
+                    .then(function (response) {
+                        if (response.status === 200) {
+                            for (var i = 0; i < vm.clients.length; i++) {
+                                if (vm.clients[i].clientId === client.clientId) {
+                                    vm.clients.splice(i, 1);
+                                }
+                            }
+
+                            toastr.info('Deleted');
+                        }
+                    });
+            }
         };
 
         vm.createNewAllowedCorsOrigin = function () {

@@ -13,6 +13,7 @@
         vm.apiResources = [];
         vm.selectedApiResource = null;
         vm.selectedTab = 'General';
+        vm.saving = false;
         vm.create = {
             apiSecretDescription: '',
             apiSecretExpiration: '',
@@ -27,7 +28,10 @@
             scopeDescription: '',
             scopeRequired: false,
             scopeEmphasize: false,
-            scopeShowInDiscoveryDocument: false
+            scopeShowInDiscoveryDocument: false,
+            apiResourceName: '',
+            apiResourceDisplayName: '',
+            apiResourceDescription: ''
         };
 
         vm.selectApiResource = function (apiResource) {
@@ -38,11 +42,15 @@
             for (var i = 0; i < vm.apiResources.length; i++) {
                 if (vm.apiResources[i].name === vm.selectedApiResource.name) {
                     vm.selectedApiResource = vm.apiResources[i];
+
+                    toastr.success("Undo comleted");
                 }
             }
         };
 
         vm.saveApiResource = function () {
+            vm.saving = true;
+
             identityServerApiResourceService.saveApiResource(vm.selectedApiResource)
                 .then(function (saveResponse) {
                     if (saveResponse.status === 200) {
@@ -55,12 +63,61 @@
                                 }
 
                                 vm.selectApiResource(response.data);
+
+                                toastr.success("Saved");
+                                vm.saving = false;
                             });
                     }
                     else {
                         vm.selectedApiResource = null;
+
+                        toastr.error("Failed");
+                        vm.saving = false;
                     }
                 });
+        };
+
+        vm.createNewApiResource = function () {
+            vm.saving = true;
+
+            identityServerApiResourceService.createApiResource(vm.create.apiResourceName, vm.create.apiResourceDisplayName, vm.create.apiResourceDescription)
+                .then(function (saveResponse) {
+                    if (saveResponse.status === 201) {
+                        vm.apiResources.push(saveResponse.data);
+
+                        toastr.success("Saved");
+                        vm.saving = false;
+
+                        vm.create.apiResourceName = '';
+                        vm.create.apiResourceDisplayName = '';
+                        vm.create.apiResourceDescription = '';
+                    }
+                    else {
+                        toastr.error("Failed");
+                        vm.saving = false;
+                    }
+                },
+                    function (response) {
+                        toastr.error("Failed");
+                        vm.saving = false;
+                    });
+        };
+
+        vm.deleteApiResource = function (apiResource) {
+            if (window.confirm("Delete " + apiResource.displayName)) {
+                identityServerApiResourceService.deleteApiResource(apiResource.name)
+                    .then(function (response) {
+                        if (response.status === 200) {
+                            for (var i = 0; i < vm.apiResources.length; i++) {
+                                if (vm.apiResources[i].name === apiResource.name) {
+                                    vm.apiResources.splice(i, 1);
+                                }
+                            }
+
+                            toastr.info('Deleted');
+                        }
+                    });
+            }
         };
 
         vm.createNewApiSecret = function () {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.IdentityProvider.IdentityServer.Entities;
+using Rinsen.InnovationBoost.Models;
 
 namespace Rinsen.InnovationBoost.ApiControllers
 {
@@ -50,19 +51,30 @@ namespace Rinsen.InnovationBoost.ApiControllers
             return identityServerClient;
         }
 
+        [HttpDelete("{id}", Name = "DeleteClient")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult> Delete(string id)
+        {
+            await _identityServerClientBusiness.DeleteIdentityServerClient(id);
+
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [Route("~/IdentityServer/api/[controller]/Create")]
-        public async Task<ActionResult<IdentityServerClient>> Create([Required]string clientId, [Required]string clientName, [Required]string description)
+        public async Task<ActionResult<IdentityServerClient>> Create([Required]CreateClient createClient)
         {
-            await _identityServerClientBusiness.CreateNewClient(clientId, clientName, description);
+            await _identityServerClientBusiness.CreateNewClient(createClient.ClientId, createClient.ClientName, createClient.Description);
 
-            var client = await _identityServerClientBusiness.GetIdentityServerClient(clientId);
+            var client = await _identityServerClientBusiness.GetIdentityServerClient(createClient.ClientId);
 
             return CreatedAtAction(nameof(GetById),
-               new { id = clientId }, client);
+               new { id = createClient.ClientId }, client);
         }
 
         [HttpPost]

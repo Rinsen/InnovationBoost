@@ -13,11 +13,15 @@
         vm.identityResources = [];
         vm.selectedIdentityResource = null;
         vm.selectedTab = 'General';
+        vm.saving = false;
         vm.create = {
             claimType: '',
             claimValue: '',
             propertyKey: '',
-            propertyValue: ''
+            propertyValue: '',
+            identityResourceName: '',
+            identityResourceDisplayName: '',
+            identityResourceDescription: ''
         };
 
         vm.selectIdentityResource = function (identityResource) {
@@ -28,11 +32,15 @@
             for (var i = 0; i < vm.identityResources.length; i++) {
                 if (vm.identityResources[i].name === vm.selectedIdentityResource.name) {
                     vm.selectedIdentityResource = vm.identityResources[i];
+
+                    toastr.success("Undo comleted");
                 }
             }
         };
 
         vm.saveIdentityResource = function () {
+            vm.saving = true;
+
             identityServerIdentityResourceService.saveIdentityResource(vm.selectedIdentityResource)
                 .then(function (saveResponse) {
                     if (saveResponse.status === 200) {
@@ -45,15 +53,66 @@
                                 }
 
                                 vm.selectIdentityResource(response.data);
+
+                                toastr.success("Saved");
+                                vm.saving = false;
                             });
                     }
                     else {
                         vm.selectedIdentityResource = null;
+
+                        toastr.error("Failed");
+                        vm.saving = false;
                     }
                     
                 });
         };
 
+        vm.createNewIdentityResource = function () {
+            vm.saving = true;
+
+            identityServerIdentityResourceService.createIdentityResource(vm.create.identityResourceName, vm.create.identityResourceDisplayName, vm.create.identityResourceDescription)
+                .then(function (saveResponse) {
+                    if (saveResponse.status === 201) {
+                        vm.identityResources.push(saveResponse.data);
+
+                        toastr.success("Saved");
+                        vm.saving = false;
+
+                        vm.create.identityResourceName = '';
+                        vm.create.identityResourceDisplayName = '';
+                        vm.create.identityResourceDescription = '';
+                    }
+                    else {
+                        toastr.error("Failed");
+                        vm.saving = false;
+                    }
+                },
+                    function (response) {
+                        toastr.error("Failed");
+                        vm.saving = false;
+                    });
+        };
+
+        vm.deleteIdentityResource = function (identityResource) {
+            if (window.confirm("Delete " + identityResource.displayName)) {
+                identityServerIdentityResourceService.deleteIdentityResource(identityResource.name)
+                    .then(function (response) {
+                        if (response.status === 200) {
+                            for (var i = 0; i < vm.identityResources.length; i++) {
+                                if (vm.identityResources[i].name === identityResource.name) {
+                                    vm.identityResources.splice(i, 1);
+                                }
+                            }
+
+                            toastr.info('Deleted');
+                        }
+                    });
+            }
+        };
+
+
+        
         vm.createNewClaim = function () {
             vm.selectedIdentityResource.claims.push({ type: vm.create.claimType, value: vm.create.claimValue, state: 1 });
 

@@ -39,14 +39,25 @@
                     <tr>
                         <th>Name</th>
                         <th>Client Id</th>
+                        <th>Description</th>
                         <th>Active</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr data-ng-repeat="client in vm.clients">
                         <td><a data-ng-click="vm.selectClient(client)">{{client.clientName}}</a></td>
                         <td><span class="text-nowrap">{{client.clientId}}</span></td>
+                        <td><span class="text-nowrap">{{client.description}}</span></td>
                         <td>{{client.enabled}}</td>
+                        <td><span data-ng-click="vm.deleteClient(client)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                    </tr>
+                    <tr>
+                        <td><input class="form-control" type="text" data-ng-model="vm.create.clientId" /></td>
+                        <td><input class="form-control" type="text" data-ng-model="vm.create.clientName" /></td>
+                        <td><input class="form-control" type="text" data-ng-model="vm.create.clientDescription" /></td>
+                        <td></td>
+                        <td><span data-ng-click="vm.createNewClient()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
                     </tr>
                 </tbody>
             </table>
@@ -60,9 +71,9 @@
         </div>
         <div class="row margin-bottom">
             <div class="col-sm-12">
-                <button data-ng-click="vm.saveClient()" class="btn btn-primary">Save</button>
-                <button data-ng-click="vm.undoChanges()" class="btn btn-warning">Undo</button>
-                <button data-ng-click="vm.selectedClient = null" class="btn btn-default">Close</button>
+                <button data-ng-click="vm.saveClient()" class="btn btn-primary" data-ng-disabled="vm.saving">Save</button>
+                <button data-ng-click="vm.undoChanges()" class="btn btn-warning" data-ng-disabled="vm.saving">Undo</button>
+                <button data-ng-click="vm.selectedClient = null" class="btn btn-default" data-ng-disabled="vm.saving">Close</button>
             </div>
         </div>
         <div class="row">

@@ -9,12 +9,19 @@
 
     function IdentityServerApiResourceService($http) {
         var service = {
+            createApiResource: createApiResource,
+            deleteApiResource: deleteApiResource,
             getApiResources: getApiResources,
             saveApiResource: saveApiResource,
             getApiResource: getApiResource
         };
 
         return service;
+
+        function createApiResource(name, displayName, description) {
+            var create = { name: name, displayName: displayName, description: description };
+            return $http.post('api/ApiResource/Create', create);
+        }
 
         function getApiResources() {
             return $http.get('api/ApiResource');
@@ -26,6 +33,10 @@
 
         function getApiResource(clientId) {
             return $http.get('api/ApiResource/' + clientId);
+        }
+
+        function deleteApiResource(clientId) {
+            return $http.delete('api/ApiResource/' + clientId);
         }
     }
 })();

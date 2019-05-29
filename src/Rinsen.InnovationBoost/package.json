@@ -14,6 +14,7 @@
     "angular": "1.7.8",
     "jquery": "3.4.1",
     "isteven-angular-multiselect": "4.0.0",
-    "angular-smart-table": "2.1.11"
+    "angular-smart-table": "2.1.11",
+    "toastr": "2.1.4"
   }
 }

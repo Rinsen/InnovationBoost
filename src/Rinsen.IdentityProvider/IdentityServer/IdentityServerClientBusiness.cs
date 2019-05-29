@@ -106,6 +106,23 @@ namespace Rinsen.IdentityProvider.IdentityServer
             return client;
         }
 
+        public async Task DeleteIdentityServerClient(string clientId)
+        {
+            var client = await _identityServerDbContext.IdentityServerClients
+                .Include(m => m.AllowedCorsOrigins)
+                .Include(m => m.AllowedGrantTypes)
+                .Include(m => m.AllowedScopes)
+                .Include(m => m.Claims)
+                .Include(m => m.ClientSecrets)
+                .Include(m => m.IdentityProviderRestrictions)
+                .Include(m => m.PostLogoutRedirectUris)
+                .Include(m => m.RedirectUris).FirstOrDefaultAsync(m => m.ClientId == clientId);
+
+            _identityServerDbContext.IdentityServerClients.Remove(client);
+
+            await _identityServerDbContext.SaveChangesAsync();
+        }
+
         public Task<List<IdentityServerClient>> GetIdentityServerClients()
         {
             var clients = _identityServerDbContext.IdentityServerClients

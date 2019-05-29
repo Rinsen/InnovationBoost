@@ -59,10 +59,10 @@ namespace Rinsen.IdentityProvider.IdentityServer
             {
                 apiResources.HasKey(m => m.Id);
                 apiResources.Ignore(m => m.State);
-                apiResources.HasMany(m => m.ApiSecrets).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired();
-                apiResources.HasMany(m => m.Claims).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired();
-                apiResources.HasMany(m => m.Scopes).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired();
-                apiResources.HasMany(m => m.Properties).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired();
+                apiResources.HasMany(m => m.ApiSecrets).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                apiResources.HasMany(m => m.Claims).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                apiResources.HasMany(m => m.Scopes).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                apiResources.HasMany(m => m.Properties).WithOne().HasForeignKey(m => m.ApiResourceId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<IdentityServerApiResourceClaim>(apiResourceClaims =>
@@ -103,14 +103,14 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 clients.Property(m => m.AccessTokenType).HasColumnType("tinyint");
                 clients.Property(m => m.RefreshTokenUsage).HasColumnType("tinyint");
                 clients.Property(m => m.RefreshTokenExpiration).HasColumnType("tinyint");
-                clients.HasMany(m => m.Claims).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
-                clients.HasMany(m => m.AllowedCorsOrigins).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
-                clients.HasMany(m => m.AllowedGrantTypes).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
-                clients.HasMany(m => m.AllowedScopes).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
-                clients.HasMany(m => m.ClientSecrets).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
-                clients.HasMany(m => m.IdentityProviderRestrictions).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
-                clients.HasMany(m => m.PostLogoutRedirectUris).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
-                clients.HasMany(m => m.RedirectUris).WithOne().HasForeignKey(m => m.ClientId).IsRequired();
+                clients.HasMany(m => m.Claims).WithOne().HasForeignKey(m => m.ClientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                clients.HasMany(m => m.AllowedCorsOrigins).WithOne().HasForeignKey(m => m.ClientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                clients.HasMany(m => m.AllowedGrantTypes).WithOne().HasForeignKey(m => m.ClientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                clients.HasMany(m => m.AllowedScopes).WithOne().HasForeignKey(m => m.ClientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                clients.HasMany(m => m.ClientSecrets).WithOne().HasForeignKey(m => m.ClientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                clients.HasMany(m => m.IdentityProviderRestrictions).WithOne().HasForeignKey(m => m.ClientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                clients.HasMany(m => m.PostLogoutRedirectUris).WithOne().HasForeignKey(m => m.ClientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                clients.HasMany(m => m.RedirectUris).WithOne().HasForeignKey(m => m.ClientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 clients.Ignore(m => m.State);
             });
 
@@ -166,8 +166,8 @@ namespace Rinsen.IdentityProvider.IdentityServer
             {
                 identityResources.HasKey(m => m.Id);
                 identityResources.Ignore(m => m.State);
-                identityResources.HasMany(m => m.Claims).WithOne().HasForeignKey(m => m.IdentityResourceId).IsRequired();
-                identityResources.HasMany(m => m.Properties).WithOne().HasForeignKey(m => m.IdentityResourceId).IsRequired();
+                identityResources.HasMany(m => m.Claims).WithOne().HasForeignKey(m => m.IdentityResourceId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+                identityResources.HasMany(m => m.Properties).WithOne().HasForeignKey(m => m.IdentityResourceId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<IdentityServerIdentityResourceClaim>(resourceClaims =>

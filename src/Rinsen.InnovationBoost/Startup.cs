@@ -4,8 +4,10 @@ using System.Reflection;
 using System.Security.Cryptography;
 using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,7 +77,15 @@ namespace Rinsen.InnovationBoost
                 options.UseLoggerFactory(_loggerFactory)
                 .UseSqlServer(Configuration["Rinsen:ConnectionString"]));
 
-            services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
+            services.AddMvc(o =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+                o.Filters.Add(new AuthorizeFilter(policy));
+
+            } ).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
         }
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger)

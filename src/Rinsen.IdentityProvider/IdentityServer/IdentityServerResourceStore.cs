@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using Microsoft.Extensions.Logging;
 
 namespace Rinsen.IdentityProvider.IdentityServer
 {
@@ -12,12 +13,15 @@ namespace Rinsen.IdentityProvider.IdentityServer
     {
         private readonly IdentityServerIdentityResourceBusiness _identityServerIdentityResourceBusiness;
         private readonly IdentityServerApiResourceBusiness _identityServerApiResourceBusiness;
+        private readonly ILogger<IdentityServerResourceStore> _logger;
 
         public IdentityServerResourceStore(IdentityServerIdentityResourceBusiness identityServerIdentityResourceBusiness,
-            IdentityServerApiResourceBusiness identityServerApiResourceBustiness)
+            IdentityServerApiResourceBusiness identityServerApiResourceBustiness,
+            ILogger<IdentityServerResourceStore> logger)
         {
             _identityServerIdentityResourceBusiness = identityServerIdentityResourceBusiness;
             _identityServerApiResourceBusiness = identityServerApiResourceBustiness;
+            _logger = logger;
         }
 
         public Task<ApiResource> FindApiResourceAsync(string name)
@@ -25,14 +29,14 @@ namespace Rinsen.IdentityProvider.IdentityServer
             return _identityServerApiResourceBusiness.GetApiResourceAsync(name);
         }
 
-        public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
-            throw new NotImplementedException();
+            return await _identityServerApiResourceBusiness.FindApiResourcesByScopeAsync(scopeNames);
         }
 
-        public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
-            throw new NotImplementedException();
+            return await _identityServerIdentityResourceBusiness.FindIdentityResourcesByScopeAsync(scopeNames);
         }
 
         public async Task<Resources> GetAllResourcesAsync()

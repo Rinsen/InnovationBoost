@@ -2,16 +2,11 @@
     ViewData["Title"] = "Index";
 }
 <div class="container">
-    <h2>Index</h2>
-    @if (User.Identity.IsAuthenticated)
-    {
-        @Html.ActionLink("Show logs", "Index", "Logger")
-    }
-    else
-    {
-        @Html.ActionLink("Login", "Index", "Logger")
-    }
-    
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Hello @User.Identity.Name!</h1>
 
-    
+
+        </div>
+    </div>
 </div>

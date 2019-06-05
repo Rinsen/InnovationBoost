@@ -37,8 +37,8 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
                         <th>Client Id</th>
+                        <th>Name</th>
                         <th>Description</th>
                         <th>Active</th>
                         <th></th>
@@ -46,8 +46,8 @@
                 </thead>
                 <tbody>
                     <tr data-ng-repeat="client in vm.clients">
-                        <td><a data-ng-click="vm.selectClient(client)">{{client.clientName}}</a></td>
-                        <td><span class="text-nowrap">{{client.clientId}}</span></td>
+                        <td><a data-ng-click="vm.selectClient(client)">{{client.clientId}}</a></td>
+                        <td><span class="text-nowrap">{{client.clientName}}</span></td>
                         <td><span class="text-nowrap">{{client.description}}</span></td>
                         <td>{{client.enabled}}</td>
                         <td><span data-ng-click="vm.deleteClient(client)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
@@ -356,6 +356,16 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="col-md-12"><a href="http://docs.identityserver.io/en/latest/topics/grant_types.html">Help</a>
+                                           <ul>
+                                               <li>Implicit = "implicit"</li>
+                                               <li>Hybrid = "hybrid"</li>
+                                               <li>AuthorizationCode = "authorization_code"</li>
+                                               <li>ClientCredentials = "client_credentials"</li>
+                                               <li>ResourceOwnerPassword = "password"</li>
+                                               <li>DeviceFlow = "urn:ietf:params:oauth:grant-type:device_code"</li>
+                                           </ul>
                     </div>
                 </div>
                 <div class="row" data-ng-show="vm.selectedTab === 'Claims'">

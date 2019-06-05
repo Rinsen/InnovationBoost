@@ -1,0 +1,128 @@
+﻿@model Rinsen.InnovationBoost.Models.DeviceConsentModel
+@{
+    ViewData["Title"] = "Index";
+}
+    <div class="container">
+        @if (Model.HasUserCode)
+        {
+            <div class="row page-header">
+                <div class="col-md-12">
+                    <h1>@Model.ClientName <small>is requesting your permission</small></h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @using (Html.BeginForm("Concent", "Device"))
+                    {
+                        <div>Uncheck the permissions you do not wish to grant.</div>
+
+                        @if (Model.IdentityScope.Any())
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h2 class="panel-title"><span class="glyphicon glyphicon-user"></span> Personal Information</h2>
+                                </div>
+                                    <ul class="list-group">
+                                        @foreach (var scope in Model.IdentityScope)
+                                        {
+                                        <li class="list-group-item">
+                                            <div class="checkbox">
+                                                <label>
+                                                    @if (scope.Required)
+                                                    {
+                                                        <input type="checkbox" name="ScopeConcented" id="scope_@scope.Name" value="@scope.Name" checked disabled><strong>@scope.DisplayName</strong><em> (Required)</em>
+                                                        <input type="hidden" name="ScopeConcented" value="@scope.Name" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" name="ScopeConcented" id="scope_@scope.Name" value="@scope.Name" checked><strong>@scope.DisplayName</strong>
+                                                    }
+
+                                                    @if (scope.Emphasize)
+                                                    {
+                                                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                                                    }
+                                                </label>
+                                            </div>
+                                            @if(!string.IsNullOrEmpty(scope.Description))
+                                            {
+                                            <div>
+                                                <label for="scope_@scope.Name">@scope.Description</label>
+                                            </div>
+                                            }
+                                        </li>
+                                        }
+                                    </ul>
+                            </div>
+                        }
+
+                        @if (Model.ResourceScope.Any())
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h2 class="panel-title"><span class="glyphicon glyphicon-tasks"></span> Application Access</h2>
+                                </div>
+                                    <ul class="list-group">
+                                        @foreach (var scope in Model.ResourceScope)
+                                        {
+                                        <li class="list-group-item">
+                                            <div class="checkbox">
+                                                <label>
+                                                    @if (scope.Required)
+                                                    {
+                                                        <input type="checkbox" name="ScopeConcented" id="scope_@scope.Name" value="@scope.Name" checked disabled><strong>@scope.DisplayName</strong><em> (Required)</em>
+                                                        <input type="hidden" name="ScopeConcented" value="@scope.Name"/>
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" name="ScopeConcented" id="scope_@scope.Name" value="@scope.Name" checked><strong>@scope.DisplayName</strong>
+                                                    }
+
+                                                    @if (scope.Emphasize)
+                                                    {
+                                                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                                                    }
+                                                </label>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(scope.Description))
+                                            {
+                                                <div>
+                                                    <label for="scope_@scope.Name">@scope.Description</label>
+                                                </div>
+                                            }
+                                        </li>
+                                        }
+                                    </ul>
+                            </div>
+                        }
+
+                        @if (Model.AllowRememberConsent)
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="RememberConcent" value="yes"><strong>Remember My Decision</strong>
+                                </label>
+                            </div>
+                        }
+
+                        <button name="acceptbutton" value="yes" class="btn btn-primary">Yes, Allow</button>
+                        <button name="acceptbutton" value="no" class="btn btn-default">No, Do Not Allow</button>
+
+                        @Html.HiddenFor(m => m.UserCode)
+                    }
+                </div>
+            </div>
+            
+        }
+        else
+        {
+            <h1>User Code</h1>
+            <p>Please enter the code displayed on your device</p>
+            <form asp-action="Index" method="get">
+                <input for="user_code" name="user_code" />
+                <button class="btn btn-primary" >Submit</button>
+            </form>
+        }
+
+
+    </div>

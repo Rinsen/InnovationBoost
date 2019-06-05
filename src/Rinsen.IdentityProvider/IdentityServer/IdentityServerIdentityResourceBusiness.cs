@@ -46,6 +46,16 @@ namespace Rinsen.IdentityProvider.IdentityServer
             await _identityServerDbContext.SaveChangesAsync();
         }
 
+        public async Task<List<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        {
+            var identityResources = await _identityServerDbContext.IdentityServerIdentityResources
+                .Include(m => m.Claims)
+                .Include(m => m.Properties)
+                .Where(m => scopeNames.Contains(m.Name)).ToListAsync();
+
+            return identityResources.Select(ir => MapIdentityResourcesFromIdentityServerIdentityResources(ir)).ToList(); ;
+        }
+
         public async Task<List<IdentityResource>> GetIdentityResourcesAsync()
         {
             var identityServerIdentityResources = await GetIdentityServerIdentityResourcesAsync();

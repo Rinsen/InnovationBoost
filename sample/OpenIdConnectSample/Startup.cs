@@ -42,8 +42,8 @@ namespace OpenIdConnectSample
             {
                 options.SignInScheme = "Cookies";
                 options.ClientSecret = "secret";
-                options.Authority = "https://localhost:44317/";
-                options.RequireHttpsMetadata = false;
+                options.Authority = "https://innovationboost.azurewebsites.net/";
+                options.RequireHttpsMetadata = true;
 
                 options.ClientId = "mvc";
                 options.SaveTokens = true;

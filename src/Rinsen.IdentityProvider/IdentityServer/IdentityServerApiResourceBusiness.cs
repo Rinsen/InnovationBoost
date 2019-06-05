@@ -40,6 +40,28 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 .FirstOrDefaultAsync(ar => ar.Name == name);
         }
 
+        public async Task<List<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        {
+            var scopes = await _identityServerDbContext.IdentityServerApiResourceScopes.Where(m => scopeNames.Contains(m.Name)).ToListAsync();
+
+            if (scopes.Any())
+            {
+                var ids = scopes.Select(m => m.ApiResourceId).ToArray();
+
+                var identityServerApiResources = await _identityServerDbContext.IdentityServerApiResources
+                .Include(m => m.Scopes)
+                    .ThenInclude(scope => scope.Claims)
+                .Include(m => m.ApiSecrets)
+                .Include(m => m.Claims)
+                .Include(m => m.Properties)
+                .Where(ar => ids.Contains(ar.Id)).ToListAsync();
+
+                return identityServerApiResources.Select(ar => MapApiResourceFromIdentityServerApiResource(ar)).ToList();
+            }
+
+            return new List<ApiResource>();
+        }
+
         public async Task DeleteIdentityServerApiResourceAsync(string name)
         {
             var apiResource = await _identityServerDbContext.IdentityServerApiResources

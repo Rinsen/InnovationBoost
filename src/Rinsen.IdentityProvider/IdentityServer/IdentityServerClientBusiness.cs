@@ -87,6 +87,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
             client.ClientSecrets = identityServerClient.ClientSecrets.Select(s => new Secret { Description = s.Description, Expiration = s.Expiration.HasValue ? s.Expiration.Value.DateTime : (DateTime?)null, Type = s.Type, Value = s.Value }).ToArray();
             client.IdentityProviderRestrictions = identityServerClient.IdentityProviderRestrictions.Select(s => s.Provider).ToArray();
             client.PostLogoutRedirectUris = identityServerClient.PostLogoutRedirectUris.Select(s => s.PostLogoutRedirectUri).ToArray();
+            client.RedirectUris = identityServerClient.RedirectUris.Select(s => s.RedirectUri).ToArray();
 
             return client;
         }
@@ -157,31 +158,6 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 Description = description
             };
 
-            await SaveClient(exampleClient);
-        }
-
-        public async Task CreateTestData()
-        {
-            var exampleClient = new Client
-            {
-                ClientId = "mvc",
-                ClientName = "MVC Client",
-                ClientSecrets = { new Secret("secret".Sha256()) },
-                RequireConsent = false,
-                AllowedGrantTypes = GrantTypes.Implicit,
-
-                // where to redirect to after login
-                RedirectUris = { "https://localhost:44315/signin-oidc" },
-
-                // where to redirect to after logout
-                PostLogoutRedirectUris = { "https://localhost:44315/signout-callback-oidc" },
-
-                AllowedScopes = new List<string>
-                        {
-                            IdentityServerConstants.StandardScopes.OpenId,
-                            IdentityServerConstants.StandardScopes.Profile
-                        }
-            };
             await SaveClient(exampleClient);
         }
 

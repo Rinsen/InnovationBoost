@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ namespace Rinsen.InnovationBoost.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index([FromQuery(Name = "user_code")] string userCode)
+        public async Task<IActionResult> Index([FromQuery]string userCode)
         {
             var deviceConcentModel = new DeviceConsentModel();
 
@@ -106,12 +107,43 @@ namespace Rinsen.InnovationBoost.Controllers
         }
 
         [HttpPost]
-        public IActionResult Concent(DeviceConcentModel deviceConcentModel)
+        public async Task<IActionResult> Concent(DeviceConcentModel deviceConcentModel)
         {
+            var request = await _deviceFlowInteractionService.GetAuthorizationContextAsync(deviceConcentModel.UserCode);
+
+            if (request == null)
+            {
+                _logger.LogError("Request not found for user code: {0}", deviceConcentModel.UserCode);
+
+                return View("Error");
+            }
+
+            if (deviceConcentModel.AcceptButton == "no")
+            {
+                await _deviceFlowInteractionService.HandleRequestAsync(deviceConcentModel.UserCode, ConsentResponse.Denied);
+
+                return View("Denied");
+            }
+            else if (deviceConcentModel.AcceptButton == "yes")
+            {
+                var concentResponse = new ConsentResponse
+                {
+                    RememberConsent = deviceConcentModel.RememberConcent == "yes",
+                    ScopesConsented = deviceConcentModel.ScopeConcented.ToArray()
+                };
+
+                await _deviceFlowInteractionService.HandleRequestAsync(deviceConcentModel.UserCode, concentResponse);
+            }
+            else
+            {
+                _logger.LogError("Invalid accept found for user code: {0}", deviceConcentModel.UserCode);
+
+                return View("Error");
+            }
 
 
 
-            return View();
+            return View("Success");
         }
 
     }

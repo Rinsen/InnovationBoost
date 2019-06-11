@@ -4,12 +4,10 @@ using System.Text;
 using Rinsen.DatabaseInstaller;
 using Rinsen.IdentityProvider.IdentityServer.Entities;
 
-namespace Rinsen.IdentityProvider.Installation.IdentityServer
+namespace Rinsen.InnovationBoost.Installation.IdentityServer
 {
     public class IdentityServerTableInstallation : DatabaseVersion
     {
-        // https://id4withclients.readthedocs.io/en/latest/id4/ID4Database/DatabaseDiagramID4.html
-
         public IdentityServerTableInstallation() 
             : base(1)
         {

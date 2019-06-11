@@ -53,6 +53,8 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         public DbSet<IdentityServerPersistedGrant> IdentityServerPersistedGrants { get; set; }
 
+        public DbSet<IdentityServerDeviceFlowCode> IdentityServerDeviceFlowCodes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IdentityServerApiResource>(apiResources =>
@@ -186,6 +188,11 @@ namespace Rinsen.IdentityProvider.IdentityServer
             {
                 persistedGrants.HasKey(m => m.Id);
                 persistedGrants.Ignore(m => m.State);
+            });
+
+            modelBuilder.Entity<IdentityServerDeviceFlowCode>(deviceCode =>
+            {
+                deviceCode.HasKey(m => m.Id);
             });
 
         }

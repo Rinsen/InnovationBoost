@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Security.Cryptography;
-using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -12,14 +10,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Rinsen.DatabaseInstaller;
 using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.IdentityServer;
-using Rinsen.IdentityProvider.Installation.IdentityServer;
+using Rinsen.InnovationBoost.Installation.IdentityServer;
 using Rinsen.InnovationBoost.Installation;
 using Rinsen.Messaging;
 using Swashbuckle.AspNetCore.Swagger;
@@ -103,6 +100,7 @@ namespace Rinsen.InnovationBoost
                     options.DatabaseVersions.Add(new CreateTables());
                     options.DatabaseVersions.Add(new CreateSettingsTable());
                     options.DatabaseVersions.Add(new IdentityServerTableInstallation());
+                    options.DatabaseVersions.Add(new IdentityServerDeviceFlowCodesAdded());
                 });
 
                 // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -155,7 +153,8 @@ namespace Rinsen.InnovationBoost
             identityServerBuilder
                 .AddClientStore<IdentityServiceClientStore>()
                 .AddResourceStore<IdentityServerResourceStore>()
-                .AddPersistedGrantStore<IdentityServerPersistedGrantStore>();
+                .AddPersistedGrantStore<IdentityServerPersistedGrantStore>()
+                .AddDeviceFlowStore<IdentityServerDeviceFlowStore>();
         }
 
         private void AddSigningCredentials(IIdentityServerBuilder identityServerBuilder)

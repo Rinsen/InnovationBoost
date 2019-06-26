@@ -43,13 +43,14 @@ namespace Rinsen.Logger
 #endif
                 httpClient.SetBearerToken(tokenResponse.AccessToken);
 
-                var serializedLogs = JsonConvert.SerializeObject(logReport);
+                var serializedLogs = JsonConvert.SerializeObject(logReport.LogItems);
                 var stringContent = new StringContent(serializedLogs, Encoding.UTF8, "application/json");
                 using (var result = await httpClient.PostAsync($"{_options.LogServiceUri}api/Logging", stringContent))
                 {
                     result.EnsureSuccessStatusCode();
                     var result2 = await result.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<bool>(result2);
+
+                    return true;
                 }
             }
         }

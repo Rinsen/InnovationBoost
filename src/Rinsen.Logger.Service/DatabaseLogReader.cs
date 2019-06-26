@@ -100,53 +100,6 @@ namespace Rinsen.Logger.Service
             return results;
         }
 
-        //public async Task<Dictionary<string, int>> GetLogEnvironmentIdAsync()
-        //{
-        //    var results = new Dictionary<string, int>();
-
-        //    using (var connection = new SqlConnection(_options.ConnectionString))
-        //    using (var command = new SqlCommand("SELECT Id, Name FROM LogEnvironments", connection))
-        //    {
-        //        await connection.OpenAsync();
-        //        using (var reader = await command.ExecuteReaderAsync())
-        //        {
-        //            if (reader.HasRows)
-        //            {
-        //                while (await reader.ReadAsync())
-        //                {
-        //                    results.Add((string)reader["Name"], (int)reader["Id"]);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return results;
-        //}
-        
-        //public async Task<Dictionary<string, int>> GetLogSourceIdsAsync()
-        //{
-        //    var results = new Dictionary<string, int>();
-
-        //    using (var connection = new SqlConnection(_options.ConnectionString))
-        //    using (var command = new SqlCommand("SELECT Id, Name FROM LogSources", connection))
-        //    {
-        //        await connection.OpenAsync();
-        //        using (var reader = await command.ExecuteReaderAsync())
-        //        {
-        //            if (reader.HasRows)
-        //            {
-        //                while (await reader.ReadAsync())
-        //                {
-        //                    results.Add((string)reader["Name"], (int)reader["Id"]);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return results;
-        //}
-
-        
         public async Task<LogApplication> GetLogApplicationAsync(string applicationId)
         {
             using (var connection = new SqlConnection(_options.ConnectionString))
@@ -194,7 +147,7 @@ namespace Rinsen.Logger.Service
                             logs.Add(new LogView
                             {
                                 Id = (int)reader["Id"],
-                                ApplicationName = (string)reader["ExtName"],
+                                ApplicationName = (string)reader["DisplayName"],
                                 EnvironmentName = (string)reader["EnvironmentName"],
                                 LogLevel = (LogLevel)Enum.Parse(typeof(LogLevel), reader["LogLevel"].ToString()),
                                 LogProperties = JsonConvert.DeserializeObject<IEnumerable<LogProperty>>((string)reader["LogProperties"]),
@@ -223,11 +176,11 @@ namespace Rinsen.Logger.Service
                                                         Logs.MessageFormat,
                                                         Logs.RequestId,
                                                         Logs.Timestamp,
-                                                        ExtApp.Name AS ExtName,
+                                                        App.DisplayName AS DisplayName,
                                                         Env.Name AS EnvironmentName,
 														Src.Name AS SourceName
 	                                                FROM Logs
-                                                        JOIN ExternalApplications ExtApp ON Logs.ApplicationId = ExtApp.Id
+                                                        JOIN LogApplications App ON Logs.ApplicationId = App.Id
                                                         JOIN LogEnvironments Env ON Logs.EnvironmentId = Env.Id
 														JOIN LogSources Src ON Logs.SourceId = Src.Id
                                                     WHERE Logs.Timestamp > @from 

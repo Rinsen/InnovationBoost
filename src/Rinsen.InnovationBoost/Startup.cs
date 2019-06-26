@@ -85,11 +85,35 @@ namespace Rinsen.InnovationBoost
                 {
                     options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]));
                     options.LoginPath = "/Identity/Login";
+
+                    options.ForwardDefaultSelector = ctx =>
+                    {
+                        if (ctx.Request.Path.StartsWithSegments("/api"))
+                        {
+                            return "Bearer";
+                        }
+                        else
+                        {
+                            return "Cookies";
+                        }
+                    };
                 })
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = Configuration["Rinsen:InnovationBoost"];
                     options.Audience = Configuration["Rinsen:Audience"];
+
+                    options.ForwardDefaultSelector = ctx =>
+                    {
+                        if (ctx.Request.Path.StartsWithSegments("/api"))
+                        {
+                            return "Bearer";
+                        }
+                        else
+                        {
+                            return "Cookies";
+                        }
+                    };
                 });
             
             services.AddRinsenMessaging();

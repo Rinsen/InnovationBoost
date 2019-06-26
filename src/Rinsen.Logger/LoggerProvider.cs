@@ -71,7 +71,7 @@ namespace Rinsen.Logger
                 }
                 catch (Exception e)
                 {
-                    _logQueue.AddLogs(logs);
+                    //_logQueue.AddLogs(logs);
 
                     CreateLogger(GetType().FullName).LogError(e, "Failed to send log report");
                 }

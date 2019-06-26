@@ -28,6 +28,11 @@ namespace Rinsen.InnovationBoost
                     logging
                         .AddFilter("Microsoft", LogLevel.Warning)
                         //.AddFilter("Microsoft.EntityFrameworkCore.Database.Command")
+#if DEBUG
+                        .AddFilter("IdentityServer4", LogLevel.Information)
+#else
+                        .AddFilter("IdentityServer4", LogLevel.Warning)
+#endif
                         .AddFilter("System", LogLevel.Warning)
                         .AddFilter("Rinsen", LogLevel.Information)
                         .AddLoggerService(hostingContext.Configuration, hostingContext.HostingEnvironment.EnvironmentName);

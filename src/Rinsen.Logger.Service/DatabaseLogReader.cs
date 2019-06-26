@@ -45,29 +45,6 @@ namespace Rinsen.Logger.Service
             return results;
         }
 
-        public async Task<Dictionary<string, int>> GetLogEnvironmentIdsAsync()
-        {
-            var results = new Dictionary<string, int>();
-
-            using (var connection = new SqlConnection(_options.ConnectionString))
-            using (var command = new SqlCommand("SELECT Id, Name FROM LogEnvironments", connection))
-            {
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            results.Add((string)reader["Name"], (int)reader["Id"]);
-                        }
-                    }
-                }
-            }
-
-            return results;
-        }
-
         public async Task<List<LogSource>> GetLogSourcesAsync()
         {
             var results = new List<LogSource>();
@@ -95,12 +72,12 @@ namespace Rinsen.Logger.Service
             return results;
         }
 
-        public async Task<Dictionary<string, int>> GetLogSourceIdsAsync()
+        public async Task<List<LogApplication>> GetLogApplicationsAsync()
         {
-            var results = new Dictionary<string, int>();
+            var results = new List<LogApplication>();
 
             using (var connection = new SqlConnection(_options.ConnectionString))
-            using (var command = new SqlCommand("SELECT Id, Name FROM LogSources", connection))
+            using (var command = new SqlCommand("SELECT Id, ApplicationId, DisplayName FROM LogApplications", connection))
             {
                 await connection.OpenAsync();
                 using (var reader = await command.ExecuteReaderAsync())
@@ -109,13 +86,92 @@ namespace Rinsen.Logger.Service
                     {
                         while (await reader.ReadAsync())
                         {
-                            results.Add((string)reader["Name"], (int)reader["Id"]);
+                            results.Add(new LogApplication
+                            {
+                                Id = (int)reader["Id"],
+                                ApplicationId = (string)reader["ApplicationId"],
+                                DisplayName = (string)reader["DisplayName"]
+                            });
                         }
                     }
                 }
             }
 
             return results;
+        }
+
+        //public async Task<Dictionary<string, int>> GetLogEnvironmentIdAsync()
+        //{
+        //    var results = new Dictionary<string, int>();
+
+        //    using (var connection = new SqlConnection(_options.ConnectionString))
+        //    using (var command = new SqlCommand("SELECT Id, Name FROM LogEnvironments", connection))
+        //    {
+        //        await connection.OpenAsync();
+        //        using (var reader = await command.ExecuteReaderAsync())
+        //        {
+        //            if (reader.HasRows)
+        //            {
+        //                while (await reader.ReadAsync())
+        //                {
+        //                    results.Add((string)reader["Name"], (int)reader["Id"]);
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    return results;
+        //}
+        
+        //public async Task<Dictionary<string, int>> GetLogSourceIdsAsync()
+        //{
+        //    var results = new Dictionary<string, int>();
+
+        //    using (var connection = new SqlConnection(_options.ConnectionString))
+        //    using (var command = new SqlCommand("SELECT Id, Name FROM LogSources", connection))
+        //    {
+        //        await connection.OpenAsync();
+        //        using (var reader = await command.ExecuteReaderAsync())
+        //        {
+        //            if (reader.HasRows)
+        //            {
+        //                while (await reader.ReadAsync())
+        //                {
+        //                    results.Add((string)reader["Name"], (int)reader["Id"]);
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    return results;
+        //}
+
+        
+        public async Task<LogApplication> GetLogApplicationAsync(string applicationId)
+        {
+            using (var connection = new SqlConnection(_options.ConnectionString))
+            using (var command = new SqlCommand("SELECT Id, ApplicationId, DisplayName FROM LogApplications WHERE ApplicationId = @applicationId", connection))
+            {
+                command.Parameters.Add(new SqlParameter("applicationId", applicationId));
+
+                await connection.OpenAsync();
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (reader.HasRows)
+                    {
+                        await reader.ReadAsync();
+
+                        return new LogApplication
+                        {
+                            Id = (int)reader["Id"],
+                            ApplicationId = (string)reader["ApplicationId"],
+                            DisplayName = (string)reader["DisplayName"]
+                        };
+                    }
+
+                    return default;
+                }
+            }
         }
 
         public async Task<IEnumerable<LogView>> GetLogsAsync(DateTimeOffset from, DateTimeOffset to, IEnumerable<int> logApplications, IEnumerable<int> logEnvironments, IEnumerable<int> logSources, IEnumerable<int> logLevels, int take = 10000)

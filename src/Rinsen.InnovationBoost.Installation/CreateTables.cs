@@ -88,24 +88,7 @@ namespace Rinsen.InnovationBoost.Installation
             externalSessionsTable.AddColumn(m => m.ExternalApplicationId).ForeignKey<ExternalApplication>(m => m.ExternalApplicationId);
 
 
-            var logSource = dbChangeList.AddNewTable<LogSource>();
-            logSource.AddAutoIncrementColumn(m => m.Id);
-            logSource.AddColumn(m => m.Name, 100).Unique().NotNull();
-
-            var logEnvironmentTable = dbChangeList.AddNewTable<LogEnvironment>();
-            logEnvironmentTable.AddAutoIncrementColumn(m => m.Id);
-            logEnvironmentTable.AddColumn(m => m.Name, 100).Unique().NotNull();
-
-            var logsTable = dbChangeList.AddNewTable<Log>();
-            logsTable.AddAutoIncrementColumn(m => m.Id);
-            logsTable.AddColumn(m => m.ApplicationId).NotNull().ForeignKey<ExternalApplication>(m => m.Id);
-            logsTable.AddColumn(m => m.EnvironmentId).NotNull().ForeignKey<LogEnvironment>(m => m.Id);
-            logsTable.AddColumn(m => m.SourceId).NotNull().ForeignKey<LogSource>(m => m.Id);
-            logsTable.AddColumn(m => m.RequestId, 100).NotNull();
-            logsTable.AddIntColumn("LogLevel").NotNull();
-            logsTable.AddColumn(m => m.MessageFormat).NotNull();
-            logsTable.AddColumn("LogProperties", new NVarChar()).NotNull();
-            logsTable.AddColumn(m => m.Timestamp).NotNull();
+            
 
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Rinsen.Logger.Service
@@ -7,7 +8,6 @@ namespace Rinsen.Logger.Service
     {
         private readonly ILogReader _logReader;
         private readonly ILogWriter _logWriter;
-        private Dictionary<string, int> _logSourceIds = new Dictionary<string, int>();
 
         public SourceHandler(ILogReader logReader,
             ILogWriter logWriter)
@@ -16,26 +16,28 @@ namespace Rinsen.Logger.Service
             _logWriter = logWriter;
         }
 
-        public async Task<int> GetSourceIdAsync(string sourceName)
+        public async Task<Dictionary<string, int>> GetSourceIdsAsync(IEnumerable<string> sourceNames)
         {
-            if (_logSourceIds.ContainsKey(sourceName))
-                return _logSourceIds[sourceName];
+            var logSources = await _logReader.GetLogSourcesAsync();
 
-            return await GetOrCreateSourceIdAsync(sourceName);
-        }
+            var logSourcesDictionary = new Dictionary<string, int>();
 
-        private async Task<int> GetOrCreateSourceIdAsync(string sourceName)
-        {
-            _logSourceIds = await _logReader.GetLogSourceIdsAsync();
-            
-            if (_logSourceIds.ContainsKey(sourceName))
-                return _logSourceIds[sourceName];
+            foreach (var logSource in logSources)
+            {
+                logSourcesDictionary.Add(logSource.Name, logSource.Id);
+            }
 
-            var logSource = await _logWriter.CreateLogSourceAsync(sourceName);
+            foreach (var name in sourceNames)
+            {
+                if (!logSourcesDictionary.ContainsKey(name))
+                {
+                    var logEnvironment = await _logWriter.CreateLogSourceAsync(name);
 
-            _logSourceIds.Add(sourceName, logSource.Id);
+                    logSourcesDictionary.Add(logEnvironment.Name, logEnvironment.Id);
+                }
+            }
 
-            return logSource.Id;
+            return logSourcesDictionary;
         }
     }
 }

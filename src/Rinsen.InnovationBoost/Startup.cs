@@ -20,6 +20,7 @@ using Rinsen.InnovationBoost.Installation.IdentityServer;
 using Rinsen.InnovationBoost.Installation;
 using Rinsen.Messaging;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Collections.Generic;
 
 namespace Rinsen.InnovationBoost
 {
@@ -43,10 +44,31 @@ namespace Rinsen.InnovationBoost
             {
                 services.AddDatabaseInstaller(Configuration["Rinsen:ConnectionString"]);
 
+                //// Register the Swagger generator, defining 1 or more Swagger documents
+                //services.AddSwaggerGen(c =>
+                //{
+                //    c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                //});
+
                 // Register the Swagger generator, defining 1 or more Swagger documents
                 services.AddSwaggerGen(c =>
                 {
                     c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+
+                    // Swagger 2.+ support
+                    var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[] { }},
+                };
+
+                    c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                    {
+                        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                        Name = "Authorization",
+                        In = "header",
+                        Type = "apiKey"
+                    });
+                    c.AddSecurityRequirement(security);
                 });
             }
             services.AddRinsenIdentity(options => options.ConnectionString = Configuration["Rinsen:ConnectionString"]);
@@ -63,8 +85,13 @@ namespace Rinsen.InnovationBoost
                 {
                     options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]));
                     options.LoginPath = "/Identity/Login";
+                })
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = Configuration["Rinsen:InnovationBoost"];
+                    options.Audience = Configuration["Rinsen:Audience"];
                 });
-
+            
             services.AddRinsenMessaging();
 
             services.AddDbContext<MessageDbContext>(options =>
@@ -101,6 +128,7 @@ namespace Rinsen.InnovationBoost
                     options.DatabaseVersions.Add(new CreateSettingsTable());
                     options.DatabaseVersions.Add(new IdentityServerTableInstallation());
                     options.DatabaseVersions.Add(new IdentityServerDeviceFlowCodesAdded());
+                    options.DatabaseVersions.Add(new CreateLogTables());
                 });
 
                 // Enable middleware to serve generated Swagger as a JSON endpoint.

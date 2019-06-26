@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
 
-        public string ApplicationKey { get; set; }
+        public string ApplicationId { get; set; }
 
-        public string ApplicationName { get; set; }
+        public string DisplayName { get; set; }
 
 
     }

@@ -20,26 +20,16 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly ILogWriter _logWriter;
         private readonly LogHandler _logHandler;
         private readonly ISettingsManager _settingsManager;
-        private readonly IExternalApplicationStorage _externalApplicationStorage;
 
         public LoggerController(ILogReader logReader,
             ILogWriter logWriter,
             LogHandler logHandler,
-            IExternalApplicationStorage externalApplicationStorage,
             ISettingsManager settingsManager)
         {
             _logReader = logReader;
             _logWriter = logWriter;
             _logHandler = logHandler;
-            _externalApplicationStorage = externalApplicationStorage;
             _settingsManager = settingsManager;
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public Task<bool> Report([FromBody]LogReport logReport)
-        {
-            return _logHandler.CreateLogs(logReport);
         }
 
         public async Task<IActionResult> Index()
@@ -87,9 +77,9 @@ namespace Rinsen.InnovationBoost.Controllers
 
         private async Task<IEnumerable<SelectionLogApplication>> GetLogApplications()
         {
-            return (await _externalApplicationStorage.GetAllAsync()).Select(la =>
+            return (await _logReader.GetLogApplicationsAsync()).Select(la =>
             {
-                return new SelectionLogApplication { Id = la.Id, Name = la.Name };
+                return new SelectionLogApplication { Id = la.Id, Name = la.DisplayName };
             });
         }
 

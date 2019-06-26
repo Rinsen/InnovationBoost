@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Rinsen.Logger.Service
 {
     public interface ILogEnvironmentHandler
     {
-        Task<int> GetLogEnvironmentIdAsync(string environmentName);
+        Task<Dictionary<string, int>> GetLogEnvironmentIdsAsync(IEnumerable<string> environmentName);
     }
 }

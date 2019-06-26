@@ -37,6 +37,7 @@ namespace Rinsen.Logger.Service
             loggingBuilder.Services.AddScoped<ILogWriter, DatabaseLogWriter>();
             loggingBuilder.Services.AddScoped<LogHandler, LogHandler>();
             loggingBuilder.Services.AddScoped<ILogEnvironmentHandler, LogEnvironmentHandler>();
+            loggingBuilder.Services.AddScoped<ILogApplicationHandler, LogApplicationHandler>();
             loggingBuilder.Services.AddScoped<ISourceHandler, SourceHandler>();
             loggingBuilder.Services.AddScoped<ISettingsManager, SettingsManager>();
             loggingBuilder.Services.AddScoped<ISettingsStorage, SettingsStorage>();

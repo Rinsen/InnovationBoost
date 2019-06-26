@@ -7,6 +7,6 @@ namespace Rinsen.Logger.Service
 {
     public interface ISourceHandler
     {
-        Task<int> GetSourceIdAsync(string sourceName);
+        Task<Dictionary<string, int>> GetSourceIdsAsync(IEnumerable<string> sourceNames);
     }
 }

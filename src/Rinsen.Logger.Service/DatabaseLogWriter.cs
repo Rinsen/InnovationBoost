@@ -14,6 +14,34 @@ namespace Rinsen.Logger.Service
             _options = options;
         }
 
+        public async Task<LogApplication> CreateLogApplicationAsync(string applicationId, string displayName)
+        {
+            string insertSql = @"INSERT INTO LogApplications (
+                                    ApplicationId, DisplayName) 
+                                 VALUES (
+                                    @applicationId, @displayName);
+                                 SELECT 
+                                    CAST(SCOPE_IDENTITY() as int)";
+
+
+            using (var connection = new SqlConnection(_options.ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(insertSql, connection))
+                {
+                    command.Parameters.Add(new SqlParameter("@applicationId", applicationId));
+                    command.Parameters.Add(new SqlParameter("@displayName", displayName));
+
+                    return new LogApplication
+                    {
+                        Id = (int)await command.ExecuteScalarAsync(),
+                        ApplicationId = applicationId,
+                        DisplayName = displayName
+                    };
+                }
+            }
+        }
+
         public async Task<LogEnvironment> CreateLogEnvironmentAsync(string environmentName)
         {
             string insertSql = @"INSERT INTO LogEnvironments (
@@ -26,7 +54,7 @@ namespace Rinsen.Logger.Service
 
             using (var connection = new SqlConnection(_options.ConnectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 using (var command = new SqlCommand(insertSql, connection))
                 {
                     command.Parameters.Add(new SqlParameter("@Name", environmentName));
@@ -51,7 +79,7 @@ namespace Rinsen.Logger.Service
 
             using (var connection = new SqlConnection(_options.ConnectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 using (var command = new SqlCommand(insertSql, connection))
                 {
                     command.Parameters.Add(new SqlParameter("@Name", sourceName));
@@ -90,7 +118,7 @@ namespace Rinsen.Logger.Service
 
             using (var connection = new SqlConnection(_options.ConnectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 foreach (var item in logs)
                 {
                     using (var command = new SqlCommand(insertSql, connection))

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Rinsen.Logger.Service
@@ -7,7 +8,6 @@ namespace Rinsen.Logger.Service
     {
         private readonly ILogReader _logReader;
         private readonly ILogWriter _logWriter;
-        private Dictionary<string, int> _logEnvironmentIds = new Dictionary<string, int>();
 
         public LogEnvironmentHandler(ILogReader logReader,
             ILogWriter logWriter)
@@ -16,26 +16,28 @@ namespace Rinsen.Logger.Service
             _logWriter = logWriter;
         }
 
-        public async Task<int> GetLogEnvironmentIdAsync(string environmentName)
+        public async Task<Dictionary<string, int>> GetLogEnvironmentIdsAsync(IEnumerable<string> environmentNames)
         {
-            if (_logEnvironmentIds.ContainsKey(environmentName))
-                return _logEnvironmentIds[environmentName];
+            var logEnvironments = await _logReader.GetLogEnvironmentsAsync();
 
-            return await GetOrCreateLogEnvironmentIdAsync(environmentName);
-        }
+            var logEnvironmentsDictionary = new Dictionary<string, int>();
 
-        private async Task<int> GetOrCreateLogEnvironmentIdAsync(string sourceName)
-        {
-            _logEnvironmentIds = await _logReader.GetLogEnvironmentIdsAsync();
+            foreach (var logEnvironment in logEnvironments)
+            {
+                logEnvironmentsDictionary.Add(logEnvironment.Name, logEnvironment.Id);
+            }
 
-            if (_logEnvironmentIds.ContainsKey(sourceName))
-                return _logEnvironmentIds[sourceName];
+            foreach (var name in environmentNames)
+            {
+                if (!logEnvironmentsDictionary.ContainsKey(name))
+                {
+                    var logEnvironment = await _logWriter.CreateLogEnvironmentAsync(name);
 
-            var logSource = await _logWriter.CreateLogEnvironmentAsync(sourceName);
+                    logEnvironmentsDictionary.Add(logEnvironment.Name, logEnvironment.Id);
+                }
+            }
 
-            _logEnvironmentIds.Add(sourceName, logSource.Id);
-
-            return logSource.Id;
+            return logEnvironmentsDictionary;
         }
     }
 }

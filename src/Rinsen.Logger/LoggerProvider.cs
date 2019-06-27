@@ -35,9 +35,9 @@ namespace Rinsen.Logger
 
         public void Dispose()
         {
-            _cancellationTokenSource?.Dispose();
-
             StopProcessing();
+
+            _cancellationTokenSource?.Dispose();
         }
 
         private void StopProcessing()
@@ -60,19 +60,17 @@ namespace Rinsen.Logger
         {
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
-                IEnumerable<LogItem> logs = null;
+                
                 try
                 {
-                    logs = _logQueue.GetReportedLogs();
+                    var logs = _logQueue.GetReportedLogs();
                     if (logs.Any())
                     {
-                        var result = await _logServiceClient.ReportAsync(new LogReport { ApplicationKey = _options.ApplicationLogKey, LogItems = logs });
+                        await _logServiceClient.ReportAsync(logs);
                     }
                 }
                 catch (Exception e)
                 {
-                    //_logQueue.AddLogs(logs);
-
                     CreateLogger(GetType().FullName).LogError(e, "Failed to send log report");
                 }
 

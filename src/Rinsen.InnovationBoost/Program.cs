@@ -24,18 +24,27 @@ namespace Rinsen.InnovationBoost
                 })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
-                    logging.AddConsole();
-                    logging
-                        .AddFilter("Microsoft", LogLevel.Warning)
-                        //.AddFilter("Microsoft.EntityFrameworkCore.Database.Command")
-#if DEBUG
-                        .AddFilter("IdentityServer4", LogLevel.Information)
-#else
-                        .AddFilter("IdentityServer4", LogLevel.Warning)
-#endif
-                        .AddFilter("System", LogLevel.Warning)
-                        .AddFilter("Rinsen", LogLevel.Information)
-                        .AddLoggerService(hostingContext.Configuration, hostingContext.HostingEnvironment.EnvironmentName);
+                    var env = hostingContext.HostingEnvironment;
+                    if (env.IsDevelopment())
+                    {
+                        logging.AddFilter("Microsoft", LogLevel.Warning)
+                                .AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Information)
+                                .AddFilter("IdentityServer4", LogLevel.Information)
+                                .AddFilter("IdentityServer4", LogLevel.Warning)
+                                .AddFilter("System", LogLevel.Warning)
+                                .AddFilter("Rinsen", LogLevel.Information).AddConsole()
+                                .AddLoggerService(hostingContext.Configuration, hostingContext.HostingEnvironment.EnvironmentName);
+                                
+                    }
+                    else
+                    {
+                        logging.AddFilter("Microsoft", LogLevel.Warning)
+                                .AddFilter("IdentityServer4", LogLevel.Information)
+                                .AddFilter("IdentityServer4", LogLevel.Warning)
+                                .AddFilter("System", LogLevel.Warning)
+                                .AddFilter("Rinsen", LogLevel.Information)
+                                .AddLoggerService(hostingContext.Configuration, hostingContext.HostingEnvironment.EnvironmentName);
+                    }
                 })
                 .UseStartup<Startup>()
                 .Build();

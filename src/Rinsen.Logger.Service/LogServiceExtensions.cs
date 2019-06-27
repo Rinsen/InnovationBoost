@@ -9,7 +9,7 @@ namespace Rinsen.Logger.Service
 {
     public static class LogServiceExtensions
     {
-        public static void AddLoggerService(this ILoggingBuilder loggingBuilder, IConfiguration configuration, string environmentName)
+        public static ILoggingBuilder AddLoggerService(this ILoggingBuilder loggingBuilder, IConfiguration configuration, string environmentName)
         {
             loggingBuilder.AddLoggerService(options =>
             {
@@ -18,6 +18,8 @@ namespace Rinsen.Logger.Service
                 options.ConnectionString = configuration["Rinsen:ConnectionString"];
                 options.EnvironmentName = environmentName;
             });
+
+            return loggingBuilder;
         }
 
         public static void AddLoggerService(this ILoggingBuilder loggingBuilder, Action<LogServiceOptions> logServiceOptionsAction)

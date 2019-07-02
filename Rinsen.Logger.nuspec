@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Rinsen.Logger</id>
-    <version>0.2.11-beta</version>
+    <version>0.2.12-beta</version>
     <title>Logger Asp.Net Core</title>
     <authors>Fredrik Rinsén</authors>
     <owners>Fredrik Rinsén</owners>
@@ -21,12 +21,8 @@
     <tags>logger aspnetcore rinsen</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="2.0.0" />
-        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="2.0.0" />
-        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="2.0.0" />
+        <dependency id="IdentityModel" version="2.2.0" />
         <dependency id="Microsoft.Extensions.Logging"  version="2.0.0" />
-        <dependency id="Newtonsoft.Json" version="10.0.3" />
-        <dependency id="System.Data.SqlClient" version="4.4.0" />
       </group>
     </dependencies>
   </metadata>

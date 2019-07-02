@@ -13,7 +13,8 @@
             deleteClient: deleteClient,
             getClients: getClients,
             saveClient: saveClient,
-            getClient: getClient
+            getClient: getClient,
+            getRandomString: getRandomString
         };
 
         return service;
@@ -25,6 +26,10 @@
 
         function getClients() {
             return $http.get('api/Client');
+        }
+
+        function getRandomString(count) {
+            return $http.get('api/Random/' + count);
         }
 
         function saveClient(client) {

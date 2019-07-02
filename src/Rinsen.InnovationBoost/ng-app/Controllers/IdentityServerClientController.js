@@ -20,8 +20,7 @@
             allowedGrantType: '',
             claimType: '',
             claimValue: '',
-            clientSecretType: '',
-            clientSecretValue: '',
+            clientSecretType: 'SharedSecret',
             clientSecretDescription: '',
             clientSecretExpiration: '',
             identityProviderRestriction: '',
@@ -143,12 +142,16 @@
         };
 
         vm.createNewClientSecret = function () {
-            vm.selectedClient.clientSecrets.push({ type: vm.create.clientSecretType, value: vm.create.clientSecretValue, description: vm.create.clientSecretDescription, expiration: vm.create.clientSecretExpiration, state: 1 });
+            identityServerClientService.getRandomString(40)
+                .then(function (response) {
+                    vm.selectedClient.clientSecrets.push({ type: vm.create.clientSecretType, value: response.data, description: vm.create.clientSecretDescription, expiration: vm.create.clientSecretExpiration, state: 1 });
 
-            vm.create.clientSecretType = '';
-            vm.create.clientSecretValue = '';
-            vm.create.clientSecretDescription = '';
-            vm.create.clientSecretExpiration = '';
+                    vm.create.clientSecretType = 'SharedSecret';
+                    vm.create.clientSecretDescription = '';
+                    vm.create.clientSecretExpiration = '';
+                });
+
+            
         };
 
         vm.createNewIdentityProviderRestriction = function () {

@@ -1,13 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using IdentityServer4.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Rinsen.IdentityProvider.Core;
-using Rinsen.IdentityProvider.IdentityServer;
-using Rinsen.IdentityProvider.IdentityServer.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Rinsen.InnovationBoost.Controllers
 {

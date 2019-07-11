@@ -30,7 +30,6 @@ namespace Rinsen.InnovationBoost
                         logging.AddFilter("Microsoft", LogLevel.Warning)
                                 .AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Information)
                                 .AddFilter("IdentityServer4", LogLevel.Information)
-                                .AddFilter("IdentityServer4", LogLevel.Warning)
                                 .AddFilter("System", LogLevel.Warning)
                                 .AddFilter("Rinsen", LogLevel.Information).AddConsole()
                                 .AddLoggerService(hostingContext.Configuration, hostingContext.HostingEnvironment.EnvironmentName);
@@ -39,7 +38,6 @@ namespace Rinsen.InnovationBoost
                     else
                     {
                         logging.AddFilter("Microsoft", LogLevel.Warning)
-                                .AddFilter("IdentityServer4", LogLevel.Information)
                                 .AddFilter("IdentityServer4", LogLevel.Warning)
                                 .AddFilter("System", LogLevel.Warning)
                                 .AddFilter("Rinsen", LogLevel.Information)

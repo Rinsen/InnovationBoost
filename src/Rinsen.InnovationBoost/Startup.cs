@@ -44,12 +44,6 @@ namespace Rinsen.InnovationBoost
             {
                 services.AddDatabaseInstaller(Configuration["Rinsen:ConnectionString"]);
 
-                //// Register the Swagger generator, defining 1 or more Swagger documents
-                //services.AddSwaggerGen(c =>
-                //{
-                //    c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
-                //});
-
                 // Register the Swagger generator, defining 1 or more Swagger documents
                 services.AddSwaggerGen(c =>
                 {
@@ -138,9 +132,6 @@ namespace Rinsen.InnovationBoost
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
         {
-            var a = new IdentityServerTableInstallation();
-            var script = a.UpCommands;
-
             if (_env.IsDevelopment())
             {
                 //app.UseBrowserLink();

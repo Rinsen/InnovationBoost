@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoginAndLogging", "sample\L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdConnectSample", "sample\OpenIdConnectSample\OpenIdConnectSample.csproj", "{25EC882B-26AD-416D-8729-37B0F4998BA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingSample", "sample\LoggingSample\LoggingSample.csproj", "{043BCD4B-2C52-42F5-9FD3-AF516F059FCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{25EC882B-26AD-416D-8729-37B0F4998BA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25EC882B-26AD-416D-8729-37B0F4998BA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25EC882B-26AD-416D-8729-37B0F4998BA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,6 +113,7 @@ Global
 		{2B8F6027-B862-4B0C-A199-AA461346076F} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{0DFC8BF6-B4BA-4ACF-8EC4-C5BAE3C774DB} = {F783FC19-6629-4B4C-B319-6F52963522BB}
 		{25EC882B-26AD-416D-8729-37B0F4998BA8} = {F783FC19-6629-4B4C-B319-6F52963522BB}
+		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF} = {F783FC19-6629-4B4C-B319-6F52963522BB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E647C73B-6B19-4B4F-97EC-8D3ECE787B91}

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Rinsen.Logger</id>
-    <version>0.2.12-beta</version>
+    <version>0.2.14-beta</version>
     <title>Logger Asp.Net Core</title>
     <authors>Fredrik Rinsén</authors>
     <owners>Fredrik Rinsén</owners>
@@ -21,14 +21,14 @@
     <tags>logger aspnetcore rinsen</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="IdentityModel" version="2.2.0" />
+        <dependency id="IdentityModel" version="3.10.10" />
         <dependency id="Microsoft.Extensions.Logging"  version="2.0.0" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="\src\Rinsen.Logger\bin\Release\netstandard2.0\Rinsen.Logger.dll" target="lib\netstandard2.0" />
-    <file src="\src\Rinsen.Logger\bin\Release\netstandard2.0\Rinsen.Logger.pdb" target="lib\netstandard2.0" />
-    <file src="\src\Rinsen.Logger\bin\Release\netstandard2.0\Rinsen.Logger.deps.json" target="lib\netstandard2.0" />
+    <file src="C:\Users\fredr\Source\Repos\InnovationBoost\src\Rinsen.Logger\bin\Release\netstandard2.0\Rinsen.Logger.dll" target="lib\netstandard2.0" />
+    <file src="C:\Users\fredr\Source\Repos\InnovationBoost\src\Rinsen.Logger\bin\Release\netstandard2.0\Rinsen.Logger.pdb" target="lib\netstandard2.0" />
+    <file src="C:\Users\fredr\Source\Repos\InnovationBoost\src\Rinsen.Logger\bin\Release\netstandard2.0\Rinsen.Logger.deps.json" target="lib\netstandard2.0" />
   </files>
 </package>

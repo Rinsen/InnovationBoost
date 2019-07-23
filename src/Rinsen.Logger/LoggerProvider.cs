@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ namespace Rinsen.Logger
         private readonly ILogQueue _logQueue;
         private readonly ILogServiceClient _logServiceClient;
         private readonly LogOptions _options;
-
         private CancellationTokenSource _cancellationTokenSource;
         private Task _logHandlerTask;
 
@@ -70,7 +70,10 @@ namespace Rinsen.Logger
                 }
                 catch (Exception e)
                 {
-                    CreateLogger(GetType().FullName).LogError(e, "Failed to send log report");
+                    if (Debugger.IsAttached)
+                    {
+                        Debug.WriteLine($"{e.Message}, {e.StackTrace}");
+                    }
                 }
 
                 await Task.Delay(_options.TimeToSleepBetweenBatches, _cancellationTokenSource.Token);

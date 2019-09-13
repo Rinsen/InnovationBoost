@@ -55,6 +55,8 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         public DbSet<IdentityServerDeviceFlowCode> IdentityServerDeviceFlowCodes { get; set; }
 
+        public DbSet<IdentityServerClientType> IdentityServerClientTypes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IdentityServerApiResource>(apiResources =>
@@ -193,6 +195,12 @@ namespace Rinsen.IdentityProvider.IdentityServer
             modelBuilder.Entity<IdentityServerDeviceFlowCode>(deviceCode =>
             {
                 deviceCode.HasKey(m => m.Id);
+            });
+
+            modelBuilder.Entity<IdentityServerClientType>(clientType =>
+            {
+                clientType.HasKey(m => m.Id);
+                clientType.Ignore(m => m.State);
             });
 
         }

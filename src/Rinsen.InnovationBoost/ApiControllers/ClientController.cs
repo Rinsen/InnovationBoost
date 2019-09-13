@@ -62,6 +62,30 @@ namespace Rinsen.InnovationBoost.ApiControllers
             return Ok();
         }
 
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        [Route("~/IdentityServer/api/[controller]/Type")]
+        public async Task<ActionResult<List<IdentityServerClientType>>> GetAllClientTypes()
+        {
+            var identityServerClientTypes = await _identityServerClientBusiness.GetAllClientTypes();
+
+            return identityServerClientTypes;
+        }
+
+        [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [Route("~/IdentityServer/api/[controller]/Type/Create")]
+        public async Task<ActionResult> CreateType([Required]CreateClientType createClientType)
+        {
+            await _identityServerClientBusiness.CreateNewClientType(createClientType.DisplayName);
+
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]

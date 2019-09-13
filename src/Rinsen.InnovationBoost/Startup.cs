@@ -144,6 +144,7 @@ namespace Rinsen.InnovationBoost
                     options.DatabaseVersions.Add(new IdentityServerTableInstallation());
                     options.DatabaseVersions.Add(new IdentityServerDeviceFlowCodesAdded());
                     options.DatabaseVersions.Add(new CreateLogTables());
+                    options.DatabaseVersions.Add(new IdentityServerClientTypeTableAdded());
                 });
 
                 // Enable middleware to serve generated Swagger as a JSON endpoint.

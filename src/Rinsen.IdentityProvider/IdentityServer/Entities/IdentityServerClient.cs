@@ -82,6 +82,8 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
         
         public bool AllowRememberConsent { get; set; }
 
+        public int? ClientTypeId { get; set; }
+
         public DateTimeOffset Created { get; set; }
 
         public DateTimeOffset Updated { get; set; }

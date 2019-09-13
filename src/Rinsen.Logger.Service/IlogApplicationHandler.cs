@@ -4,6 +4,6 @@ namespace Rinsen.Logger.Service
 {
     public interface ILogApplicationHandler
     {
-        Task<LogApplication> GetLogApplicationAsync(string logApplicationName);
+        Task<LogApplication> GetLogApplicationAsync(string applicationId, string displayName);
     }
 }

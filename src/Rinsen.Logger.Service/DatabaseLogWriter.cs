@@ -92,6 +92,27 @@ namespace Rinsen.Logger.Service
             }
         }
 
+        public async Task UpdateLogApplicationAsync(LogApplication logApplication)
+        {
+            string insertSql = @"UPDATE LogApplications
+                                    SET DisplayName = @displayName
+                                 WHERE
+                                    Id = @id";
+
+
+            using (var connection = new SqlConnection(_options.ConnectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(insertSql, connection))
+                {
+                    command.Parameters.Add(new SqlParameter("@id", logApplication.Id));
+                    command.Parameters.Add(new SqlParameter("@displayName", logApplication.DisplayName));
+
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
         public async Task WriteLogsAsync(IEnumerable<Log> logs)
         {
             string insertSql = @"

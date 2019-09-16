@@ -12,6 +12,7 @@
             createClient: createClient,
             deleteClient: deleteClient,
             getClients: getClients,
+            getClientTypes: getClientTypes,
             saveClient: saveClient,
             getClient: getClient,
             getRandomString: getRandomString
@@ -22,6 +23,10 @@
         function createClient(clientId, clientName, description) {
             var create = { clientId: clientId, clientName: clientName, description: description };
             return $http.post('api/Client/Create', create);
+        }
+
+        function getClientTypes() {
+            return $http.get('api/Client/Type');
         }
 
         function getClients() {

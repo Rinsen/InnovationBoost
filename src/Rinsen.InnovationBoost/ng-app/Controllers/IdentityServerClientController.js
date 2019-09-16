@@ -11,6 +11,7 @@
         /* jshint validthis:true */
         var vm = this;
         vm.clients = [];
+        vm.types = [];
         vm.selectedClient = null;
         vm.selectedTab = 'General';
         vm.saving = false;
@@ -203,15 +204,31 @@
         activate();
 
         function activate() {
-            identityServerClientService.getClients().then(function (response) {
-                vm.clients.length = 0;
-
-                response.data.forEach(function (client) {
-                    vm.clients.push(client);
+            identityServerClientService.getClientTypes().then(function (typeResponse) {
+                typeResponse.data.forEach(function (type) {
+                    vm.types.push(type);
                 });
 
-            });
+                identityServerClientService.getClients().then(function (clientResponse) {
+                    vm.clients.length = 0;
 
+                    clientResponse.data.forEach(function (client) {
+                        client.clientTypeName = '';
+
+                        if (client.clientTypeId !== undefined) {
+                            vm.types.forEach(function (type) {
+                                if (type.id === client.clientTypeId) {
+                                    client.clientTypeName = type.name;
+                                }
+                            });
+                        }
+                        vm.clients.push(client);
+                    });
+
+                });
+            });
         }
     }
 })();
+
+

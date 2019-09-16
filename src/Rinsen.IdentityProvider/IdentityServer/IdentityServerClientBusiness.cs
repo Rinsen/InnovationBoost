@@ -83,12 +83,12 @@ namespace Rinsen.IdentityProvider.IdentityServer
             client.AllowedCorsOrigins = identityServerClient.AllowedCorsOrigins.Select(aco => aco.Origin).ToArray();
             client.AllowedGrantTypes= identityServerClient.AllowedGrantTypes.Select(agt => agt.GrantType ).ToArray();
             client.AllowedScopes = identityServerClient.AllowedScopes.Select(s => s.Scope).ToArray();
-            client.Claims = identityServerClient.Claims.Select(s => new Claim(s.Type, s.Value, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider)).ToArray();
             client.ClientSecrets = identityServerClient.ClientSecrets.Select(s => new Secret { Description = s.Description, Expiration = s.Expiration.HasValue ? s.Expiration.Value.DateTime : (DateTime?)null, Type = s.Type, Value = s.Value }).ToArray();
             client.IdentityProviderRestrictions = identityServerClient.IdentityProviderRestrictions.Select(s => s.Provider).ToArray();
             client.PostLogoutRedirectUris = identityServerClient.PostLogoutRedirectUris.Select(s => s.PostLogoutRedirectUri).ToArray();
             client.RedirectUris = identityServerClient.RedirectUris.Select(s => s.RedirectUri).ToArray();
 
+            client.Claims = identityServerClient.Claims.Select(s => new Claim(s.Type, s.Value, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider)).ToList();
             client.Claims.Add(new Claim("name", identityServerClient.ClientName, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider));
 
             return client;

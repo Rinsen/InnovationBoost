@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider;
+using Rinsen.IdentityProvider.AuditLogging;
 using Rinsen.IdentityProvider.Contracts;
 using Rinsen.IdentityProvider.Contracts.v1;
 using Rinsen.IdentityProvider.Core;
@@ -23,18 +24,21 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly IIdentityService _identityService;
         private readonly ILocalAccountService _localAccountService;
         private readonly IIdentityAttributeStorage _identityAttributeStorage;
+        private readonly AuditLog _auditLog;
 
         public IdentityController(ILoginService loginService,
             IExternalApplicationService externalApplicationService,
             IIdentityService identityService,
             ILocalAccountService localAccountService,
-            IIdentityAttributeStorage identityAttributeStorage)
+            IIdentityAttributeStorage identityAttributeStorage,
+            AuditLog auditLog)
         {
             _loginService = loginService;
             _externalApplicationService = externalApplicationService;
             _identityService = identityService;
             _localAccountService = localAccountService;
             _identityAttributeStorage = identityAttributeStorage;
+            _auditLog = auditLog;
         }
 
         [HttpGet] 
@@ -49,6 +53,8 @@ namespace Rinsen.InnovationBoost.Controllers
                 {
                     if (!Url.IsLocalUrl(model.ReturnUrl))
                     {
+                        await _auditLog.Log("InvalidReturnUrl", $"Return Url '{model.ReturnUrl}'", HttpContext.Connection.RemoteIpAddress.ToString());
+
                         throw new UnauthorizedAccessException($"Only local redirects is allowed");
                     }
 
@@ -72,6 +78,8 @@ namespace Rinsen.InnovationBoost.Controllers
 
                 if (result.Succeeded)
                 {
+                    await _auditLog.Log("LoginSuccess", $"Email '{model.Email}'", HttpContext.Connection.RemoteIpAddress.ToString());
+
                     // Set loged in user to the one just created as this only will be provided at next request by the framework
                     HttpContext.User = result.Principal;
 
@@ -79,6 +87,8 @@ namespace Rinsen.InnovationBoost.Controllers
                     {
                         if (!Url.IsLocalUrl(model.ReturnUrl))
                         {
+                            await _auditLog.Log("InvalidReturnUrl", $"Email '{model.Email}', Return Url '{model.ReturnUrl}'", HttpContext.Connection.RemoteIpAddress.ToString());
+
                             throw new UnauthorizedAccessException($"Only local redirects is allowed");
                         }
 
@@ -89,6 +99,8 @@ namespace Rinsen.InnovationBoost.Controllers
                 }
                 else
                 {
+                    await _auditLog.Log("InvalidLoginAttempt", $"Email '{model.Email}'", HttpContext.Connection.RemoteIpAddress.ToString());
+
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 }
 
@@ -118,6 +130,8 @@ namespace Rinsen.InnovationBoost.Controllers
 
                 if (createIdentityResult.Succeeded)
                 {
+                    await _auditLog.Log("IdentityCreated", $"Email '{model.Email}', ", HttpContext.Connection.RemoteIpAddress.ToString());
+
                     var createLocalAccountResult = await _localAccountService.CreateAsync(createIdentityResult.Identity.IdentityId, model.Email, model.Password);
 
                     if (createLocalAccountResult.Succeeded)
@@ -130,6 +144,8 @@ namespace Rinsen.InnovationBoost.Controllers
                         }
                     }
                 }
+
+                await _auditLog.Log("FailedToCreateIdentity", $"Email '{model.Email}', ", HttpContext.Connection.RemoteIpAddress.ToString());
 
                 ModelState.AddModelError(string.Empty, "Create user invalid.");
             }

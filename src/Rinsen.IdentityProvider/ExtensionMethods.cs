@@ -4,6 +4,7 @@ using Rinsen.IdentityProvider.LocalAccounts;
 using Rinsen.IdentityProvider.Core;
 using System;
 using Rinsen.IdentityProvider.IdentityServer;
+using Rinsen.IdentityProvider.AuditLogging;
 
 namespace Rinsen.IdentityProvider
 {
@@ -33,6 +34,8 @@ namespace Rinsen.IdentityProvider
             services.AddTransient<IdentityServerClientBusiness, IdentityServerClientBusiness>();
             services.AddTransient<IdentityServerApiResourceBusiness, IdentityServerApiResourceBusiness>();
             services.AddTransient<IdentityServerIdentityResourceBusiness, IdentityServerIdentityResourceBusiness>();
+            services.AddScoped<AuditLog, AuditLog>();
+            services.AddScoped<AuditLogStorage, AuditLogStorage>();
 
             services.AddRinsenAuthentication();
         }

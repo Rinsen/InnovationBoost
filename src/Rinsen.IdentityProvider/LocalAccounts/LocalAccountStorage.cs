@@ -95,7 +95,7 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                         command.Parameters.Add(new SqlParameter("@PasswordSalt", localAccount.PasswordSalt));
                         command.Parameters.Add(new SqlParameter("@Updated", localAccount.Updated));
 
-                        connection.Open();
+                        await connection.OpenAsync();
 
                         localAccount.Id = (int)await command.ExecuteScalarAsync();
                     }
@@ -125,20 +125,22 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                 using (var command = new SqlCommand(_selectWithLoginId, connection))
                 {
                     command.Parameters.Add(new SqlParameter("@LoginId", loginId));
-                    connection.Open();
-                    var reader = await command.ExecuteReaderAsync();
 
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
+                    { 
+                        if (reader.HasRows)
                         {
-                            return MapLocalAccountFromReader(reader);
+                            while (await reader.ReadAsync())
+                            {
+                                return MapLocalAccountFromReader(reader);
+                            }
                         }
                     }
                 }
             }
 
-            return default(LocalAccount);
+            return default;
         }
 
         public async Task<LocalAccount> GetAsync(Guid identityId)
@@ -148,20 +150,22 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                 using (var command = new SqlCommand(_selectWithIdentityId, connection))
                 {
                     command.Parameters.Add(new SqlParameter("@IdentityId", identityId));
-                    connection.Open();
-                    var reader = await command.ExecuteReaderAsync();
 
-                    if (reader.HasRows)
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        if (reader.HasRows)
                         {
-                            return MapLocalAccountFromReader(reader);
+                            while (await reader.ReadAsync())
+                            {
+                                return MapLocalAccountFromReader(reader);
+                            }
                         }
                     }
                 }
             }
 
-            return default(LocalAccount);
+            return default;
         }
 
         private LocalAccount MapLocalAccountFromReader(SqlDataReader reader)

@@ -10,6 +10,8 @@
     function IdentityServerClientService($http) {
         var service = {
             createClient: createClient,
+            createNodeClient: createNodeClient,
+            createWebsiteClient: createWebsiteClient,
             deleteClient: deleteClient,
             getClients: getClients,
             getClientTypes: getClientTypes,
@@ -23,6 +25,16 @@
         function createClient(clientId, clientName, description) {
             var create = { clientId: clientId, clientName: clientName, description: description };
             return $http.post('api/Client/Create', create);
+        }
+
+        function createNodeClient(clientName, description) {
+            var create = { clientName: clientName, description: description };
+            return $http.post('api/Client/CreateNode', create);
+        }
+
+        function createWebsiteClient(clientName, description) {
+            var create = { clientName: clientName, description: description };
+            return $http.post('api/Client/CreateWebsite', create);
         }
 
         function getClientTypes() {

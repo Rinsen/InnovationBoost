@@ -78,18 +78,6 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        [Route("~/IdentityServer/api/[controller]/Type/Create")]
-        public async Task<ActionResult> CreateType([Required]CreateClientType createClientType)
-        {
-            await _identityServerClientBusiness.CreateNewClientType(createClientType.DisplayName);
-
-            return Ok();
-        }
-
-        [HttpPost]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
         [Route("~/IdentityServer/api/[controller]/Create")]
         public async Task<ActionResult<IdentityServerClient>> Create([Required]CreateClient createClient)
         {
@@ -99,6 +87,36 @@ namespace Rinsen.InnovationBoost.ApiControllers
 
             return CreatedAtAction(nameof(GetById),
                new { id = createClient.ClientId }, client);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [Route("~/IdentityServer/api/[controller]/CreateNode")]
+        public async Task<ActionResult<IdentityServerClient>> CreateNode([Required]CreateTypedClient createClient)
+        {
+            var clientId = await _identityServerClientBusiness.CreateNewTypedClient(createClient.ClientName, createClient.Description, "Node");
+
+            var client = await _identityServerClientBusiness.GetIdentityServerClient(clientId);
+
+            return CreatedAtAction(nameof(GetById),
+               new { id = clientId }, client);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [Route("~/IdentityServer/api/[controller]/CreateWebsite")]
+        public async Task<ActionResult<IdentityServerClient>> CreateWebsite([Required]CreateTypedClient createClient)
+        {
+            var clientId = await _identityServerClientBusiness.CreateNewTypedClient(createClient.ClientName, createClient.Description, "Website");
+
+            var client = await _identityServerClientBusiness.GetIdentityServerClient(clientId);
+
+            return CreatedAtAction(nameof(GetById),
+               new { id = clientId }, client);
         }
 
         [HttpPost]

@@ -94,13 +94,6 @@ namespace Rinsen.IdentityProvider.IdentityServer
             return client;
         }
 
-        public async Task CreateNewClientType(string displayName)
-        {
-            await _identityServerDbContext.IdentityServerClientTypes.AddAsync(new IdentityServerClientType { Created = DateTimeOffset.Now, Name = displayName, Updated = DateTimeOffset.Now });
-
-            await _identityServerDbContext.SaveChangesAsync();
-        }
-
         public Task<List<IdentityServerClientType>> GetAllClientTypes()
         {
             var clientTypes = _identityServerDbContext.IdentityServerClientTypes.ToListAsync();
@@ -177,7 +170,43 @@ namespace Rinsen.IdentityProvider.IdentityServer
             await SaveClient(exampleClient);
         }
 
-        private async Task SaveClient(Client clientToCreate)
+        public async Task<string> CreateNewTypedClient(string clientName, string description, string typeName)
+        {
+            var exampleClient = new Client
+            {
+                ClientId = Guid.NewGuid().ToString(),
+                ClientName = clientName,
+                Description = description
+            };
+            var id = await GetClientTypeId(typeName);
+
+            await SaveClient(exampleClient, id);
+
+            return exampleClient.ClientId;
+        }
+
+        private async Task<int> GetClientTypeId(string typeName)
+        {
+            var identityServerClientType = await _identityServerDbContext.IdentityServerClientTypes.FirstOrDefaultAsync(m => m.Name == typeName);
+
+            if (identityServerClientType == default)
+            {
+                identityServerClientType = new IdentityServerClientType
+                {
+                    Created = DateTimeOffset.Now,
+                    Name = typeName,
+                    Updated = DateTimeOffset.Now
+                };
+
+                await _identityServerDbContext.IdentityServerClientTypes.AddAsync(identityServerClientType);
+
+                await _identityServerDbContext.SaveChangesAsync();
+            }
+
+            return identityServerClientType.Id;
+        }
+
+        private async Task SaveClient(Client clientToCreate, int? typeId = default)
         {
             var client = new IdentityServerClient
             {
@@ -201,6 +230,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 ClientId = clientToCreate.ClientId,
                 ClientName = clientToCreate.ClientName,
                 ClientSecrets = new List<IdentityServerClientSecret>(),
+                ClientTypeId = typeId,
                 ClientUri = clientToCreate.ClientUri,
                 ConsentLifetime = clientToCreate.ConsentLifetime,
                 Description = clientToCreate.Description,
@@ -225,7 +255,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 SlidingRefreshTokenLifetime = clientToCreate.SlidingRefreshTokenLifetime,
                 UpdateAccessTokenClaimsOnRefresh = clientToCreate.UpdateAccessTokenClaimsOnRefresh,
                 UserCodeType = clientToCreate.UserCodeType,
-                UserSsoLifetime = clientToCreate.UserSsoLifetime
+                UserSsoLifetime = clientToCreate.UserSsoLifetime,
             };
 
             client.AllowedCorsOrigins.AddRange(clientToCreate.AllowedCorsOrigins.Select(aco => new IdentityServerClientCorsOrigin { Origin = aco }));

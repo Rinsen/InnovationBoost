@@ -32,11 +32,10 @@
     }
 </style>
 <div class="container-fluid ng-cloak" data-ng-controller="IdentityServerClientController as vm">
-    <div data-ng-hide="vm.selectedClient !== null">
+    <div data-ng-hide="vm.selectedClient !== null || vm.create.active === true">
         <div class="row">
             <div class="col-sm-12">
-                <button class="btn btn-default" type="button" data-ng-click="vm.createNewWebSite()">Create Website</button>
-                <button class="btn btn-default" type="button" data-ng-click="vm.createNewNode()">Create Node</button>
+                <button class="btn btn-default" type="button" data-ng-click="vm.create.active = true">Create Client</button>
             </div>
         </div>
         <div class="row">
@@ -52,15 +51,76 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr data-ng-repeat="client in vm.clients" data-ng-click="vm.selectClient(client)" style="cursor:pointer">
-                            <td><span class="text-nowrap">{{client.clientName}}</span></td>
-                            <td><span class="text-nowrap">{{client.description}}</span></td>
-                            <td>{{client.clientTypeName}}</td>
-                            <td>{{client.enabled}}</td>
+                        <tr data-ng-repeat="client in vm.clients" style="cursor:pointer">
+                            <td><span class="text-nowrap" data-ng-click="vm.selectClient(client)">{{client.clientName}}</span></td>
+                            <td><span class="text-nowrap" data-ng-click="vm.selectClient(client)">{{client.description}}</span></td>
+                            <td data-ng-click="vm.selectClient(client)">{{client.clientTypeName}}</td>
+                            <td data-ng-click="vm.selectClient(client)">{{client.enabled}}</td>
                             <td><span data-ng-click="vm.deleteClient(client)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+    <div data-ng-if="vm.create.active === true">
+        <div class="row margin-bottom">
+            <div class="col-sm-12">
+                <button data-ng-click="vm.create.active = false" class="btn btn-default" data-ng-disabled="vm.saving">Cancel</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <form>
+                    
+                    <div class="form-group">
+                        <label for="clientName">Client Name</label>
+                        <input type="text" class="form-control" id="clientName" data-ng-model="vm.create.clientName">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientDescription">Description</label>
+                        <input type="text" class="form-control" id="clientDescription" data-ng-model="vm.create.clientDescription">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Node Client</h3>
+                    </div>
+                    <div class="panel-body">
+                        <button class="btn btn-default" type="button" data-ng-click="vm.createNewNodeClient()">Create</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Website Client</h3>
+                    </div>
+                    <div class="panel-body">
+                        
+                        <button class="btn btn-default" type="button" data-ng-click="vm.createNewWebsiteClient()">Create</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Unknown Client Type</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="clientName">Client Id</label>
+                                <input type="text" class="form-control" id="clientId" data-ng-model="vm.create.clientId">
+                            </div>
+                        </form>
+                        <button class="btn btn-default" type="button" data-ng-click="vm.create.active = true">Create</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -69,7 +129,9 @@
             <div class="col-sm-12">
                 <button data-ng-click="vm.saveClient()" class="btn btn-primary" data-ng-disabled="vm.saving">Save</button>
                 <button data-ng-click="vm.undoChanges()" class="btn btn-warning" data-ng-disabled="vm.saving">Undo</button>
-                <button data-ng-click="vm.selectedClient = null" class="btn btn-default" data-ng-disabled="vm.saving">Close</button>
+                <button data-ng-click="vm.closeEdit()" class="btn btn-default" data-ng-disabled="vm.saving">Close</button>
+                <button data-ng-click="vm.selectPreviousClient()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-backward"></span>Previous</button>
+                <button data-ng-click="vm.selectNextClient()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-forward"></span>Next</button>
             </div>
         </div>
         <div class="row">
@@ -83,7 +145,6 @@
                     <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'General'}"><a data-ng-click="vm.selectedTab = 'General'">General</a></li>
                     <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedCorsOrigins'}"><a data-ng-click="vm.selectedTab = 'AllowedCorsOrigins'">Allowed Cors Origins</a></li>
                     <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedScopes'}"><a data-ng-click="vm.selectedTab = 'AllowedScopes'">Allowed Scopes</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedScopesUx'}"><a data-ng-click="vm.selectedTab = 'AllowedScopesUx'">Allowed Scopes Ux</a></li>
                     <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedGrants'}"><a data-ng-click="vm.selectedTab = 'AllowedGrants'">Allowed Grants</a></li>
                     <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Claims'}"><a data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
                     <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'ClientSecrets'}"><a data-ng-click="vm.selectedTab = 'ClientSecrets'">Client Secrets</a></li>
@@ -313,34 +374,6 @@
                     </div>
                 </div>
                 <div class="row" data-ng-show="vm.selectedTab === 'AllowedScopes'">
-                    <div class="col-sm-12">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Scope</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr data-ng-repeat="allowedScope in vm.selectedClient.allowedScopes" data-ng-class="{'new-item': allowedScope.state == 1, 'updated-item': allowedScope.state == 2, 'deleted-item': allowedScope.state == 3 || allowedScope.state == 4 }">
-                                    <td><input class="form-control" type="text" data-ng-model="allowedScope.scope" data-ng-change="vm.setModified(allowedScope)" /></td>
-                                    <td>{{allowedScope.created | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td>{{allowedScope.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(allowedScope)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
-                                </tr>
-                                <tr>
-                                    <td><input class="form-control" type="text" data-ng-model="vm.create.allowedScope" /></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><span data-ng-click="vm.createNewAllowedScope()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="row" data-ng-show="vm.selectedTab === 'AllowedScopesUx'">
                     <div class="col-sm-12">
                         <h2>Check the scopes you wish to grant.</h2>
                         <div class="panel panel-default">

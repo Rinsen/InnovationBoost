@@ -15,10 +15,11 @@
         vm.apiResources = [];
         vm.identityResources = [];
         vm.selectedClient = null;
+        vm.selectedClientIndex = null;
         vm.selectedTab = 'General';
         vm.saving = false;
         vm.create = {
-            allowedScope: '',
+            active: false,
             allowedCorsOrigin: '',
             allowedGrantType: '',
             claimType: '',
@@ -35,15 +36,23 @@
         };
 
         vm.selectClient = function (client) {
+            for (var i = 0; i < vm.clients.length; i++) {
+                if (client.id === vm.clients[i].id) {
+                    vm.selectedClientIndex = i;
+                }
+            }
+
             vm.selectedClient = JSON.parse(JSON.stringify(client));
 
             vm.apiResources.forEach(function (apiResource) {
                 apiResource.scopes.forEach(function (scope) {
                     scope.selected = false;
+                    scope.previousState = 'notSelected';
 
                     vm.selectedClient.allowedScopes.forEach(function (allowedScope) {
                         if (scope.name === allowedScope.scope) {
                             scope.selected = true;
+                            scope.previousState = allowedScope.state;
                         }
                     });
                 });
@@ -51,13 +60,47 @@
 
             vm.identityResources.forEach(function (identityResource) {
                 identityResource.selected = false;
+                identityResource.previousState = 'notSelected';
 
                 vm.selectedClient.allowedScopes.forEach(function (allowedScope) {
                     if (identityResource.name === allowedScope.scope) {
                         identityResource.selected = true;
+                        identityResource.previousState = allowedScope.state;
                     }
                 });
             });
+        };
+
+        vm.selectPreviousClient = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            if (vm.selectedClientIndex > 0) {
+                vm.selectedClientIndex--;
+                var client = vm.clients[vm.selectedClientIndex];
+                vm.selectClient(client);
+            }
+        };
+
+        vm.selectNextClient = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            if (vm.selectedClientIndex < vm.clients.length - 1) {
+                vm.selectedClientIndex++;
+                var client = vm.clients[vm.selectedClientIndex];
+                vm.selectClient(client);
+            }
+        };
+
+        vm.closeEdit = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            vm.selectedClient = null;
         };
 
         vm.undoChanges = function () {
@@ -73,16 +116,44 @@
         vm.saveClient = function () {
             vm.saving = true;
 
+            vm.apiResources.forEach(function (apiResource) {
+                apiResource.scopes.forEach(function (scope) {
+                    if (scope.selected && scope.previousState === 'notSelected') { // new selection
+
+                        vm.selectedClient.allowedScopes.push({ scope: scope.name, state: 1 });
+                    }
+                    else if (!scope.selected && scope.previousState === 0) { // removed selection
+                        vm.selectedClient.allowedScopes.forEach(function (allowedScope) {
+                            if (scope.name === allowedScope.scope) {
+                                allowedScope.state = 3;
+                            }
+                        });
+                    }
+                });
+            });
+
+            vm.identityResources.forEach(function (identityResource) {
+                if (identityResource.selected && identityResource.previousState === 'notSelected') { // new selection
+
+                    vm.selectedClient.allowedScopes.push({ scope: identityResource.name, state: 1 });
+                }
+                else if (!identityResource.selected && identityResource.previousState === 0) { // removed selection
+                    vm.selectedClient.allowedScopes.forEach(function (allowedScope) {
+                        if (identityResource.name === allowedScope.scope) {
+                            allowedScope.state = 3;
+                        }
+                    });
+                }
+            });
+
             identityServerClientService.saveClient(vm.selectedClient)
                 .then(function (saveResponse) {
                     if (saveResponse.status === 200) {
                         identityServerClientService.getClient(vm.selectedClient.clientId).
                             then(function (response) {
-                                for (var i = 0; i < vm.clients.length; i++) {
-                                    if (vm.clients[i].clientId === vm.selectedClient.clientId) {
-                                        vm.clients[i] = response.data;
-                                    }
-                                }
+                                var client = response.data;
+
+                                addClientToClientsList(client, true);
 
                                 vm.selectClient(response.data);
 
@@ -98,32 +169,50 @@
                 });
         };
 
-        vm.createNewClient = function () {
+        vm.createNewNodeClient = function () {
             vm.saving = true;
 
-            identityServerClientService.createClient(vm.create.clientId, vm.create.clientName, vm.create.clientDescription)
-                .then(function (saveResponse) {
-                    if (saveResponse.status === 201) {
-                        vm.clients.push(saveResponse.data);
-
-                        toastr.success("Saved");
-                        vm.saving = false;
-
-                        vm.create.clientId = '';
-                        vm.create.clientName = '';
-                        vm.create.clientDescription = '';
-                    }
-                    else {
-                        toastr.error("Failed");
-                        vm.saving = false;
-                    }
-                },
+            identityServerClientService.createNodeClient(vm.create.clientName, vm.create.clientDescription)
+                .then(clientCreated,
                     function (response) {
                         toastr.error("Failed");
                         vm.saving = false;
                     });
         };
 
+        vm.createNewWebsiteClient = function () {
+            vm.saving = true;
+
+            identityServerClientService.createWebsiteClient(vm.create.clientName, vm.create.clientDescription)
+                .then(clientCreated,
+                    function (response) {
+                        toastr.error("Failed");
+                        vm.saving = false;
+                    });
+        };
+
+        function clientCreated(saveResponse) {
+            if (saveResponse.status === 201) {
+                var client = saveResponse.data;
+                
+                addClientToClientsList(client);
+
+                toastr.success("Saved");
+                vm.saving = false;
+
+                vm.create.clientId = '';
+                vm.create.clientName = '';
+                vm.create.clientDescription = '';
+                vm.create.active = false;
+                vm.selectClient(client);
+            }
+            else {
+                toastr.error("Failed");
+                vm.saving = false;
+            }
+        }
+
+        
         vm.deleteClient = function (client) {
             if (window.confirm("Delete " + client.clientName)) {
                 identityServerClientService.deleteClient(client.clientId)
@@ -225,6 +314,38 @@
             object.state = 3;
         };
 
+        function stopActionBecauseOfUnsavedChanges() {
+            if (!angular.equals(vm.selectedClient, vm.clients[vm.selectedClientIndex])) {
+                if (!window.confirm("Unsaved changes to " + vm.clients[vm.selectedClientIndex].clientName + " will be lost")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function addClientToClientsList(client, updated = false) {
+            client.clientTypeName = '';
+
+            if (client.clientTypeId !== undefined) {
+                vm.types.forEach(function (type) {
+                    if (type.id === client.clientTypeId) {
+                        client.clientTypeName = type.name;
+                    }
+                });
+            }
+
+            if (updated) {
+                for (var i = 0; i < vm.clients.length; i++) {
+                    if (vm.clients[i].clientId === vm.selectedClient.clientId) {
+                        vm.clients[i] = response.data;
+                    }
+                }
+            }
+            else {
+                vm.clients.push(client);
+            }
+        }
+
         activate();
 
         function activate() {
@@ -248,16 +369,7 @@
                             vm.clients.length = 0;
 
                             clientResponse.data.forEach(function (client) {
-                                client.clientTypeName = '';
-
-                                if (client.clientTypeId !== undefined) {
-                                    vm.types.forEach(function (type) {
-                                        if (type.id === client.clientTypeId) {
-                                            client.clientTypeName = type.name;
-                                        }
-                                    });
-                                }
-                                vm.clients.push(client);
+                                addClientToClientsList(client);
                             });
                         });
                     });

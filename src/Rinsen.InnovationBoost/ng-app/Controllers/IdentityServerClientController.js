@@ -104,13 +104,9 @@
         };
 
         vm.undoChanges = function () {
-            for (var i = 0; i < vm.clients.length; i++) {
-                if (vm.clients[i].clientId === vm.selectedClient.clientId) {
-                    vm.selectedClient = vm.clients[i];
+            vm.selectedClient = vm.clients[vm.selectedClientIndex];
 
-                    toastr.success("Undo comleted");
-                }
-            }
+            toastr.success("Undo comleted");
         };
 
         vm.saveClient = function () {
@@ -212,7 +208,6 @@
             }
         }
 
-        
         vm.deleteClient = function (client) {
             if (window.confirm("Delete " + client.clientName)) {
                 identityServerClientService.deleteClient(client.clientId)
@@ -323,7 +318,7 @@
             return false;
         }
 
-        function addClientToClientsList(client, updated = false) {
+        function addClientToClientsList(client, updated) {
             client.clientTypeName = '';
 
             if (client.clientTypeId !== undefined) {
@@ -334,7 +329,7 @@
                 });
             }
 
-            if (updated) {
+            if (updated !== undefined && updated !== false) {
                 for (var i = 0; i < vm.clients.length; i++) {
                     if (vm.clients[i].clientId === vm.selectedClient.clientId) {
                         vm.clients[i] = response.data;

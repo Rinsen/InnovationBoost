@@ -41,7 +41,6 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
                         <th>Display Name</th>
                         <th>Description</th>
                         <th>Active</th>
@@ -49,11 +48,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr data-ng-repeat="identityResource in vm.identityResources">
-                        <td><a data-ng-click="vm.selectIdentityResource(identityResource)">{{identityResource.name}}</a></td>
-                        <td><span class="text-nowrap">{{identityResource.displayName}}</span></td>
-                        <td><span class="text-nowrap">{{identityResource.description}}</span></td>
-                        <td>{{identityResource.enabled}}</td>
+                    <tr data-ng-repeat="identityResource in vm.identityResources" style="cursor:pointer">
+                        <td data-ng-click="vm.selectIdentityResource(identityResource)"><span class="text-nowrap">{{identityResource.displayName}}</span></td>
+                        <td data-ng-click="vm.selectIdentityResource(identityResource)"><span class="text-nowrap">{{identityResource.description}}</span></td>
+                        <td data-ng-click="vm.selectIdentityResource(identityResource)">{{identityResource.enabled}}</td>
                         <td><span data-ng-click="vm.deleteIdentityResource(identityResource)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
                     </tr>
                     <tr>
@@ -78,6 +76,8 @@
                 <button data-ng-click="vm.saveIdentityResource()" class="btn btn-primary" data-ng-disabled="vm.saving">Save</button>
                 <button data-ng-click="vm.undoChanges()" class="btn btn-warning" data-ng-disabled="vm.saving">Undo</button>
                 <button data-ng-click="vm.selectedIdentityResource = null" class="btn btn-default" data-ng-disabled="vm.saving">Close</button>
+                <button data-ng-click="vm.selectPreviousIdentityResource()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-backward"></span>Previous</button>
+                <button data-ng-click="vm.selectNextIdentityResource()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-forward"></span>Next</button>
             </div>
         </div>
         <div class="row">

@@ -12,6 +12,7 @@
         var vm = this;
         vm.apiResources = [];
         vm.selectedApiResource = null;
+        vm.selectedApiResourceIndex = null;
         vm.selectedTab = 'General';
         vm.saving = false;
         vm.create = {
@@ -35,17 +36,51 @@
         };
 
         vm.selectApiResource = function (apiResource) {
+            for (var i = 0; i < vm.apiResources.length; i++) {
+                if (apiResource.id === vm.apiResources[i].id) {
+                    vm.selectedApiResourceIndex = i;
+                }
+            }
+
             vm.selectedApiResource = JSON.parse(JSON.stringify(apiResource));
         };
 
         vm.undoChanges = function () {
-            for (var i = 0; i < vm.apiResources.length; i++) {
-                if (vm.apiResources[i].name === vm.selectedApiResource.name) {
-                    vm.selectedApiResource = vm.apiResources[i];
+            vm.selectedApiResource = vm.apiResources[vm.selectedApiResourceIndex];
 
-                    toastr.success("Undo comleted");
-                }
+            toastr.success("Undo comleted");
+        };
+
+        vm.selectPreviousApiResource = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
             }
+
+            if (vm.selectedApiResourceIndex > 0) {
+                vm.selectedApiResourceIndex--;
+                var apiResource = vm.apiResources[vm.selectedApiResourceIndex];
+                vm.selectApiResource(apiResource);
+            }
+        }; 
+
+        vm.selectNextApiResource = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            if (vm.selectedApiResourceIndex < vm.apiResources.length - 1) {
+                vm.selectedApiResourceIndex++;
+                var apiResource = vm.apiResources[vm.selectedApiResourceIndex];
+                vm.selectApiResource(apiResource);
+            }
+        };
+
+        vm.closeEdit = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            vm.selectedApiResource = null;
         };
 
         vm.saveApiResource = function () {
@@ -181,6 +216,15 @@
 
             object.state = 3;
         };
+
+        function stopActionBecauseOfUnsavedChanges() {
+            if (!angular.equals(vm.selectedApiResource, vm.apiResources[vm.selectedApiResourceIndex])) {
+                if (!window.confirm("Unsaved changes to " + vm.apiResources[vm.selectedApiResourceIndex].displayName + " will be lost")) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         activate();
 

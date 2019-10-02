@@ -44,31 +44,7 @@
 
             vm.selectedClient = JSON.parse(JSON.stringify(client));
 
-            vm.apiResources.forEach(function (apiResource) {
-                apiResource.scopes.forEach(function (scope) {
-                    scope.selected = false;
-                    scope.previousState = 'notSelected';
-
-                    vm.selectedClient.allowedScopes.forEach(function (allowedScope) {
-                        if (scope.name === allowedScope.scope) {
-                            scope.selected = true;
-                            scope.previousState = allowedScope.state;
-                        }
-                    });
-                });
-            });
-
-            vm.identityResources.forEach(function (identityResource) {
-                identityResource.selected = false;
-                identityResource.previousState = 'notSelected';
-
-                vm.selectedClient.allowedScopes.forEach(function (allowedScope) {
-                    if (identityResource.name === allowedScope.scope) {
-                        identityResource.selected = true;
-                        identityResource.previousState = allowedScope.state;
-                    }
-                });
-            });
+            
         };
 
         vm.selectPreviousClient = function () {

@@ -175,12 +175,14 @@ namespace Rinsen.InnovationBoost.ApiControllers
                 ClientTypeId = identityServerClient.ClientTypeId,
                 ClientUri = identityServerClient.ClientUri,
                 ConsentLifetime = identityServerClient.ConsentLifetime,
+                Created = identityServerClient.Created,
                 Description = identityServerClient.Description,
                 DeviceCodeLifetime = identityServerClient.DeviceCodeLifetime,
                 Enabled = identityServerClient.Enabled,
                 EnableLocalLogin = identityServerClient.EnableLocalLogin,
                 FrontChannelLogoutSessionRequired = identityServerClient.FrontChannelLogoutSessionRequired,
                 FrontChannelLogoutUri = identityServerClient.FrontChannelLogoutUri,
+                Id = identityServerClient.Id,
                 IdentityProviderRestrictions = new List<IdentityServerClientIdpRestriction>(),
                 IdentityTokenLifetime = identityServerClient.IdentityTokenLifetime,
                 IncludeJwtId = identityServerClient.IncludeJwtId,
@@ -195,9 +197,10 @@ namespace Rinsen.InnovationBoost.ApiControllers
                 RequireConsent = identityServerClient.RequireConsent,
                 RequirePkce = identityServerClient.RequirePkce,
                 SlidingRefreshTokenLifetime = identityServerClient.SlidingRefreshTokenLifetime,
+                Updated = identityServerClient.Updated,
                 UpdateAccessTokenClaimsOnRefresh = identityServerClient.UpdateAccessTokenClaimsOnRefresh,
                 UserCodeType = identityServerClient.UserCodeType,
-                UserSsoLifetime = identityServerClient.UserSsoLifetime,
+                UserSsoLifetime = identityServerClient.UserSsoLifetime
             };
 
             identityServerClientModel.AllowedCorsOrigins = identityServerClient.AllowedCorsOrigins;
@@ -208,11 +211,11 @@ namespace Rinsen.InnovationBoost.ApiControllers
             identityServerClientModel.IdentityProviderRestrictions = identityServerClient.IdentityProviderRestrictions;
             identityServerClientModel.PostLogoutRedirectUris = identityServerClient.PostLogoutRedirectUris;
 
-            identityServerApiResources.ForEach(apiResource => {
-
+            foreach (var apiResource in identityServerApiResources)
+            {
                 var identityServerApiResourceModel = new IdentityServerApiResourceModel
                 {
-                    Checked = IsChecked(apiResource.Name, identityServerClientModel.AllowedScopes),
+                    Selected = IsSelected(apiResource.Name, identityServerClientModel.AllowedScopes),
                     Description = apiResource.Description,
                     DisplayName = apiResource.DisplayName,
                     Enabled = apiResource.Enabled,
@@ -221,24 +224,24 @@ namespace Rinsen.InnovationBoost.ApiControllers
 
                 identityServerClientModel.IdentityServerApiResources.Add(identityServerApiResourceModel);
 
-                apiResource.Scopes.ForEach(scope =>
+                foreach (var scope in apiResource.Scopes)
                 {
                     var identityServerApiResourceScopeModel = new IdentityServerApiResourceScopeModel
                     {
-                        Checked = IsChecked(scope.Name, identityServerClientModel.AllowedScopes),
+                        Selected = IsSelected(scope.Name, identityServerClientModel.AllowedScopes),
                         Description = scope.Description,
                         DisplayName = scope.DisplayName
                     };
 
                     identityServerApiResourceModel.IdentityServerApiResourceScopes.Add(identityServerApiResourceScopeModel);
-                });
-            });
+                }
+            }
 
-            identityServerIdentityResources.ForEach(identityResource => {
-
+            foreach (var identityResource in identityServerIdentityResources)
+            { 
                 var identityServerIdentityResourceModel = new IdentityServerIdentityResourceModel
                 {
-                    Checked = IsChecked(identityResource.Name, identityServerClientModel.AllowedScopes),
+                    Selected = IsSelected(identityResource.Name, identityServerClientModel.AllowedScopes),
                     Description = identityResource.Description,
                     DisplayName = identityResource.DisplayName,
                     Enabled = identityResource.Enabled,
@@ -246,12 +249,12 @@ namespace Rinsen.InnovationBoost.ApiControllers
                 };
 
                 identityServerClientModel.IdentityServerIdentityResources.Add(identityServerIdentityResourceModel);
-            });
+            }
             
             return identityServerClientModel;
         }
 
-        private bool IsChecked(string name, List<IdentityServerClientScope> allowedScopes)
+        private bool IsSelected(string name, List<IdentityServerClientScope> allowedScopes)
         {
             return allowedScopes.Any(m => m.Scope == name);
         }

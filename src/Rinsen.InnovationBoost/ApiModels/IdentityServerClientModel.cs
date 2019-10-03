@@ -9,9 +9,9 @@ namespace Rinsen.InnovationBoost.ApiModels
     public class IdentityServerClientModel : IdentityServerClient
     {
 
-        public List<IdentityServerApiResourceModel> IdentityServerApiResources { get; set; }
+        public List<IdentityServerApiResourceModel> IdentityServerApiResources { get; set; } = new List<IdentityServerApiResourceModel>();
 
-        public List<IdentityServerIdentityResourceModel> IdentityServerIdentityResources { get; set; }
+        public List<IdentityServerIdentityResourceModel> IdentityServerIdentityResources { get; set; } = new List<IdentityServerIdentityResourceModel>();
 
     }
 }

@@ -15,9 +15,9 @@ namespace Rinsen.InnovationBoost.ApiModels
 
         public bool Enabled { get; set; }
 
-        public bool Checked { get; set; }
+        public bool Selected { get; set; }
 
-        public List<IdentityServerApiResourceScopeModel> IdentityServerApiResourceScopes { get; set; }
+        public List<IdentityServerApiResourceScopeModel> IdentityServerApiResourceScopes { get; set; } = new List<IdentityServerApiResourceScopeModel>();
     }
 
     public class IdentityServerApiResourceScopeModel
@@ -27,6 +27,6 @@ namespace Rinsen.InnovationBoost.ApiModels
 
         public string Description { get; set; }
 
-        public bool Checked { get; set; }
+        public bool Selected { get; set; }
     }
 }

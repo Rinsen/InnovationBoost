@@ -15,6 +15,6 @@ namespace Rinsen.InnovationBoost.ApiModels
 
         public bool Enabled { get; set; }
 
-        public bool Checked { get; set; }
+        public bool Selected { get; set; }
     }
 }

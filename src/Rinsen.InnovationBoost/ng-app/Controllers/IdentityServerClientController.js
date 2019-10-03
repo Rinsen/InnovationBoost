@@ -12,8 +12,6 @@
         var vm = this;
         vm.clients = [];
         vm.types = [];
-        vm.apiResources = [];
-        vm.identityResources = [];
         vm.selectedClient = null;
         vm.selectedClientIndex = null;
         vm.selectedTab = 'General';
@@ -326,23 +324,13 @@
                     vm.types.push(type);
                 });
 
-                identityServerApiResourceService.getApiResources().then(function (apiResourceResponse) {
-                    apiResourceResponse.data.forEach(function (apiResource) {
-                        vm.apiResources.push(apiResource);
-                    });
+                
 
-                    identityServerIdentityResourceService.getIdentityResources().then(function (identityResourceResponse) {
-                        identityResourceResponse.data.forEach(function (identityResource) {
-                            vm.identityResources.push(identityResource);
-                        });
+                identityServerClientService.getClients().then(function (clientResponse) {
+                    vm.clients.length = 0;
 
-                        identityServerClientService.getClients().then(function (clientResponse) {
-                            vm.clients.length = 0;
-
-                            clientResponse.data.forEach(function (client) {
-                                addClientToClientsList(client);
-                            });
-                        });
+                    clientResponse.data.forEach(function (client) {
+                        addClientToClientsList(client);
                     });
                 });
             });

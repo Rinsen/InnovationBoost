@@ -381,19 +381,27 @@
                                 <h3 class="panel-title"><span class="glyphicon glyphicon-tasks"></span> API Resources</h3>
                             </div>
                             <ul class="list-group">
-                                <li class="list-group-item" data-ng-repeat="apiResource in vm.apiResources">
+                                <li class="list-group-item" data-ng-repeat="apiResource in vm.selectedClient.identityServerApiResources">
                                     <h4 class="list-group-item-heading">{{apiResource.displayName}}</h4>
-                                    <p class="list-group-item-text">{{apiResource.description}}</p>
-                                    <ul class="list-group">
-                                        <li class="list-group-item" data-ng-repeat="scope in apiResource.scopes">
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" data-ng-model="scope.selected">{{scope.displayName}}
-                                                </label>
-                                                <label for="scope1">{{scope.description}}</label>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" data-ng-model="apiResource.selected">{{apiResource.description}}
+                                        </label>
+                                    </div>
+                                    <div data-ng-show="apiResource.identityServerApiResourceScopes.length > 0">
+                                        <strong>Scopes</strong>
+                                        <ul class="list-unstyled">
+                                            <li data-ng-repeat="scope in apiResource.identityServerApiResourceScopes">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" data-ng-model="scope.selected">{{scope.displayName}}
+                                                    </label>
+                                                    <label for="scope1">{{scope.description}}</label>
+                                                </div>
+                                            </li>
+                                        </ul>
+
+                                    </div>
                                 </li>
                             </ul>
                         </div>
@@ -402,7 +410,7 @@
                                 <h3 class="panel-title"><span class="glyphicon glyphicon-user"></span> Identity Resources</h3>
                             </div>
                             <ul class="list-group">
-                                <li class="list-group-item" data-ng-repeat="identityResource in vm.identityResources">
+                                <li class="list-group-item" data-ng-repeat="identityResource in vm.selectedClient.identityServerIdentityResources">
                                     <div class="checkbox">
                                         <label>
                                             <input type="checkbox" data-ng-model="identityResource.selected">{{identityResource.displayName}}

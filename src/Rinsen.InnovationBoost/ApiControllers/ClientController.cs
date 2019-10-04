@@ -143,10 +143,54 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [Route("~/IdentityServer/api/[controller]/Update")]
         public async Task<ActionResult> Update([Required]IdentityServerClientModel identityServerClient)
         {
+            AddAllowedScopesFromSelectedResources(identityServerClient);
+
             await _identityServerClientBusiness.UpdateClient(identityServerClient);
 
             return Ok();
         }
+
+        private static void AddAllowedScopesFromSelectedResources(IdentityServerClientModel identityServerClient)
+        {
+            var selectedScopes = new List<string>();
+
+            foreach (var apiResourceModel in identityServerClient.IdentityServerApiResources)
+            {
+                if (apiResourceModel.Selected)
+                {
+                    selectedScopes.Add(apiResourceModel.Name);
+                }
+
+                foreach (var scopeModel in apiResourceModel.IdentityServerApiResourceScopes)
+                {
+                    if (scopeModel.Selected)
+                    {
+                        selectedScopes.Add(scopeModel.Name);
+                    }
+                }
+            }
+
+            foreach (var identityResourceModel in identityServerClient.IdentityServerIdentityResources)
+            {
+                if (identityResourceModel.Selected)
+                {
+                    selectedScopes.Add(identityResourceModel.Name);
+                }
+            }
+
+            var scopesToRemove = identityServerClient.AllowedScopes.Select(m => m.Scope).Except(selectedScopes).ToArray();
+            var scopesToAdd = selectedScopes.Except(identityServerClient.AllowedScopes.Select(m => m.Scope)).ToArray();
+
+            foreach (var scopeName in scopesToAdd)
+            {
+                identityServerClient.AllowedScopes.Add(new IdentityServerClientScope { Scope = scopeName, State = ObjectState.Added });
+            }
+
+            foreach (var scopeName in scopesToRemove)
+            {
+                identityServerClient.AllowedScopes.Single(m => m.Scope == scopeName).State = ObjectState.Deleted;
+            }
+        }  
 
         private IdentityServerClientModel MapIdentityServerClientToModel(IdentityServerClient identityServerClient, List<IdentityServerApiResource> identityServerApiResources, List<IdentityServerIdentityResource> identityServerIdentityResources)
         {
@@ -218,6 +262,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
                     Selected = IsSelected(apiResource.Name, identityServerClientModel.AllowedScopes),
                     Description = apiResource.Description,
                     DisplayName = apiResource.DisplayName,
+                    Name = apiResource.Name,
                     Enabled = apiResource.Enabled,
                     Id = apiResource.Id
                 };
@@ -230,7 +275,8 @@ namespace Rinsen.InnovationBoost.ApiControllers
                     {
                         Selected = IsSelected(scope.Name, identityServerClientModel.AllowedScopes),
                         Description = scope.Description,
-                        DisplayName = scope.DisplayName
+                        DisplayName = scope.DisplayName,
+                        Name = scope.Name
                     };
 
                     identityServerApiResourceModel.IdentityServerApiResourceScopes.Add(identityServerApiResourceScopeModel);
@@ -244,6 +290,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
                     Selected = IsSelected(identityResource.Name, identityServerClientModel.AllowedScopes),
                     Description = identityResource.Description,
                     DisplayName = identityResource.DisplayName,
+                    Name = identityResource.Name,
                     Enabled = identityResource.Enabled,
                     Id = identityResource.Id
                 };

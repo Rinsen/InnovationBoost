@@ -85,37 +85,7 @@
 
         vm.saveClient = function () {
             vm.saving = true;
-
-            vm.apiResources.forEach(function (apiResource) {
-                apiResource.scopes.forEach(function (scope) {
-                    if (scope.selected && scope.previousState === 'notSelected') { // new selection
-
-                        vm.selectedClient.allowedScopes.push({ scope: scope.name, state: 1 });
-                    }
-                    else if (!scope.selected && scope.previousState === 0) { // removed selection
-                        vm.selectedClient.allowedScopes.forEach(function (allowedScope) {
-                            if (scope.name === allowedScope.scope) {
-                                allowedScope.state = 3;
-                            }
-                        });
-                    }
-                });
-            });
-
-            vm.identityResources.forEach(function (identityResource) {
-                if (identityResource.selected && identityResource.previousState === 'notSelected') { // new selection
-
-                    vm.selectedClient.allowedScopes.push({ scope: identityResource.name, state: 1 });
-                }
-                else if (!identityResource.selected && identityResource.previousState === 0) { // removed selection
-                    vm.selectedClient.allowedScopes.forEach(function (allowedScope) {
-                        if (identityResource.name === allowedScope.scope) {
-                            allowedScope.state = 3;
-                        }
-                    });
-                }
-            });
-
+            
             identityServerClientService.saveClient(vm.selectedClient)
                 .then(function (saveResponse) {
                     if (saveResponse.status === 200) {
@@ -125,7 +95,7 @@
 
                                 addClientToClientsList(client, true);
 
-                                vm.selectClient(response.data);
+                                vm.selectClient(client);
 
                                 toastr.success("Saved");
                                 vm.saving = false;
@@ -305,8 +275,8 @@
 
             if (updated !== undefined && updated !== false) {
                 for (var i = 0; i < vm.clients.length; i++) {
-                    if (vm.clients[i].clientId === vm.selectedClient.clientId) {
-                        vm.clients[i] = response.data;
+                    if (vm.clients[i].clientId === client.clientId) {
+                        vm.clients[i] = client;
                     }
                 }
             }

@@ -14,7 +14,7 @@ namespace Rinsen.IdentityProvider.IdentityServer.Entities
 
         public DateTimeOffset Created { get; set; }
 
-        public DateTimeOffset Updated { get; set; }
+        public DateTimeOffset Updated { get; set; } 
 
         public ObjectState State { get; set; }
     }

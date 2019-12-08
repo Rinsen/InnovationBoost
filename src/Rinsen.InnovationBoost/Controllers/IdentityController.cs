@@ -2,10 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider;
-using Rinsen.IdentityProvider.Contracts;
-using Rinsen.IdentityProvider.Contracts.v1;
 using Rinsen.IdentityProvider.Core;
-using Rinsen.IdentityProvider.ExternalApplications;
 using Rinsen.IdentityProvider.LocalAccounts;
 using Rinsen.InnovationBoost.Models;
 using System;
@@ -19,19 +16,16 @@ namespace Rinsen.InnovationBoost.Controllers
     public class IdentityController : Controller
     {
         private readonly ILoginService _loginService;
-        private readonly IExternalApplicationService _externalApplicationService;
         private readonly IIdentityService _identityService;
         private readonly ILocalAccountService _localAccountService;
         private readonly IIdentityAttributeStorage _identityAttributeStorage;
 
         public IdentityController(ILoginService loginService,
-            IExternalApplicationService externalApplicationService,
             IIdentityService identityService,
             ILocalAccountService localAccountService,
             IIdentityAttributeStorage identityAttributeStorage)
         {
             _loginService = loginService;
-            _externalApplicationService = externalApplicationService;
             _identityService = identityService;
             _localAccountService = localAccountService;
             _identityAttributeStorage = identityAttributeStorage;
@@ -39,24 +33,9 @@ namespace Rinsen.InnovationBoost.Controllers
 
         [HttpGet] 
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string externalUrl, string host, string applicationName, string returnUrl)
+        public IActionResult Login()
         {
-            var model = new LoginModel { ExternalUrl = externalUrl, Host = host, ApplicationName = applicationName, ReturnUrl = returnUrl };
-
-            if (User.Identity.IsAuthenticated)
-            {
-                if (!string.IsNullOrEmpty(returnUrl))
-                {
-                    if (!Url.IsLocalUrl(model.ReturnUrl))
-                    {
-                        throw new UnauthorizedAccessException($"Only local redirects is allowed");
-                    }
-
-                    return Redirect(returnUrl);
-                }
-
-                model.RedirectUrl = await RedirectToLocalOrTrustedExternalHostOnlyAsync(applicationName, externalUrl, host);
-            }
+            var model = new LoginModel();
 
             return View(model);
         }              
@@ -74,18 +53,6 @@ namespace Rinsen.InnovationBoost.Controllers
                 {
                     // Set loged in user to the one just created as this only will be provided at next request by the framework
                     HttpContext.User = result.Principal;
-
-                    if (!string.IsNullOrEmpty(model.ReturnUrl))
-                    {
-                        if (!Url.IsLocalUrl(model.ReturnUrl))
-                        {
-                            throw new UnauthorizedAccessException($"Only local redirects is allowed");
-                        }
-
-                        return Redirect(model.ReturnUrl);
-                    }
-
-                    model.RedirectUrl = await RedirectToLocalOrTrustedExternalHostOnlyAsync(model.ApplicationName, model.ExternalUrl, model.Host);
                 }
                 else
                 {
@@ -126,7 +93,7 @@ namespace Rinsen.InnovationBoost.Controllers
 
                         if (loginResult.Succeeded)
                         {
-                            model.RedirectUrl = await RedirectToLocalOrTrustedExternalHostOnlyAsync(model.ApplicationName, model.ExternalUrl, model.Host);
+                            
                         }
                     }
                 }
@@ -144,73 +111,6 @@ namespace Rinsen.InnovationBoost.Controllers
 
 
             return View();
-        }
-
-        private async Task<string> RedirectToLocalOrTrustedExternalHostOnlyAsync(string applicationName, string externalUrl, string host)
-        {
-            if (!string.IsNullOrEmpty(host))
-            {
-                var identityId = User.GetClaimGuidValue(ClaimTypes.NameIdentifier);
-                var correlationId = User.GetClaimGuidValue(ClaimTypes.SerialNumber);
-                var rememberMe = User.GetClaimBoolValue(ClaimTypes.Expiration);
-
-                var result = await _externalApplicationService.GetTokenForValidHostAsync(applicationName, host, identityId, correlationId, rememberMe);
-
-                if (result.Succeeded)
-                {
-                    // Always enforce https, no options on this
-                    var uri = $"https://{host}{externalUrl}" + QueryString.Create("AuthToken", result.Token).ToUriComponent();
-
-                    return uri;
-                }
-
-                throw new UnauthorizedAccessException($"External application is not found from Host {host}");
-            }
-
-            if (Url.IsLocalUrl(externalUrl))
-            {
-                return externalUrl;
-            }
-
-            return string.Empty;
-        }
-
-        public async Task<ExternalIdentity> Get(string authToken, string applicationKey)
-        {
-            var token = await _externalApplicationService.GetTokenAsync(authToken, applicationKey);
-            var identity = await _identityService.GetIdentityAsync(token.IdentityId);
-            var extensions = await GetIdentityAttributesAsExternsions(identity);
-
-            var externalIdentity = new ExternalIdentity
-            {
-                GivenName = identity.GivenName,
-                IdentityId = identity.IdentityId,
-                Surname = identity.Surname,
-                Email = identity.Email,
-                PhoneNumber = identity.PhoneNumber,
-                Issuer = RinsenIdentityConstants.RinsenIdentityProvider,
-                Expiration = token.Expiration,
-                CorrelationId = token.CorrelationId,
-                Extensions = extensions
-            };
-
-            await _externalApplicationService.LogExportedExternalIdentity(externalIdentity, token.ExternalApplicationId);
-
-            return externalIdentity;
-        }
-
-        private async Task<List<Extension>> GetIdentityAttributesAsExternsions(Identity identity)
-        {
-            var identityAttributes = await _identityAttributeStorage.GetIdentityAttributesAsync(identity.IdentityId);
-
-            var extensions = new List<Extension>();
-
-            if (identityAttributes.Any(attr => attr.Attribute == "Administrator"))
-            {
-                extensions.Add(new Extension { Type = RinsenIdentityConstants.Role, Value = RinsenIdentityConstants.Administrator });
-            }
-
-            return extensions;
         }
     }
 }

@@ -21,15 +21,18 @@ using Rinsen.InnovationBoost.Installation;
 using Rinsen.Messaging;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
+using Microsoft.Extensions.Hosting;
+using IdentityServer4.Configuration;
+using IdentityServer4;
 
 namespace Rinsen.InnovationBoost
 {
     public class Startup
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly ILoggerFactory _loggerFactory;
 
-        public Startup(IConfiguration configuration, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
             _env = env;
@@ -164,17 +167,17 @@ namespace Rinsen.InnovationBoost
 
             app.UseHttpsRedirection();
 
+            app.UseRouting();
+
             app.UseAuthentication();
 
             app.UseStaticFiles();
 
             app.UseIdentityServer();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapDefaultControllerRoute();
             });
 
             logger.LogInformation("Starting");
@@ -207,7 +210,7 @@ namespace Rinsen.InnovationBoost
 
             var rsaKey = JsonConvert.DeserializeObject<RsaKey>(rsaKeyFile, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() });
 
-            identityServerBuilder.AddSigningCredential(IdentityServerBuilderExtensionsCrypto.CreateRsaSecurityKey(rsaKey.Parameters, rsaKey.KeyId));
+            identityServerBuilder.AddSigningCredential(CryptoHelper.CreateRsaSecurityKey(rsaKey.Parameters, rsaKey.KeyId), IdentityServerConstants.RsaSigningAlgorithm.RS256);
         }
 
         private class RsaKey

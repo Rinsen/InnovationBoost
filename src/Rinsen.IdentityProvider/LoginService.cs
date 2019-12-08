@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Rinsen.IdentityProvider.Contracts;
 using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.LocalAccounts;
 using System;

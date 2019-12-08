@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider.Core;
-using Rinsen.IdentityProvider.ExternalApplications;
 using Rinsen.InnovationBoost.Models;
 using Rinsen.Logger;
 using Rinsen.Logger.Service;
@@ -155,23 +154,5 @@ namespace Rinsen.InnovationBoost.Controllers
                 }
             }
         }
-
-        private async Task<List<LogEnvironment>> GetLogEnvironments(LogReport logReport)
-        {
-            var environmentNames = logReport.LogItems.Select(m => m.EnvironmentName).Distinct();
-
-            var logEnvironments = await _logReader.GetLogEnvironmentsAsync();
-
-            foreach (var environmentName in environmentNames)
-            {
-                if (!logEnvironments.Any(m => m.Name == environmentName))
-                {
-                    logEnvironments.Add(await _logWriter.CreateLogEnvironmentAsync(environmentName));
-                }
-            }
-
-            return logEnvironments;
-        }
-
     }
 }

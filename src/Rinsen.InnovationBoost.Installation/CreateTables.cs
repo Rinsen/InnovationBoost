@@ -1,10 +1,7 @@
 ﻿using Rinsen.DatabaseInstaller;
-using Rinsen.DatabaseInstaller.SqlTypes;
 using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.Core;
-using Rinsen.IdentityProvider.ExternalApplications;
 using Rinsen.IdentityProvider.LocalAccounts;
-using Rinsen.Logger.Service;
 using System.Collections.Generic;
 
 namespace Rinsen.InnovationBoost.Installation
@@ -54,41 +51,6 @@ namespace Rinsen.InnovationBoost.Installation
             sessionsTable.AddColumn(m => m.LastAccess);
             sessionsTable.AddColumn(m => m.Expires);
             sessionsTable.AddColumn(m => m.SerializedTicket);
-
-            var externalApplicationTable = dbChangeList.AddNewTable<ExternalApplication>().SetPrimaryKeyNonClustered();
-            externalApplicationTable.AddAutoIncrementColumn(m => m.Id, primaryKey: false).Unique().Clustered();
-            externalApplicationTable.AddColumn(m => m.ExternalApplicationId).PrimaryKey();
-            externalApplicationTable.AddColumn(m => m.Active);
-            externalApplicationTable.AddColumn(m => m.ActiveUntil);
-            externalApplicationTable.AddColumn(m => m.ApplicationKey, 256);
-            externalApplicationTable.AddColumn(m => m.Created);
-            externalApplicationTable.AddColumn(m => m.Name, 256).Unique();
-
-            var externalApplicationHostNameTable = dbChangeList.AddNewTable<ExternalApplicationHostName>().SetPrimaryKeyNonClustered();
-            externalApplicationHostNameTable.AddColumn(m => m.ExternalApplicationId).ForeignKey<ExternalApplication>(m => m.ExternalApplicationId);
-            externalApplicationHostNameTable.AddColumn(m => m.Hostname, 512).PrimaryKey();
-            externalApplicationHostNameTable.AddColumn(m => m.Active);
-            externalApplicationHostNameTable.AddColumn(m => m.ActiveUntil);
-            externalApplicationHostNameTable.AddColumn(m => m.Created);
-
-            var tokenTable = dbChangeList.AddNewTable<Token>().SetPrimaryKeyNonClustered();
-            tokenTable.AddAutoIncrementColumn(m => m.ClusteredId, primaryKey: false).Unique().Clustered();
-            tokenTable.AddColumn(m => m.ExternalApplicationId).ForeignKey<ExternalApplication>(m => m.ExternalApplicationId);
-            tokenTable.AddColumn(m => m.Created);
-            tokenTable.AddColumn(m => m.CorrelationId);
-            tokenTable.AddColumn(m => m.Expiration);
-            tokenTable.AddColumn(m => m.IdentityId);
-            tokenTable.AddColumn(m => m.TokenId, 50).PrimaryKey();
-
-            var externalSessionsTable = dbChangeList.AddNewTable<ExternalSession>();
-            externalSessionsTable.AddAutoIncrementColumn(m => m.Id);
-            externalSessionsTable.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId");
-            externalSessionsTable.AddColumn(m => m.Created);
-            externalSessionsTable.AddColumn(m => m.CorrelationId);
-            externalSessionsTable.AddColumn(m => m.ExternalApplicationId).ForeignKey<ExternalApplication>(m => m.ExternalApplicationId);
-
-
-            
 
         }
     }

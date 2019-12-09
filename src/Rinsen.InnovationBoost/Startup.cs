@@ -19,24 +19,21 @@ using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.InnovationBoost.Installation.IdentityServer;
 using Rinsen.InnovationBoost.Installation;
 using Rinsen.Messaging;
-using Swashbuckle.AspNetCore.Swagger;
-using System.Collections.Generic;
 using Microsoft.Extensions.Hosting;
 using IdentityServer4.Configuration;
 using IdentityServer4;
+using Microsoft.OpenApi.Models;
 
 namespace Rinsen.InnovationBoost
 {
     public class Startup
     {
         private readonly IWebHostEnvironment _env;
-        private readonly ILoggerFactory _loggerFactory;
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             _env = env;
-            _loggerFactory = loggerFactory;
         }
 
         public IConfiguration Configuration { get; }
@@ -50,22 +47,32 @@ namespace Rinsen.InnovationBoost
                 // Register the Swagger generator, defining 1 or more Swagger documents
                 services.AddSwaggerGen(c =>
                 {
-                    c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
                     // Swagger 2.+ support
-                    var security = new Dictionary<string, IEnumerable<string>>
-                {
-                    {"Bearer", new string[] { }},
-                };
+                    //var security = new Dictionary<string, IEnumerable<string>>
+                    //{
+                    //    {"Bearer", new string[] { }},
+                    //};
 
-                    c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                     {
                         Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                         Name = "Authorization",
-                        In = "header",
-                        Type = "apiKey"
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey
                     });
-                    c.AddSecurityRequirement(security);
+
+                    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                            },
+                            new[] { "readAccess", "writeAccess" }
+                        }
+                    });
                 });
             }
             services.AddRinsenIdentity(options => options.ConnectionString = Configuration["Rinsen:ConnectionString"]);
@@ -119,8 +126,7 @@ namespace Rinsen.InnovationBoost
                 options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
 
             services.AddDbContext<IdentityServerDbContext>(options =>
-                options.UseLoggerFactory(_loggerFactory)
-                .UseSqlServer(Configuration["Rinsen:ConnectionString"]));
+            options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
 
             services.AddMvc(o =>
             {
@@ -170,6 +176,8 @@ namespace Rinsen.InnovationBoost
             app.UseRouting();
 
             app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseStaticFiles();
 

@@ -22,7 +22,7 @@ namespace Rinsen.IdentityProvider
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILocalAccountStorage, LocalAccountStorage>();
             services.AddScoped<IIdentityStorage, IdentityStorage>();
-            services.AddScoped<ISessionStorage, SessionStorage>();
+            //services.AddScoped<ISessionStorage, SessionStorage>();
             services.AddScoped<IIdentityAccessor, IdentityAccessService>();
             services.AddScoped<IIdentityAttributeStorage, IdentityAttributeStorage>();
             services.AddTransient<IdentityServerClientBusiness, IdentityServerClientBusiness>();

@@ -8,6 +8,7 @@
 
         // 3rd Party Modules
         'isteven-multi-select',
-        'smart-table'
+        'smart-table',
+        'ngSanitize'
     ]);
 })();

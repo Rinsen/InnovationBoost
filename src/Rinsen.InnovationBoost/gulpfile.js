@@ -29,6 +29,7 @@ var npmPaths = {
     bootstrapfont: "./node_modules/bootstrap/fonts/*.*",
     bootstrapJs: "./node_modules/bootstrap/dist/js/bootstrap*.js*",
     angularJs: "./node_modules/angular/*.js",
+    angularSanitize: "./node_modules/angular-sanitize/*.js",
     jQuery: "./node_modules/jquery/dist/jquery*.js*",
     istevenMultiSelectCss: "./node_modules/isteven-angular-multiselect/*.css",
     istevenMultiSelectJs: "./node_modules/isteven-angular-multiselect/*.js",
@@ -84,6 +85,11 @@ gulp.task("angular", function () {
         .pipe(gulp.dest(destPaths.js));
 });
 
+gulp.task("angularSanitize", function () {
+    return gulp.src([npmPaths.angularSanitize])
+        .pipe(gulp.dest(destPaths.js));
+});
+
 gulp.task("jQuery", function () {
     return gulp.src([npmPaths.jQuery])
         .pipe(gulp.dest(destPaths.js));
@@ -123,6 +129,6 @@ gulp.task("debug:ngApp", function () {
         .pipe(gulp.dest("./wwwroot/js/debug/"));
 });
 
-gulp.task("3rdparty", gulp.parallel("bootstrap", "angular", "jQuery", "istevenMultiSelect", "smartTable", "toastr"));
+gulp.task("3rdparty", gulp.parallel("bootstrap", "angular", "angularSanitize", "jQuery", "istevenMultiSelect", "smartTable", "toastr"));
 
 gulp.task("min", gulp.parallel("min:js", "min:css"));

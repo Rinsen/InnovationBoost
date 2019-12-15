@@ -136,7 +136,9 @@ namespace Rinsen.InnovationBoost
 
                 o.Filters.Add(new AuthorizeFilter(policy));
 
-            } ).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
+            })
+                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest)
+                .AddRazorRuntimeCompilation();
         }
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger)

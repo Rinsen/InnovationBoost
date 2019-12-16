@@ -42,12 +42,11 @@ namespace OpenIdConnectSample
             .AddOpenIdConnect("oidc", options =>
             {
                 options.SignInScheme = "Cookies";
-                options.ClientSecret = "secret";
-                options.Authority = "https://innovationboost.azurewebsites.net/";
-                options.RequireHttpsMetadata = true;
-
                 options.ClientId = "mvc";
-                options.SaveTokens = true;
+                options.ClientSecret = "secret";
+                //options.Authority = "https://innovationboost.azurewebsites.net/";
+                options.Authority = "https://localhost:44317/";
+
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
@@ -67,10 +66,15 @@ namespace OpenIdConnectSample
             }
 
             app.UseHttpsRedirection();
+
+            app.UseRouting();
+
             app.UseStaticFiles();
             //app.UseCookiePolicy();
 
             app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(routes =>
             {

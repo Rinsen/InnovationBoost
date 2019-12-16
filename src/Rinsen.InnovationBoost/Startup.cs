@@ -128,7 +128,7 @@ namespace Rinsen.InnovationBoost
             services.AddDbContext<IdentityServerDbContext>(options =>
             options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
 
-            services.AddMvc(o =>
+            var builder = services.AddMvc(o =>
             {
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
@@ -137,8 +137,14 @@ namespace Rinsen.InnovationBoost
                 o.Filters.Add(new AuthorizeFilter(policy));
 
             })
-                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest)
-                .AddRazorRuntimeCompilation();
+                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
+
+#if DEBUG
+            if (_env.IsDevelopment())
+            {
+                builder.AddRazorRuntimeCompilation();
+            }
+#endif
         }
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
@@ -210,7 +216,8 @@ namespace Rinsen.InnovationBoost
                 .AddClientStore<IdentityServiceClientStore>()
                 .AddResourceStore<IdentityServerResourceStore>()
                 .AddPersistedGrantStore<IdentityServerPersistedGrantStore>()
-                .AddDeviceFlowStore<IdentityServerDeviceFlowStore>();
+                .AddDeviceFlowStore<IdentityServerDeviceFlowStore>()
+                .AddProfileService<IdentityServerProfileService>();
         }
 
         private void AddSigningCredentials(IIdentityServerBuilder identityServerBuilder)

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider.Core;
-using Rinsen.IdentityProvider.ExternalApplications;
 using Rinsen.InnovationBoost.Models;
 using Rinsen.Logger;
 using Rinsen.Logger.Service;
@@ -10,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Elmah;
 
 namespace Rinsen.InnovationBoost.Controllers
 {
@@ -64,7 +64,31 @@ namespace Rinsen.InnovationBoost.Controllers
 
             var logViews = await _logReader.GetLogsAsync(searchModel.From, searchModel.To, searchModel.LogApplications, searchModel.LogEnvironments, searchModel.LogSources, searchModel.LogLevels);
 
-            return logViews.Select(log => new LogResult(log)).OrderByDescending(m => m.Timestamp);
+            var a = new StackTraceHtmlFragments
+            {
+                BeforeFrame = "<span class='frame'>",
+                AfterFrame = "</span>",
+                BeforeType = "<span class=\"text-info\">",
+                AfterType = "</span>",
+                BeforeMethod = "<span class=\"text-success\"><strong>",
+                AfterMethod = "</strong></span>",
+                BeforeParameterName = "<span class=\"text-secondary\">",
+                AfterParameterName = "</span>",
+                BeforeParameterType = "<span class=\"text-info\">",
+                AfterParameterType = "</span>"
+            };
+            return logViews.Select(log =>
+            {
+
+                foreach (var property in log.LogProperties)
+                {
+                    if (property.Name.StartsWith("ExceptionStackTrace_") && !string.IsNullOrEmpty(property.Value))
+                    {
+                        property.Value = "<pre><code>" + StackTraceFormatter.FormatHtml(property.Value, a) + "</code></pre>";
+                    }
+                }
+                return new LogResult(log);
+            }).OrderByDescending(m => m.Timestamp);
         }
 
         private async Task<IEnumerable<SelectionLogEnvironment>> GetLogEnvironments()
@@ -155,23 +179,5 @@ namespace Rinsen.InnovationBoost.Controllers
                 }
             }
         }
-
-        private async Task<List<LogEnvironment>> GetLogEnvironments(LogReport logReport)
-        {
-            var environmentNames = logReport.LogItems.Select(m => m.EnvironmentName).Distinct();
-
-            var logEnvironments = await _logReader.GetLogEnvironmentsAsync();
-
-            foreach (var environmentName in environmentNames)
-            {
-                if (!logEnvironments.Any(m => m.Name == environmentName))
-                {
-                    logEnvironments.Add(await _logWriter.CreateLogEnvironmentAsync(environmentName));
-                }
-            }
-
-            return logEnvironments;
-        }
-
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
-using Rinsen.IdentityProvider.Contracts;
+using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.IdentityServer.Entities;
 
 namespace Rinsen.IdentityProvider.IdentityServer

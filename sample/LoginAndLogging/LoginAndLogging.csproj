@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Rinsen.IdentityProvider.Token\Rinsen.IdentityProvider.Token.csproj" />
     <ProjectReference Include="..\..\src\Rinsen.Logger\Rinsen.Logger.csproj" />
   </ItemGroup>
 

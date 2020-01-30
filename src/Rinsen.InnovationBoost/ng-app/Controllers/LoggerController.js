@@ -31,25 +31,25 @@
 
             vm.options.logLevels.forEach(function (logLevel) {
                 if (logLevel.selected) {
-                    searchModel.logLevels.push(logLevel.level)
+                    searchModel.logLevels.push(logLevel.level);
                 }
             });
 
             vm.options.logEnvironments.forEach(function (logEnvironment) {
                 if (logEnvironment.selected) {
-                    searchModel.logEnvironments.push(logEnvironment.id)
+                    searchModel.logEnvironments.push(logEnvironment.id);
                 }
             });
 
             vm.options.logApplications.forEach(function (logApplication) {
                 if (logApplication.selected) {
-                    searchModel.logApplications.push(logApplication.id)
+                    searchModel.logApplications.push(logApplication.id);
                 }
             });
 
             vm.options.logSources.forEach(function (logSource) {
                 if (logSource.selected) {
-                    searchModel.logSources.push(logSource.id)
+                    searchModel.logSources.push(logSource.id);
                 }
             });
 

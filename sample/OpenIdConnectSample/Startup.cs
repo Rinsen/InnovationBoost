@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace OpenIdConnectSample
 {
@@ -41,19 +42,18 @@ namespace OpenIdConnectSample
             .AddOpenIdConnect("oidc", options =>
             {
                 options.SignInScheme = "Cookies";
-                options.ClientSecret = "secret";
-                options.Authority = "https://innovationboost.azurewebsites.net/";
-                options.RequireHttpsMetadata = true;
-
                 options.ClientId = "mvc";
-                options.SaveTokens = true;
+                options.ClientSecret = "secret";
+                //options.Authority = "https://innovationboost.azurewebsites.net/";
+                options.Authority = "https://localhost:44317/";
+
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -66,16 +66,19 @@ namespace OpenIdConnectSample
             }
 
             app.UseHttpsRedirection();
+
+            app.UseRouting();
+
             app.UseStaticFiles();
             //app.UseCookiePolicy();
 
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
+            app.UseAuthorization();
+
+            app.UseEndpoints(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapDefaultControllerRoute();
             });
         }
     }

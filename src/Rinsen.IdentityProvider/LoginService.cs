@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Rinsen.IdentityProvider.Contracts;
 using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.LocalAccounts;
 using System;
@@ -60,12 +59,14 @@ namespace Rinsen.IdentityProvider
 
             var identity = await _identityService.GetIdentityAsync((Guid)identityId);
 
-            var claims = await GetClaimsForIdentityAsync(identity, host, rememberMe);
+            var expiration = DateTimeOffset.UtcNow.AddMonths(1);
+            var timeToExpiration = expiration.Subtract(DateTimeOffset.Now);
+            var claims = await GetClaimsForIdentityAsync(identity, host, rememberMe, timeToExpiration);
 
             var authenticationProperties = new AuthenticationProperties()
             {
                 AllowRefresh = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMonths(1),
+                ExpiresUtc = expiration,
                 IsPersistent = rememberMe,
                 IssuedUtc = DateTimeOffset.UtcNow,
             };
@@ -77,7 +78,7 @@ namespace Rinsen.IdentityProvider
             return LoginResult.Success(principal);
         }
 
-        private async Task<List<Claim>> GetClaimsForIdentityAsync(Identity identity, string host, bool rememberMe)
+        private async Task<List<Claim>> GetClaimsForIdentityAsync(Identity identity, string host, bool rememberMe, TimeSpan timeToExpiration)
         {
             var sessionId = _randomStringGenerator.GetRandomString(32);
 
@@ -88,7 +89,8 @@ namespace Rinsen.IdentityProvider
                 new Claim(ClaimTypes.Email, identity.Email, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
                 new Claim(ClaimTypes.GivenName, identity.GivenName, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
                 new Claim(ClaimTypes.Surname, identity.Surname, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
-                new Claim(ClaimTypes.Expiration, rememberMe.ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
+                new Claim(ClaimTypes.IsPersistent, rememberMe.ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
+                new Claim(ClaimTypes.Expiration, timeToExpiration.ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
                 new Claim(ClaimTypes.SerialNumber, Guid.NewGuid().ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
                 new Claim(JwtClaimTypes.Issuer, host, ClaimValueTypes.String,  RinsenIdentityConstants.RinsenIdentityProvider),
                 new Claim(JwtClaimTypes.Subject, identity.IdentityId.ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),

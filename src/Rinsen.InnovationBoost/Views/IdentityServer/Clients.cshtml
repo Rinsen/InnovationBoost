@@ -435,7 +435,7 @@
                             </thead>
                             <tbody>
                                 <tr data-ng-repeat="allowedGrantType in vm.selectedClient.allowedGrantTypes" data-ng-class="{'new-item': allowedGrantType.state == 1, 'updated-item': allowedGrantType.state == 2, 'deleted-item': allowedGrantType.state == 3 || allowedGrantType.state == 4 }">
-                                    <td><input class="form-control" type="text" data-ng-model="allowedGrantType.grantType" data-ng-change="vm.setModified(allowedGrantTypes)" /></td>
+                                    <td><input class="form-control" type="text" data-ng-model="allowedGrantType.grantType" data-ng-change="vm.setModified(allowedGrantType)" /></td>
                                     <td>{{allowedGrantType.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{allowedGrantType.updated | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td><span data-ng-click="vm.toggleDelete(allowedGrantType)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>

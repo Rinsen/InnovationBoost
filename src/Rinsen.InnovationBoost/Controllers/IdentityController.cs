@@ -3,15 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.AuditLogging;
-using Rinsen.IdentityProvider.Contracts;
-using Rinsen.IdentityProvider.Contracts.v1;
-using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.LocalAccounts;
 using Rinsen.InnovationBoost.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Rinsen.InnovationBoost.Controllers
@@ -21,19 +14,16 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly ILoginService _loginService;
         private readonly IIdentityService _identityService;
         private readonly ILocalAccountService _localAccountService;
-        private readonly IIdentityAttributeStorage _identityAttributeStorage;
         private readonly AuditLog _auditLog;
 
         public IdentityController(ILoginService loginService,
             IIdentityService identityService,
             ILocalAccountService localAccountService,
-            IIdentityAttributeStorage identityAttributeStorage,
             AuditLog auditLog)
         {
             _loginService = loginService;
             _identityService = identityService;
             _localAccountService = localAccountService;
-            _identityAttributeStorage = identityAttributeStorage;
             _auditLog = auditLog;
         }
 

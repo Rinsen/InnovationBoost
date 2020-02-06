@@ -1,9 +1,7 @@
 @model Rinsen.InnovationBoost.Models.LoggerModel
-@using Microsoft.AspNetCore.Hosting;
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Serialization;
 
-@inject IHostingEnvironment HostingEnvironment
 @{
     ViewBag.NgAppName = "app";
 }
@@ -55,43 +53,41 @@
                     </tr>
                     <tr>
                         <th st-sort="id">Id</th>
-                        <th st-sort="applicationName">ApplicationName</th>
-                        <th st-sort="environmentName">EnvironmentName</th>
                         <th st-sort="sourceName">SourceName</th>
                         <th st-sort="message">Message</th>
+                        <th st-sort="applicationName">ApplicationName</th>
                         <th st-sort="logLevelName">LogLevel</th>
+                        <th st-sort="environmentName">Environment</th>
                         <th st-sort="timestamp">Timestamp</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr data-ng-repeat-start="log in logTable" data-ng-click="log.expanded = !log.expanded">
                         <td>{{log.id}}</td>
-                        <td>{{log.applicationName}}</td>
-                        <td>{{log.environmentName}}</td>
                         <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 20em;">{{log.sourceName}}</td>
                         <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 20em;">{{log.message}}</td>
+                        <td>{{log.applicationName}}</td>
                         <td>{{log.logLevelName}}</td>
+                        <td>{{log.environmentName}}</td>
                         <td style="white-space: nowrap">{{log.timestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                     </tr>
                     <tr data-ng-show="false"></tr>
                     <tr data-ng-show="log.expanded" data-ng-repeat-end="">
-                        <td colspan="6">
-                            {{log.message}}<br />
+                        <td colspan="7">
                             <table class="table table-striped table-bordered">
-                                <tbody data-ng-repeat="prop in log.logProperties">
-                                    <tr>
+                                <tbody>
+                                    <tr data-ng-repeat="prop in log.logProperties">
                                         <td>{{prop.name}}</td>
-                                        <td>{{prop.value}}</td>
+                                        <td><div data-ng-bind-html="prop.value"></div></td>
                                     </tr>
                                 </tbody>
-                                @*https://github.com/atifaziz/StackTraceFormatter*@
                             </table>
                         </td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="6" class="text-center">
+                        <td colspan="7" class="text-center">
                             <div st-pagination="" st-items-by-page="100" st-displayed-pages="7"></div>
                         </td>
                     </tr>

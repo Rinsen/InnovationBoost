@@ -1,7 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Hosting;
+@using Microsoft.Extensions.Hosting;
 @using Rinsen.InnovationBoost.Extensions;
 
-@inject IHostingEnvironment HostingEnvironment
+@inject IWebHostEnvironment HostingEnvironment
 <!DOCTYPE html>
 
 <html @{if (!string.IsNullOrEmpty(ViewBag.NgAppName)) { <text> ng-app="@ViewBag.NgAppName" </text>  } }>

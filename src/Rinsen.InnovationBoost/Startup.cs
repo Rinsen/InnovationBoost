@@ -89,6 +89,7 @@ namespace Rinsen.InnovationBoost
                 {
                     options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]));
                     options.LoginPath = "/Identity/Login";
+                    options.LogoutPath = "/Identity/LogOut";
 
                     options.ForwardDefaultSelector = ctx =>
                     {

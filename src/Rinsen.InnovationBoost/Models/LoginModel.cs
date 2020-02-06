@@ -15,6 +15,6 @@ namespace Rinsen.InnovationBoost.Models
         public string Password { get; set; }
         public bool RememberMe { get; set; }
         public bool InvalidEmailOrPassword { get; set; }
-
+        public string ReturnUrl { get; set; }
     }
 }

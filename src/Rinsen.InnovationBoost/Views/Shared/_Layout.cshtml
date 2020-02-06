@@ -82,13 +82,19 @@
                     @if (User.HasClaim(c => c.Type == Rinsen.IdentityProvider.Core.RinsenClaimTypes.Administrator && c.Value == "True"))
                     {
                         @Html.MenuItem("Logger")
-                        @Html.MenuItem("External Applications", "ExternalApplications")
                         <li><p class="navbar-text">Identity Server</p></li>
                         @Html.MenuItem("Clients", "IdentityServer", "Clients")
                         @Html.MenuItem("ApiResources", "IdentityServer", "ApiResources")
                         @Html.MenuItem("IdentityResources", "IdentityServer", "IdentityResources")
                     }
                 </ul>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="navbar-right">
+                        <a asp-area="" asp-controller="Identity" asp-action="Logout" class="navbar-brand pull-right">Log out</a>
+                    </div>
+                }
             </div><!--/.nav-collapse -->
         </div>
     </nav>

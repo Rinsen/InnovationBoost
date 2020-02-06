@@ -31,8 +31,15 @@ namespace OpenIdConnectSample.Controllers
             return View();
         }
 
+        public IActionResult Logout()
+        {
+            return SignOut("Cookies", "oidc");
+        }
+
         public IActionResult Privacy()
         {
+            
+
             return View();
         }
 

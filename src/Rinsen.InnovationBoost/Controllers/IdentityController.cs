@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider;
@@ -15,23 +17,29 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly IIdentityService _identityService;
         private readonly ILocalAccountService _localAccountService;
         private readonly AuditLog _auditLog;
+        private readonly IIdentityServerInteractionService _identityServerInteractionService;
 
         public IdentityController(ILoginService loginService,
             IIdentityService identityService,
             ILocalAccountService localAccountService,
-            AuditLog auditLog)
+            AuditLog auditLog,
+            IIdentityServerInteractionService identityServerInteractionService)
         {
             _loginService = loginService;
             _identityService = identityService;
             _localAccountService = localAccountService;
             _auditLog = auditLog;
+            _identityServerInteractionService = identityServerInteractionService;
         }
 
         [HttpGet] 
         [AllowAnonymous]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl)
         {
-            var model = new LoginModel();
+            var model = new LoginModel
+            {
+                ReturnUrl = returnUrl
+            };
 
             return View(model);
         }              
@@ -51,6 +59,13 @@ namespace Rinsen.InnovationBoost.Controllers
 
                     // Set loged in user to the one just created as this only will be provided at next request by the framework
                     HttpContext.User = result.Principal;
+
+                    if (_identityServerInteractionService.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+
+                    return Redirect("~/");
                 }
                 else
                 {
@@ -111,9 +126,13 @@ namespace Rinsen.InnovationBoost.Controllers
         [HttpGet]
         public IActionResult Logout()
         {
+            return SignOut(new Microsoft.AspNetCore.Authentication.AuthenticationProperties { RedirectUri = "/Identity/LoggedOut" }, CookieAuthenticationDefaults.AuthenticationScheme);
+        }
 
-
-
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult LoggedOut()
+        {
             return View();
         }
     }

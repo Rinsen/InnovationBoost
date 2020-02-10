@@ -25,7 +25,7 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             identityServerDeviceFlowCode.AddColumn(m => m.CreationTime);
             identityServerDeviceFlowCode.AddColumn(m => m.Expiration);
             identityServerDeviceFlowCode.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId");
-            identityServerDeviceFlowCode.AddColumn(m => m.SerializedDeviceFlowCode);
+            identityServerDeviceFlowCode.AddColumn(m => m.SerializedDeviceFlowCode,  int.MaxValue);
 
         }
     }

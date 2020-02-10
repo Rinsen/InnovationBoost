@@ -201,7 +201,7 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             identityServerPersistedGrantsTable.AddAutoIncrementColumn(m => m.Id);
             identityServerPersistedGrantsTable.AddColumn(m => m.ClientId, 200).ForeignKey<IdentityServerClient>(m => m.ClientId);
             identityServerPersistedGrantsTable.AddColumn(m => m.CreationTime);
-            identityServerPersistedGrantsTable.AddColumn(m => m.Data);
+            identityServerPersistedGrantsTable.AddColumn(m => m.Data, int.MaxValue);
             identityServerPersistedGrantsTable.AddColumn(m => m.Expiration);
             identityServerPersistedGrantsTable.AddColumn(m => m.Key, 250);
             identityServerPersistedGrantsTable.AddColumn(m => m.SubjectId, 250).Null();

@@ -41,11 +41,6 @@ namespace Rinsen.InnovationBoost.Models
         {
             var validationList = new List<ValidationResult>();
 
-            if (InviteCode != "freddeärbäst")
-            {
-                validationList.Add(new ValidationResult("Invalid invite code.", new[] { "InviteCode" }));
-            }
-
             if (string.IsNullOrEmpty(Password) || string.IsNullOrEmpty(Password) || Password != PasswordRepeated)
             {
                 validationList.Add(new ValidationResult("Passwords does not match", new[] { "Password", "PasswordRepeated" }));

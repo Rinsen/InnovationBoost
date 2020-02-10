@@ -254,6 +254,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
             identityServerClientModel.ClientSecrets = identityServerClient.ClientSecrets;
             identityServerClientModel.IdentityProviderRestrictions = identityServerClient.IdentityProviderRestrictions;
             identityServerClientModel.PostLogoutRedirectUris = identityServerClient.PostLogoutRedirectUris;
+            identityServerClientModel.RedirectUris = identityServerClient.RedirectUris;
 
             foreach (var apiResource in identityServerApiResources)
             {

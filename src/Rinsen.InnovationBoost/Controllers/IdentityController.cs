@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.AuditLogging;
 using Rinsen.IdentityProvider.LocalAccounts;
@@ -18,18 +19,21 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly ILocalAccountService _localAccountService;
         private readonly AuditLog _auditLog;
         private readonly IIdentityServerInteractionService _identityServerInteractionService;
+        private readonly IConfiguration _configuration;
 
         public IdentityController(ILoginService loginService,
             IIdentityService identityService,
             ILocalAccountService localAccountService,
             AuditLog auditLog,
-            IIdentityServerInteractionService identityServerInteractionService)
+            IIdentityServerInteractionService identityServerInteractionService,
+            IConfiguration configuration)
         {
             _loginService = loginService;
             _identityService = identityService;
             _localAccountService = localAccountService;
             _auditLog = auditLog;
             _identityServerInteractionService = identityServerInteractionService;
+            _configuration = configuration;
         }
 
         [HttpGet] 
@@ -96,6 +100,15 @@ namespace Rinsen.InnovationBoost.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (model.InviteCode != _configuration["Rinsen:InvitationCode"])
+                {
+                    ModelState.AddModelError("InviteCode", "Invalid invite code.");
+
+                    await _auditLog.Log("InvalidInvitationCode", $"Email '{model.Email}', '{model.InviteCode}'", HttpContext.Connection.RemoteIpAddress.ToString());
+
+                    return View(model);
+                }
+
                 var createIdentityResult = await _identityService.CreateAsync(model.GivenName, model.Surname, model.Email, model.PhoneNumber);
 
                 if (createIdentityResult.Succeeded)

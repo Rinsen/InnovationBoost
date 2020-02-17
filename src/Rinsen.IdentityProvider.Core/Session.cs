@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 
 namespace Rinsen.IdentityProvider.Core
 {
@@ -9,7 +8,11 @@ namespace Rinsen.IdentityProvider.Core
         public string SessionId { get; set; }
         public Guid CorrelationId { get; set; }
         public Guid IdentityId { get; set; }
-        public DateTimeOffset LastAccess { get; set; }
+        public string IpAddress { get; set; }
+        public string UserAgent { get; set; }
+        public DateTimeOffset Created { get; set; }
+        public DateTimeOffset Updated { get; set; }
+        public DateTimeOffset? Deleted { get; set; }
         public DateTimeOffset Expires { get; set; }
         public byte[] SerializedTicket { get; set; }
 

@@ -197,15 +197,19 @@
         vm.createNewClientSecret = function () {
             identityServerClientService.getRandomString(40)
                 .then(function (response) {
-                    vm.selectedClient.clientSecrets.push({ type: vm.create.clientSecretType, value: response.data, description: vm.create.clientSecretDescription, expiration: vm.create.clientSecretExpiration, state: 1 });
+                    if (vm.create.clientSecretExpiration === '') {
+                        vm.selectedClient.clientSecrets.push({ type: vm.create.clientSecretType, value: response.data, description: vm.create.clientSecretDescription, state: 1 });
+                    }
+                    else {
+                        vm.selectedClient.clientSecrets.push({ type: vm.create.clientSecretType, value: response.data, description: vm.create.clientSecretDescription, expiration: vm.create.clientSecretExpiration, state: 1 });
+                    }
 
                     vm.create.clientSecretType = 'SharedSecret';
                     vm.create.clientSecretDescription = '';
                     vm.create.clientSecretExpiration = '';
                 });
-
-
         };
+
 
         vm.createNewIdentityProviderRestriction = function () {
             vm.selectedClient.identityProviderRestrictions.push({ provider: vm.create.identityProviderRestriction, state: 1 });

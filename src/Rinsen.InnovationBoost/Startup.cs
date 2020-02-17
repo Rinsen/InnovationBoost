@@ -23,6 +23,7 @@ using Microsoft.Extensions.Hosting;
 using IdentityServer4.Configuration;
 using IdentityServer4;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Rinsen.InnovationBoost
 {
@@ -40,6 +41,9 @@ namespace Rinsen.InnovationBoost
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var httpContextAccessor = new HttpContextAccessor();
+            services.AddSingleton<IHttpContextAccessor>(httpContextAccessor);
+
             if (_env.IsDevelopment())
             {
                 services.AddDatabaseInstaller(Configuration["Rinsen:ConnectionString"]);
@@ -87,7 +91,7 @@ namespace Rinsen.InnovationBoost
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]));
+                    options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]), httpContextAccessor);
                     options.LoginPath = "/Identity/Login";
                     options.LogoutPath = "/Identity/LogOut";
 

@@ -48,7 +48,11 @@ namespace Rinsen.InnovationBoost.Installation
             sessionsTable.AddColumn(m => m.SessionId, 60).PrimaryKey();
             sessionsTable.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId");
             sessionsTable.AddColumn(m => m.CorrelationId);
-            sessionsTable.AddColumn(m => m.LastAccess);
+            sessionsTable.AddColumn(m => m.IpAddress, 45);
+            sessionsTable.AddColumn(m => m.UserAgent, 200);
+            sessionsTable.AddColumn(m => m.Created);
+            sessionsTable.AddColumn(m => m.Updated);
+            sessionsTable.AddColumn(m => m.Deleted);
             sessionsTable.AddColumn(m => m.Expires);
             sessionsTable.AddColumn(m => m.SerializedTicket);
 

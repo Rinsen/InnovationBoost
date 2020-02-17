@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
 
 namespace Rinsen.IdentityProvider.Core
 {
@@ -12,10 +12,13 @@ namespace Rinsen.IdentityProvider.Core
     {
         private readonly TicketSerializer _ticketSerializer = new TicketSerializer();
         private readonly ISessionStorage _sessionStorage;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public SqlTicketStore(ISessionStorage sessionStorage)
+        public SqlTicketStore(ISessionStorage sessionStorage,
+            IHttpContextAccessor httpContextAccessor)
         {
             _sessionStorage = sessionStorage;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task RemoveAsync(string key)
@@ -30,7 +33,7 @@ namespace Rinsen.IdentityProvider.Core
             var serializedTicket = _ticketSerializer.Serialize(ticket);
 
             session.SerializedTicket = serializedTicket;
-            session.LastAccess = DateTimeOffset.Now;
+            session.Updated = DateTimeOffset.Now;
             session.Expires = ticket.Properties.ExpiresUtc ?? DateTimeOffset.Now.AddDays(1);
 
             await _sessionStorage.UpdateAsync(session);
@@ -57,14 +60,42 @@ namespace Rinsen.IdentityProvider.Core
                 SessionId = ticket.Principal.GetClaimStringValue(JwtClaimTypes.SessionId),
                 IdentityId = ticket.Principal.GetClaimGuidValue(ClaimTypes.NameIdentifier),
                 CorrelationId = ticket.Principal.GetClaimGuidValue(ClaimTypes.SerialNumber),
-                LastAccess = DateTimeOffset.Now,
+                UserAgent = string.Empty,
+                IpAddress = string.Empty,
+                Created = DateTimeOffset.Now,
+                Updated = DateTimeOffset.Now,
+                Deleted = null,
                 Expires = ticket.Properties.ExpiresUtc ?? DateTimeOffset.Now.AddDays(1),
                 SerializedTicket = _ticketSerializer.Serialize(ticket)
             };
 
+            var httpContext = _httpContextAccessor?.HttpContext;
+            if (httpContext != null)
+            {
+                var remoteIpAddress = httpContext.Connection.RemoteIpAddress;
+                if (remoteIpAddress != null)
+                {
+                    session.IpAddress = remoteIpAddress.ToString();
+                }
+
+                var userAgent = httpContext.Request.Headers["User-Agent"];
+                if (!string.IsNullOrEmpty(userAgent))
+                {
+                    if (userAgent.Count > 200)
+                    {
+                        session.UserAgent = userAgent.ToString().Substring(0, 200);
+                    }
+                    else
+                    {
+                        session.UserAgent = userAgent;
+                    }
+                }
+            }
+
             await _sessionStorage.CreateAsync(session);
 
             return session.SessionId;
+
         }
     }
 }

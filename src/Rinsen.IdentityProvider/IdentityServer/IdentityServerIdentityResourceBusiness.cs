@@ -86,7 +86,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 DisplayName = displayName,
                 Name = name,
                 Enabled = true,
-                ShowInDiscoveryDocument = true,
+                ShowInDiscoveryDocument = false,
                 Emphasize = false,
                 Required = false
             });

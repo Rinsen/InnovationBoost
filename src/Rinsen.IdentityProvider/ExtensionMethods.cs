@@ -18,7 +18,7 @@ namespace Rinsen.IdentityProvider
             services.AddSingleton(identityOptions);
 
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<PasswordHashGenerator, PasswordHashGenerator>();
+            services.AddScoped<PasswordHashGenerator>();
             services.AddScoped<ILocalAccountService, LocalAccountService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILocalAccountStorage, LocalAccountStorage>();
@@ -26,11 +26,12 @@ namespace Rinsen.IdentityProvider
             //services.AddScoped<ISessionStorage, SessionStorage>();
             services.AddScoped<IIdentityAccessor, IdentityAccessService>();
             services.AddScoped<IIdentityAttributeStorage, IdentityAttributeStorage>();
-            services.AddTransient<IdentityServerClientBusiness, IdentityServerClientBusiness>();
-            services.AddTransient<IdentityServerApiResourceBusiness, IdentityServerApiResourceBusiness>();
-            services.AddTransient<IdentityServerIdentityResourceBusiness, IdentityServerIdentityResourceBusiness>();
-            services.AddScoped<AuditLog, AuditLog>();
-            services.AddScoped<AuditLogStorage, AuditLogStorage>();
+            services.AddTransient<IdentityServerClientBusiness>();
+            services.AddTransient<IdentityServerApiResourceBusiness>();
+            services.AddTransient<IdentityServerIdentityResourceBusiness>();
+            services.AddScoped<AuditLog>();
+            services.AddScoped<AuditLogStorage>();
+            services.AddScoped<IdentityServerDefaultInstaller>();
 
             services.AddRinsenAuthentication();
         }

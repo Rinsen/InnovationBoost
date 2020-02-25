@@ -21,7 +21,7 @@ namespace Rinsen.IdentityProvider
             services.AddSingleton(identityOptions);
 
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<PasswordHashGenerator, PasswordHashGenerator>();
+            services.AddScoped<PasswordHashGenerator>();
             services.AddScoped<ILocalAccountService, LocalAccountService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILocalAccountStorage, LocalAccountStorage>();

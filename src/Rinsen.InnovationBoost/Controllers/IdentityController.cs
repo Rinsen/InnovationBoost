@@ -180,8 +180,10 @@ namespace Rinsen.InnovationBoost.Controllers
 
                         if (loginResult.Succeeded)
                         {
-                            
+                            return View("UserCreated");    
                         }
+
+                        return View("UserCreated");
                     }
                 }
 

@@ -39,6 +39,9 @@
     <Content Update="Views\Identity\Create.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Identity\UserCreated.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Identity\LoggedOut.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

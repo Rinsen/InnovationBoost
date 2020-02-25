@@ -37,7 +37,7 @@ namespace Rinsen.InnovationBoost.Installation
             logsTable.AddColumn(m => m.RequestId, 100).NotNull();
             logsTable.AddIntColumn("LogLevel").NotNull();
             logsTable.AddColumn(m => m.MessageFormat, int.MaxValue).NotNull();
-            logsTable.AddColumn("LogProperties", new NVarChar(int.MaxValue)).NotNull();
+            logsTable.AddColumn("LogProperties", new NVarChar()).NotNull();
             logsTable.AddColumn(m => m.Timestamp).NotNull();
         }
     }

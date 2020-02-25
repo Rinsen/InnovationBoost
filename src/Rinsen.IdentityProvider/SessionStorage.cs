@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 
-namespace Rinsen.IdentityProvider.Core
+namespace Rinsen.IdentityProvider
 {
     public class SessionStorage : ISessionStorage
     {

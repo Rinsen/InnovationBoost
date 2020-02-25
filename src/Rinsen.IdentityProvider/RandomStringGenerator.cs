@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
 
-namespace Rinsen.IdentityProvider.Core
+namespace Rinsen.IdentityProvider
 {
     public class RandomStringGenerator
     {

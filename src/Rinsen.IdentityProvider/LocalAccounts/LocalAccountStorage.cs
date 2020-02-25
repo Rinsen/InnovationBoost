@@ -1,16 +1,13 @@
-﻿using Rinsen.IdentityProvider;
-using Rinsen.IdentityProvider.LocalAccounts;
-using System;
+﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace Rinsen.IdentityProvider.LocalAccounts
 {
-
     public class LocalAccountStorage : ILocalAccountStorage
     {
         private readonly IdentityOptions _identityOptions;
-
+        
         const string _insertSql = @"INSERT INTO LocalAccounts 
                                         (Created,
                                         FailedLoginCount,
@@ -20,7 +17,13 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                                         LoginId,
                                         PasswordHash,
                                         PasswordSalt,
-                                        Updated) 
+                                        Updated,
+                                        SharedTotpSecret,
+                                        TwoFactorTotpEnabled,
+                                        TwoFactorSmsEnabled,
+                                        TwoFactorEmailEnabled,
+                                        TwoFactorAppNotificationEnabled,
+                                        Deleted) 
                                     VALUES 
                                         (@Created,
                                         @FailedLoginCount,
@@ -30,34 +33,52 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                                         @LoginId,
                                         @PasswordHash,
                                         @PasswordSalt,
-                                        @Updated); 
+                                        @Updated,
+                                        @SharedTotpSecret,
+                                        @TwoFactorTotpEnabled,
+                                        @TwoFactorSmsEnabled,
+                                        @TwoFactorEmailEnabled,
+                                        @TwoFactorAppNotificationEnabled,
+                                        @Deleted); 
                                     SELECT CAST(SCOPE_IDENTITY() as int)";
 
         const string _selectWithIdentityId = @"SELECT Id,
+                                        IdentityId,
                                         Created,
                                         FailedLoginCount,
-                                        IdentityId,
                                         IsDisabled,
                                         IterationCount,
                                         LoginId,
                                         PasswordHash,
                                         PasswordSalt,
-                                        Updated 
+                                        Updated,
+                                        SharedTotpSecret,
+                                        TwoFactorTotpEnabled,
+                                        TwoFactorSmsEnabled,
+                                        TwoFactorEmailEnabled,
+                                        TwoFactorAppNotificationEnabled,
+                                        Deleted 
                                     FROM 
                                         LocalAccounts 
                                     WHERE 
                                         IdentityId=@IdentityId";
 
         const string _selectWithLoginId = @"SELECT Id,
+                                        IdentityId,
                                         Created,
                                         FailedLoginCount,
-                                        IdentityId,
                                         IsDisabled,
                                         IterationCount,
                                         LoginId,
                                         PasswordHash,
                                         PasswordSalt,
-                                        Updated 
+                                        Updated,
+                                        SharedTotpSecret,
+                                        TwoFactorTotpEnabled,
+                                        TwoFactorSmsEnabled,
+                                        TwoFactorEmailEnabled,
+                                        TwoFactorAppNotificationEnabled,
+                                        Deleted
                                     FROM 
                                         LocalAccounts 
                                     WHERE 
@@ -94,6 +115,28 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                         command.Parameters.Add(new SqlParameter("@PasswordHash", localAccount.PasswordHash));
                         command.Parameters.Add(new SqlParameter("@PasswordSalt", localAccount.PasswordSalt));
                         command.Parameters.Add(new SqlParameter("@Updated", localAccount.Updated));
+                        command.Parameters.Add(new SqlParameter("@SharedTotpSecret", System.Data.SqlDbType.VarBinary));
+                        if (localAccount.SharedTotpSecret == null)
+                        {
+                            command.Parameters["@SharedTotpSecret"].Value = DBNull.Value;
+                        }
+                        else
+                        {
+                            command.Parameters["@SharedTotpSecret"].Value = localAccount.SharedTotpSecret;
+                        }
+                        command.Parameters.Add(new SqlParameter("@TwoFactorAppNotificationEnabled", localAccount.TwoFactorAppNotificationEnabled));
+                        command.Parameters.Add(new SqlParameter("@TwoFactorEmailEnabled", localAccount.TwoFactorEmailEnabled));
+                        command.Parameters.Add(new SqlParameter("@TwoFactorSmsEnabled", localAccount.TwoFactorSmsEnabled));
+                        command.Parameters.Add(new SqlParameter("@TwoFactorTotpEnabled", localAccount.TwoFactorTotpEnabled));
+                        command.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.DateTimeOffset));
+                        if (localAccount.Deleted == null)
+                        {
+                            command.Parameters["@Deleted"].Value = DBNull.Value;
+                        }
+                        else
+                        {
+                            command.Parameters["@Deleted"].Value = localAccount.Deleted;
+                        }
 
                         await connection.OpenAsync();
 
@@ -170,6 +213,17 @@ namespace Rinsen.IdentityProvider.LocalAccounts
 
         private LocalAccount MapLocalAccountFromReader(SqlDataReader reader)
         {
+            DateTimeOffset? deleted = null;
+            if (reader["Deleted"] != DBNull.Value)
+            {
+                deleted = (DateTimeOffset?)reader["Deleted"];
+            }
+            byte?[] sharedTotpSecret = null;
+            if (reader["SharedTotpSecret"] != DBNull.Value)
+            {
+                sharedTotpSecret = (byte?[])reader["SharedTotpSecret"];
+            }
+
             return new LocalAccount
             {
                 Created = (DateTimeOffset)reader["Created"],
@@ -181,7 +235,13 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                 LoginId = (string)reader["LoginId"],
                 PasswordHash = (byte[])reader["PasswordHash"],
                 PasswordSalt = (byte[])reader["PasswordSalt"],
-                Updated = (DateTimeOffset)reader["Updated"]
+                Updated = (DateTimeOffset)reader["Updated"],
+                Deleted = deleted,
+                SharedTotpSecret = sharedTotpSecret,
+                TwoFactorAppNotificationEnabled = (bool)reader["TwoFactorAppNotificationEnabled"],
+                TwoFactorEmailEnabled = (bool)reader["TwoFactorEmailEnabled"],
+                TwoFactorSmsEnabled = (bool)reader["TwoFactorSmsEnabled"],
+                TwoFactorTotpEnabled = (bool)reader["TwoFactorTotpEnabled"]
             };
         }
 

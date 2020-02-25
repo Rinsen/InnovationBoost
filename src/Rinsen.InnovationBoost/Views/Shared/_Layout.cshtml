@@ -79,7 +79,7 @@
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     @Html.MenuItem("Home")
-                    @if (User.HasClaim(c => c.Type == Rinsen.IdentityProvider.Core.RinsenClaimTypes.Administrator && c.Value == "True"))
+                    @if (User.HasClaim(c => c.Type == Rinsen.IdentityProvider.RinsenClaimTypes.Administrator && c.Value == "True"))
                     {
                         @Html.MenuItem("Logger")
                         <li><p class="navbar-text">Identity Server</p></li>

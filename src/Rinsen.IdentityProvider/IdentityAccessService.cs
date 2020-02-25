@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using System;
-using Rinsen.IdentityProvider.Core;
 
 namespace Rinsen.IdentityProvider
 {

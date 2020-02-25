@@ -8,6 +8,7 @@ using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.AuditLogging;
 using Rinsen.IdentityProvider.LocalAccounts;
 using Rinsen.InnovationBoost.Models;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Rinsen.InnovationBoost.Controllers
@@ -59,17 +60,19 @@ namespace Rinsen.InnovationBoost.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _auditLog.Log("LoginSuccess", $"Email '{model.Email}'", HttpContext.Connection.RemoteIpAddress.ToString());
+                    return await LoginSuccess(model.Email, model.ReturnUrl, result.Principal);
+                }
+                else if(result.TwoFactorRequired)
+                {
+                    model.RequestTwoFactor = true;
+                    model.TwoFactorAppNotificationEnabled = result.TwoFactorAppNotificationEnabled;
+                    model.TwoFactorEmailEnabled = result.TwoFactorEmailEnabled;
+                    model.TwoFactorSmsEnabled = result.TwoFactorSmsEnabled;
+                    model.TwoFactorTotpEnabled = result.TwoFactorTotpEnabled;
 
-                    // Set loged in user to the one just created as this only will be provided at next request by the framework
-                    HttpContext.User = result.Principal;
+                    Response.Cookies.Append("AuthSessionId", result.TwoFactorAuthenticationSessionId);
 
-                    if (_identityServerInteractionService.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
-                    {
-                        return Redirect(model.ReturnUrl);
-                    }
-
-                    return Redirect("~/");
+                    return View("TwoFactor", model);
                 }
                 else
                 {
@@ -77,7 +80,61 @@ namespace Rinsen.InnovationBoost.Controllers
 
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 }
+            }
 
+            return View(model);
+        }
+
+        private async Task<IActionResult> LoginSuccess(string email, string returnUrl, ClaimsPrincipal principal)
+        {
+            await _auditLog.Log("LoginSuccess", $"Email '{email}'", HttpContext.Connection.RemoteIpAddress.ToString());
+
+            // Set loged in user to the one just created as this only will be provided at next request by the framework
+            HttpContext.User = principal;
+
+            if (_identityServerInteractionService.IsValidReturnUrl(returnUrl) || Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return Redirect("~/");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> TwoFactor(TwoFactorModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if(Request.Cookies.TryGetValue("AuthSessionId", out var authSessionId))
+                {
+                    if (model.TypeSelected == TwoFactorType.Totp)
+                    {
+                        if (string.IsNullOrEmpty(model.KeyCode))
+                        {
+                            await _loginService.StartTotpFlow(authSessionId);
+
+                            return View(model);
+                        }
+                        var result = await _loginService.ConfirmTotpCode(authSessionId, model.KeyCode);
+
+                        if (result.Succeeded)
+                        {
+                            return await LoginSuccess("", model.ReturnUrl, result.Principal);
+                        }
+                        else
+                        {
+                            await _auditLog.Log("InvalidLoginAttempt", $"Totp key code not valid", HttpContext.Connection.RemoteIpAddress.ToString());
+
+                            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                        }
+                    }
+                }
+                else
+                {
+                    await _auditLog.Log("InvalidLoginAttempt", $"Auth Session Id not found", HttpContext.Connection.RemoteIpAddress.ToString());
+                }
             }
 
             return View(model);

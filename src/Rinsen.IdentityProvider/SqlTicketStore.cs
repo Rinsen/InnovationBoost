@@ -6,7 +6,7 @@ using System.Security.Claims;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 
-namespace Rinsen.IdentityProvider.Core
+namespace Rinsen.IdentityProvider
 {
     public class SqlTicketStore : ITicketStore
     {

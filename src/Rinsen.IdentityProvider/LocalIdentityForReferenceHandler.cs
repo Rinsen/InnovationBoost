@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Rinsen.IdentityProvider.Core
+namespace Rinsen.IdentityProvider
 {
     public class LocalIdentityForReferenceHandler
     {

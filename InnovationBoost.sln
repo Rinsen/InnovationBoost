@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7DEA85E7-1A8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider", "src\Rinsen.IdentityProvider\Rinsen.IdentityProvider.csproj", "{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Core", "src\Rinsen.IdentityProvider.Core\Rinsen.IdentityProvider.Core.csproj", "{11037521-A2F0-46F8-9557-116C4B6518D3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.InnovationBoost", "src\Rinsen.InnovationBoost\Rinsen.InnovationBoost.csproj", "{392560C2-D3BA-4F31-95C7-87FE13427C25}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.Logger", "src\Rinsen.Logger\Rinsen.Logger.csproj", "{3B91405A-959D-4291-A681-BFF647EF664C}"
@@ -36,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdConnectSample", "samp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggingSample", "sample\LoggingSample\LoggingSample.csproj", "{043BCD4B-2C52-42F5-9FD3-AF516F059FCF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rinsen.IdentityProvider.Tests", "test\Rinsen.IdentityProvider.Tests\Rinsen.IdentityProvider.Tests.csproj", "{0703837F-14E2-491A-8EF0-8CFD2703D71F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,10 +46,6 @@ Global
 		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{11037521-A2F0-46F8-9557-116C4B6518D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11037521-A2F0-46F8-9557-116C4B6518D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11037521-A2F0-46F8-9557-116C4B6518D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11037521-A2F0-46F8-9557-116C4B6518D3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{392560C2-D3BA-4F31-95C7-87FE13427C25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{392560C2-D3BA-4F31-95C7-87FE13427C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{392560C2-D3BA-4F31-95C7-87FE13427C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -78,13 +74,16 @@ Global
 		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0703837F-14E2-491A-8EF0-8CFD2703D71F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0703837F-14E2-491A-8EF0-8CFD2703D71F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0703837F-14E2-491A-8EF0-8CFD2703D71F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0703837F-14E2-491A-8EF0-8CFD2703D71F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3BBBB25B-D0E5-4CC5-883C-7449CE10CFC6} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
-		{11037521-A2F0-46F8-9557-116C4B6518D3} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{392560C2-D3BA-4F31-95C7-87FE13427C25} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{3B91405A-959D-4291-A681-BFF647EF664C} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{E3703329-5592-40E8-B6D5-C23F7CE8C22E} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
@@ -92,6 +91,7 @@ Global
 		{2B8F6027-B862-4B0C-A199-AA461346076F} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
 		{25EC882B-26AD-416D-8729-37B0F4998BA8} = {F783FC19-6629-4B4C-B319-6F52963522BB}
 		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF} = {F783FC19-6629-4B4C-B319-6F52963522BB}
+		{0703837F-14E2-491A-8EF0-8CFD2703D71F} = {2A179564-1E28-4918-BE16-494C31BFD9F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E647C73B-6B19-4B4F-97EC-8D3ECE787B91}

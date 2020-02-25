@@ -14,7 +14,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Rinsen.DatabaseInstaller;
 using Rinsen.IdentityProvider;
-using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.InnovationBoost.Installation.IdentityServer;
 using Rinsen.InnovationBoost.Installation;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rinsen.IdentityProvider.Core
+namespace Rinsen.IdentityProvider
 {
     public class Session
     {

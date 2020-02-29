@@ -17,6 +17,7 @@ namespace Rinsen.IdentityProvider
         public bool TwoFactorSmsEnabled { get; private set; }
         public bool TwoFactorTotpEnabled { get; private set; }
         public bool TwoFactorAppNotificationEnabled { get; private set; }
+        public string LoginId { get; private set; }
 
         public static LoginResult RequireTwoFactor(string twoFactorAuthenticationSessionId, bool twoFactorEmailEnabled,
             bool twoFactorSmsEnabled, bool twoFactorTotpEnabled, bool twoFactorAppNotificationEnabled)
@@ -37,9 +38,9 @@ namespace Rinsen.IdentityProvider
             return new LoginResult() { Succeeded = false };
         }
 
-        public static LoginResult Success(ClaimsPrincipal principal)
+        public static LoginResult Success(ClaimsPrincipal principal, string loginId)
         {
-            return new LoginResult() { Succeeded = true, Principal = principal };
+            return new LoginResult() { Succeeded = true, Principal = principal, LoginId = loginId };
         }
     }
 }

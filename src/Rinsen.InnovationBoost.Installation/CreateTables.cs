@@ -24,11 +24,15 @@ namespace Rinsen.InnovationBoost.Installation
             identitiesTable.AddColumn(m => m.PhoneNumberConfirmed);
             identitiesTable.AddColumn(m => m.Created);
             identitiesTable.AddColumn(m => m.Updated);
+            identitiesTable.AddColumn(m => m.Deleted);
 
             var identityAttributesTable = dbChangeList.AddNewTable<IdentityAttribute>().SetPrimaryKeyNonClustered();
             identityAttributesTable.AddAutoIncrementColumn(m => m.ClusteredId, primaryKey: false).Unique().Clustered();
             identityAttributesTable.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId").Unique("UQ_IdentityAndAttribute");
             identityAttributesTable.AddColumn(m => m.Attribute, 256).Unique("UQ_IdentityAndAttribute");
+            identityAttributesTable.AddColumn(m => m.Created);
+            identityAttributesTable.AddColumn(m => m.Updated);
+            identityAttributesTable.AddColumn(m => m.Deleted);
 
             var localAccountsTable = dbChangeList.AddNewTable<LocalAccount>();
             localAccountsTable.AddAutoIncrementColumn(m => m.Id);
@@ -49,7 +53,7 @@ namespace Rinsen.InnovationBoost.Installation
             localAccountsTable.AddColumn(m => m.Deleted);
 
             var sessionsTable = dbChangeList.AddNewTable<Session>().SetPrimaryKeyNonClustered();
-            sessionsTable.AddAutoIncrementColumn(m => m.ClusteredId, primaryKey: false).Unique().Clustered();
+            sessionsTable.AddAutoIncrementColumn(m => m.Id, primaryKey: false).Unique().Clustered();
             sessionsTable.AddColumn(m => m.SessionId, 60).PrimaryKey();
             sessionsTable.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId");
             sessionsTable.AddColumn(m => m.CorrelationId);
@@ -68,7 +72,14 @@ namespace Rinsen.InnovationBoost.Installation
             twoFactorAuthenticationSessionTable.AddColumn(m => m.Type);
             twoFactorAuthenticationSessionTable.AddColumn(m => m.KeyCode, 256);
             twoFactorAuthenticationSessionTable.AddColumn(m => m.Created);
+            twoFactorAuthenticationSessionTable.AddColumn(m => m.Updated);
+            twoFactorAuthenticationSessionTable.AddColumn(m => m.Deleted);
 
+            var usedTotpLogTable = dbChangeList.AddNewTable<UsedTotpLog>();
+            usedTotpLogTable.AddAutoIncrementColumn(m => m.Id);
+            usedTotpLogTable.AddColumn(m => m.IdentityId).Unique("UX_UsedTotpLogs_IdentityId");
+            usedTotpLogTable.AddColumn(m => m.Code, 256).Unique("UX_UsedTotpLogs_IdentityId");
+            usedTotpLogTable.AddColumn(m => m.UsedTime);
         }
     }
 }

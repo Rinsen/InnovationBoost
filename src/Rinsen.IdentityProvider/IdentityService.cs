@@ -9,23 +9,17 @@ namespace Rinsen.IdentityProvider
     public class IdentityService : IIdentityService
     {
         readonly IIdentityAccessor _claimsPrincipalAccessor;
-        readonly IdentityOptions _identityOptions;
         readonly IIdentityStorage _identityStorage;
-        readonly ILocalAccountService _localAccountService;
         readonly ILogger _log;
         readonly IHttpContextAccessor _httpContextAccessor;
 
         public IdentityService(IIdentityAccessor claimsPrincipalAccessor,
-            IdentityOptions identityOptions,
             IIdentityStorage identityStorage,
-            ILocalAccountService localAccountService,
             ILogger<IdentityService> log,
             IHttpContextAccessor httpContextAccessor)
         {
             _claimsPrincipalAccessor = claimsPrincipalAccessor;
-            _identityOptions = identityOptions;
             _identityStorage = identityStorage;
-            _localAccountService = localAccountService;
             _httpContextAccessor = httpContextAccessor;
             _log = log;
         }

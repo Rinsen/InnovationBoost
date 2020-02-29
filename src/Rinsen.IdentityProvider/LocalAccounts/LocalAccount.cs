@@ -14,15 +14,15 @@ namespace Rinsen.IdentityProvider.LocalAccounts
 
         public byte[] PasswordSalt { get; set; }
 
-        public byte?[] SharedTotpSecret { get; set; }
+        public byte[] SharedTotpSecret { get; set; }
 
-        public bool TwoFactorEmailEnabled { get; set; }
+        public DateTimeOffset? TwoFactorEmailEnabled { get; set; }
 
-        public bool TwoFactorSmsEnabled { get; set; }
+        public DateTimeOffset? TwoFactorSmsEnabled { get; set; }
 
-        public bool TwoFactorTotpEnabled { get; set; }
+        public DateTimeOffset? TwoFactorTotpEnabled { get; set; }
 
-        public bool TwoFactorAppNotificationEnabled { get; set; }
+        public DateTimeOffset? TwoFactorAppNotificationEnabled { get; set; }
 
         public int IterationCount { get; set; }
 

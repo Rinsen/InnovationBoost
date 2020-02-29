@@ -34,7 +34,7 @@ namespace Rinsen.IdentityProvider
                                             SELECT CAST(SCOPE_IDENTITY() as int)";
 
         private const string GetSql = @"SELECT 
-                                            ClusteredId,
+                                            Id,
                                             SessionId,
                                             IdentityId,
                                             CorrelationId,
@@ -56,9 +56,10 @@ namespace Rinsen.IdentityProvider
         private const string UpdateSql = @"UPDATE Sessions SET
                                                 Updated = @Updated,
                                                 Expires = @Expires,
+                                                Deleted = @Deleted,
                                                 SerializedTicket = @SerializedTicket
                                             WHERE
-                                                SessionId=@SessionId AND IdentityId = @IdentityId";
+                                                Id = @Id";
 
         public SessionStorage(string connectionString)
         {
@@ -72,27 +73,20 @@ namespace Rinsen.IdentityProvider
                 using (var connection = new SqlConnection(_connectionString))
                 using (var command = new SqlCommand(InsertSql, connection))
                 {
-                    command.Parameters.Add(new SqlParameter("@SessionId", session.SessionId));
-                    command.Parameters.Add(new SqlParameter("@IdentityId", session.IdentityId));
-                    command.Parameters.Add(new SqlParameter("@CorrelationId", session.CorrelationId));
-                    command.Parameters.Add(new SqlParameter("@IpAddress", session.IpAddress));
-                    command.Parameters.Add(new SqlParameter("@UserAgent", session.UserAgent));
-                    command.Parameters.Add(new SqlParameter("@Created", session.Created));
-                    command.Parameters.Add(new SqlParameter("@Updated", session.Updated));
-                    command.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.DateTimeOffset));
-                    if (session.Deleted == null)
-                    {
-                        command.Parameters["@Deleted"].Value = DBNull.Value;
-                    }
-                    else
-                    {
-                        command.Parameters["@Deleted"].Value = session.Deleted;
-                    }
-                    command.Parameters.Add(new SqlParameter("@Expires", session.Expires));
-                    command.Parameters.Add(new SqlParameter("@SerializedTicket", session.SerializedTicket));
+                    command.Parameters.AddWithValue("@SessionId", session.SessionId);
+                    command.Parameters.AddWithValue("@IdentityId", session.IdentityId);
+                    command.Parameters.AddWithValue("@CorrelationId", session.CorrelationId);
+                    command.Parameters.AddWithValue("@IpAddress", session.IpAddress);
+                    command.Parameters.AddWithValue("@UserAgent", session.UserAgent);
+                    command.Parameters.AddWithValue("@Created", session.Created);
+                    command.Parameters.AddWithValue("@Updated", session.Updated);
+                    command.Parameters.AddWithValue("@Expires", session.Expires);
+                    command.Parameters.AddWithValue("@SerializedTicket", session.SerializedTicket);
+                    command.Parameters.AddWithNullableValue("@Deleted", session.Deleted);
+
                     await connection.OpenAsync();
 
-                    session.ClusteredId = (int)await command.ExecuteScalarAsync();
+                    session.Id = (int)await command.ExecuteScalarAsync();
                 }
             }
 
@@ -171,15 +165,9 @@ namespace Rinsen.IdentityProvider
 
         private static Session MapSession(SqlDataReader reader)
         {
-            DateTimeOffset? deleted = null;
-            if (reader["Deleted"] != DBNull.Value)
-            {
-                deleted = (DateTimeOffset?)reader["Deleted"];
-            }
-
             return new Session
             {
-                ClusteredId = (int)reader["ClusteredId"],
+                Id = (int)reader["Id"],
                 SessionId = (string)reader["SessionId"],
                 IdentityId = (Guid)reader["IdentityId"],
                 CorrelationId = (Guid)reader["CorrelationId"],
@@ -187,7 +175,7 @@ namespace Rinsen.IdentityProvider
                 UserAgent = (string)reader["UserAgent"],
                 Created = (DateTimeOffset)reader["Created"],
                 Updated = (DateTimeOffset)reader["Updated"],
-                Deleted = deleted,
+                Deleted = reader.GetValueOrDefault<DateTimeOffset?>("Deleted"),
                 Expires = (DateTimeOffset)reader["Expires"],
                 SerializedTicket = (byte[])reader["SerializedTicket"]
             };
@@ -198,11 +186,12 @@ namespace Rinsen.IdentityProvider
             using (var connection = new SqlConnection(_connectionString))
             using (var command = new SqlCommand(UpdateSql, connection))
             {
-                command.Parameters.Add(new SqlParameter("@SessionId", session.SessionId));
-                command.Parameters.Add(new SqlParameter("@IdentityId", session.IdentityId));
-                command.Parameters.Add(new SqlParameter("@Updated", session.Updated));
-                command.Parameters.Add(new SqlParameter("@Expires", session.Expires));
-                command.Parameters.Add(new SqlParameter("@SerializedTicket", session.SerializedTicket));
+                command.Parameters.AddWithValue("@Id", session.Id);
+                command.Parameters.AddWithValue("@Updated", session.Updated);
+                command.Parameters.AddWithValue("@Expires", session.Expires);
+                command.Parameters.AddWithValue("@SerializedTicket", session.SerializedTicket);
+                command.Parameters.AddWithValue("@dDeleted", session.Deleted);
+
                 await connection.OpenAsync();
 
                 await command.ExecuteNonQueryAsync();

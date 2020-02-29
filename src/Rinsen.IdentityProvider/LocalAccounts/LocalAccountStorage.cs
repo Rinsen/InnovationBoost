@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Rinsen.IdentityProvider;
 
 namespace Rinsen.IdentityProvider.LocalAccounts
 {
@@ -92,6 +93,27 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                                                 WHERE 
                                                     IdentityId=@IdentityId";
 
+        const string _update = @"UPDATE
+                                    LocalAccounts
+                                SET
+                                    Created = @Created,
+                                    FailedLoginCount = @FailedLoginCount,
+                                    IdentityId = @IdentityId,
+                                    IsDisabled = @IsDisabled,
+                                    IterationCount = @IterationCount,
+                                    LoginId = @LoginId,
+                                    PasswordHash = @PasswordHash,
+                                    PasswordSalt = @PasswordSalt,
+                                    Updated = @Updated,
+                                    SharedTotpSecret = @SharedTotpSecret,
+                                    TwoFactorTotpEnabled = @TwoFactorTotpEnabled,
+                                    TwoFactorSmsEnabled = @TwoFactorSmsEnabled,
+                                    TwoFactorEmailEnabled = @TwoFactorEmailEnabled,
+                                    TwoFactorAppNotificationEnabled = @TwoFactorAppNotificationEnabled,
+                                    Deleted = @Deleted
+                                WHERE 
+                                    Id = @Id";
+
 
         public LocalAccountStorage(IdentityOptions identityOptions)
         {
@@ -100,6 +122,9 @@ namespace Rinsen.IdentityProvider.LocalAccounts
 
         public async Task CreateAsync(LocalAccount localAccount)
         {
+            localAccount.Created = DateTimeOffset.Now;
+            localAccount.Updated = DateTimeOffset.Now;
+
             using (var connection = new SqlConnection(_identityOptions.ConnectionString))
             {
                 try
@@ -115,28 +140,12 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                         command.Parameters.Add(new SqlParameter("@PasswordHash", localAccount.PasswordHash));
                         command.Parameters.Add(new SqlParameter("@PasswordSalt", localAccount.PasswordSalt));
                         command.Parameters.Add(new SqlParameter("@Updated", localAccount.Updated));
-                        command.Parameters.Add(new SqlParameter("@SharedTotpSecret", System.Data.SqlDbType.VarBinary));
-                        if (localAccount.SharedTotpSecret == null)
-                        {
-                            command.Parameters["@SharedTotpSecret"].Value = DBNull.Value;
-                        }
-                        else
-                        {
-                            command.Parameters["@SharedTotpSecret"].Value = localAccount.SharedTotpSecret;
-                        }
-                        command.Parameters.Add(new SqlParameter("@TwoFactorAppNotificationEnabled", localAccount.TwoFactorAppNotificationEnabled));
-                        command.Parameters.Add(new SqlParameter("@TwoFactorEmailEnabled", localAccount.TwoFactorEmailEnabled));
-                        command.Parameters.Add(new SqlParameter("@TwoFactorSmsEnabled", localAccount.TwoFactorSmsEnabled));
-                        command.Parameters.Add(new SqlParameter("@TwoFactorTotpEnabled", localAccount.TwoFactorTotpEnabled));
-                        command.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.DateTimeOffset));
-                        if (localAccount.Deleted == null)
-                        {
-                            command.Parameters["@Deleted"].Value = DBNull.Value;
-                        }
-                        else
-                        {
-                            command.Parameters["@Deleted"].Value = localAccount.Deleted;
-                        }
+                        command.Parameters.AddWithNullableValue("@SharedTotpSecret", localAccount.SharedTotpSecret);
+                        command.Parameters.AddWithNullableValue("@TwoFactorAppNotificationEnabled", localAccount.TwoFactorAppNotificationEnabled);
+                        command.Parameters.AddWithNullableValue("@TwoFactorEmailEnabled", localAccount.TwoFactorEmailEnabled);
+                        command.Parameters.AddWithNullableValue("@TwoFactorSmsEnabled", localAccount.TwoFactorSmsEnabled);
+                        command.Parameters.AddWithNullableValue("@TwoFactorTotpEnabled", localAccount.TwoFactorTotpEnabled);
+                        command.Parameters.AddWithNullableValue("@Deleted", localAccount.Deleted);
 
                         await connection.OpenAsync();
 
@@ -158,7 +167,9 @@ namespace Rinsen.IdentityProvider.LocalAccounts
 
         public Task DeleteAsync(LocalAccount localAccount)
         {
-            throw new NotImplementedException();
+            localAccount.Deleted = DateTimeOffset.Now;
+
+            return UpdateAsync(localAccount);
         }
 
         public async Task<LocalAccount> GetAsync(string loginId)
@@ -167,7 +178,7 @@ namespace Rinsen.IdentityProvider.LocalAccounts
             {
                 using (var command = new SqlCommand(_selectWithLoginId, connection))
                 {
-                    command.Parameters.Add(new SqlParameter("@LoginId", loginId));
+                    command.Parameters.AddWithValue("@LoginId", loginId);
 
                     await connection.OpenAsync();
                     using (var reader = await command.ExecuteReaderAsync())
@@ -189,20 +200,18 @@ namespace Rinsen.IdentityProvider.LocalAccounts
         public async Task<LocalAccount> GetAsync(Guid identityId)
         {
             using (var connection = new SqlConnection(_identityOptions.ConnectionString))
+            using (var command = new SqlCommand(_selectWithIdentityId, connection))
             {
-                using (var command = new SqlCommand(_selectWithIdentityId, connection))
-                {
-                    command.Parameters.Add(new SqlParameter("@IdentityId", identityId));
+                command.Parameters.Add(new SqlParameter("@IdentityId", identityId));
 
-                    await connection.OpenAsync();
-                    using (var reader = await command.ExecuteReaderAsync())
+                await connection.OpenAsync();
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (reader.HasRows)
                     {
-                        if (reader.HasRows)
+                        while (await reader.ReadAsync())
                         {
-                            while (await reader.ReadAsync())
-                            {
-                                return MapLocalAccountFromReader(reader);
-                            }
+                            return MapLocalAccountFromReader(reader);
                         }
                     }
                 }
@@ -213,17 +222,6 @@ namespace Rinsen.IdentityProvider.LocalAccounts
 
         private LocalAccount MapLocalAccountFromReader(SqlDataReader reader)
         {
-            DateTimeOffset? deleted = null;
-            if (reader["Deleted"] != DBNull.Value)
-            {
-                deleted = (DateTimeOffset?)reader["Deleted"];
-            }
-            byte?[] sharedTotpSecret = null;
-            if (reader["SharedTotpSecret"] != DBNull.Value)
-            {
-                sharedTotpSecret = (byte?[])reader["SharedTotpSecret"];
-            }
-
             return new LocalAccount
             {
                 Created = (DateTimeOffset)reader["Created"],
@@ -236,33 +234,55 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                 PasswordHash = (byte[])reader["PasswordHash"],
                 PasswordSalt = (byte[])reader["PasswordSalt"],
                 Updated = (DateTimeOffset)reader["Updated"],
-                Deleted = deleted,
-                SharedTotpSecret = sharedTotpSecret,
-                TwoFactorAppNotificationEnabled = (bool)reader["TwoFactorAppNotificationEnabled"],
-                TwoFactorEmailEnabled = (bool)reader["TwoFactorEmailEnabled"],
-                TwoFactorSmsEnabled = (bool)reader["TwoFactorSmsEnabled"],
-                TwoFactorTotpEnabled = (bool)reader["TwoFactorTotpEnabled"]
+                Deleted = reader.GetValueOrDefault<DateTimeOffset?>("Deleted"),
+                SharedTotpSecret = (byte[])reader["SharedTotpSecret"],
+                TwoFactorAppNotificationEnabled = reader.GetValueOrDefault<DateTimeOffset?>("TwoFactorAppNotificationEnabled"),
+                TwoFactorEmailEnabled = reader.GetValueOrDefault<DateTimeOffset?>("TwoFactorEmailEnabled"),
+                TwoFactorSmsEnabled = reader.GetValueOrDefault<DateTimeOffset?>("TwoFactorSmsEnabled"),
+                TwoFactorTotpEnabled = reader.GetValueOrDefault<DateTimeOffset?>("TwoFactorTotpEnabled")
             };
         }
 
-        public Task UpdateAsync(LocalAccount localAccount)
+        public async Task UpdateAsync(LocalAccount localAccount)
         {
-            throw new NotImplementedException();
+            localAccount.Updated = DateTimeOffset.Now;
+
+            using (var connection = new SqlConnection(_identityOptions.ConnectionString))
+            using (var command = new SqlCommand(_update, connection))
+            {
+                command.Parameters.AddWithValue("@Id", localAccount.Id);
+                command.Parameters.AddWithValue("@Created", localAccount.Created);
+                command.Parameters.AddWithValue("@FailedLoginCount", localAccount.FailedLoginCount);
+                command.Parameters.AddWithValue("@IdentityId", localAccount.IdentityId);
+                command.Parameters.AddWithValue("@IsDisabled", localAccount.IsDisabled);
+                command.Parameters.AddWithValue("@IterationCount", localAccount.IterationCount);
+                command.Parameters.AddWithValue("@LoginId", localAccount.LoginId);
+                command.Parameters.AddWithValue("@PasswordHash", localAccount.PasswordHash);
+                command.Parameters.AddWithValue("@PasswordSalt", localAccount.PasswordSalt);
+                command.Parameters.AddWithValue("@Updated", localAccount.Updated);
+                command.Parameters.AddWithValue("@SharedTotpSecret", localAccount.SharedTotpSecret);
+                command.Parameters.AddWithNullableValue("@TwoFactorAppNotificationEnabled", localAccount.TwoFactorAppNotificationEnabled);
+                command.Parameters.AddWithNullableValue("@TwoFactorEmailEnabled", localAccount.TwoFactorEmailEnabled);
+                command.Parameters.AddWithNullableValue("@TwoFactorSmsEnabled", localAccount.TwoFactorSmsEnabled);
+                command.Parameters.AddWithNullableValue("@TwoFactorTotpEnabled", localAccount.TwoFactorTotpEnabled);
+                command.Parameters.AddWithNullableValue("@Deleted", localAccount.Deleted);
+                await connection.OpenAsync();
+
+                var result = await command.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task UpdateFailedLoginCountAsync(LocalAccount localAccount)
         {
             using (var connection = new SqlConnection(_identityOptions.ConnectionString))
+            using (var command = new SqlCommand(_updateFailedLoginCount, connection))
             {
-                using (var command = new SqlCommand(_updateFailedLoginCount, connection))
-                {
-                    command.Parameters.Add(new SqlParameter("@FailedLoginCount", localAccount.FailedLoginCount));
-                    command.Parameters.Add(new SqlParameter("@Updated", localAccount.Updated));
-                    command.Parameters.Add(new SqlParameter("@IdentityId", localAccount.IdentityId));
-                    connection.Open();
+                command.Parameters.AddWithValue("@FailedLoginCount", localAccount.FailedLoginCount);
+                command.Parameters.AddWithValue("@Updated", localAccount.Updated);
+                command.Parameters.AddWithValue("@IdentityId", localAccount.IdentityId);
+                await connection.OpenAsync();
 
-                    var result = await command.ExecuteNonQueryAsync();
-                }
+                var result = await command.ExecuteNonQueryAsync();
             }
         }
     }

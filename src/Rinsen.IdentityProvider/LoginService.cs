@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using OtpNet;
 using Rinsen.IdentityProvider.LocalAccounts;
 using System;
 using System.Collections.Generic;
@@ -20,19 +21,22 @@ namespace Rinsen.IdentityProvider
         private readonly ILogger<LoginService> _log;
         private readonly ILocalAccountService _localAccountService;
         private readonly IIdentityAttributeStorage _identityAttributeStorage;
+        private readonly IUsedTotpLogStorage _usedTotpLogStorage;
         private readonly ITwoFactorAuthenticationSessionStorage _twoFactorAuthenticationSessionStorage;
 
         public LoginService(ILocalAccountService localAccountService,
             IIdentityService identityService,
             IIdentityAttributeStorage identityAttributeStorage,
+            IUsedTotpLogStorage usedTotpLogStorage,
             ITwoFactorAuthenticationSessionStorage twoFactorAuthenticationSessionStorage,
             IHttpContextAccessor httpContextAccessor,
-            RandomStringGenerator randomStringGenerator, 
+            RandomStringGenerator randomStringGenerator,
             ILogger<LoginService> log)
         {
             _localAccountService = localAccountService;
             _identityService = identityService;
             _identityAttributeStorage = identityAttributeStorage;
+            _usedTotpLogStorage = usedTotpLogStorage;
             _twoFactorAuthenticationSessionStorage = twoFactorAuthenticationSessionStorage;
             _httpContextAccessor = httpContextAccessor;
             _randomStringGenerator = randomStringGenerator;
@@ -58,11 +62,11 @@ namespace Rinsen.IdentityProvider
                 return LoginResult.Failure();
             }
 
-            if (localAccount.TwoFactorAppNotificationEnabled || localAccount.TwoFactorEmailEnabled
-                || localAccount.TwoFactorSmsEnabled || localAccount.TwoFactorTotpEnabled)
+            if (localAccount.TwoFactorAppNotificationEnabled is object || localAccount.TwoFactorEmailEnabled is object
+                || localAccount.TwoFactorSmsEnabled is object|| localAccount.TwoFactorTotpEnabled is object)
             {
                 string keyCode = string.Empty;
-                if (localAccount.TwoFactorEmailEnabled || localAccount.TwoFactorSmsEnabled)
+                if (localAccount.TwoFactorEmailEnabled is object || localAccount.TwoFactorSmsEnabled is object)
                 {
                     keyCode = _randomStringGenerator.GetRandomString(10);
                 }
@@ -79,7 +83,7 @@ namespace Rinsen.IdentityProvider
 
                 await _twoFactorAuthenticationSessionStorage.Create(twoFactorAuthenticationSession);
 
-                return LoginResult.RequireTwoFactor(twoFactorAuthenticationSession.SessionId, localAccount.TwoFactorEmailEnabled, localAccount.TwoFactorSmsEnabled, localAccount.TwoFactorTotpEnabled, localAccount.TwoFactorAppNotificationEnabled);
+                return LoginResult.RequireTwoFactor(twoFactorAuthenticationSession.SessionId, localAccount.TwoFactorEmailEnabled is object, localAccount.TwoFactorSmsEnabled is object, localAccount.TwoFactorTotpEnabled is object, localAccount.TwoFactorAppNotificationEnabled is object);
             }
 
             return await PrivateLogin(host, rememberMe, localAccount);
@@ -101,9 +105,27 @@ namespace Rinsen.IdentityProvider
             }
         }
 
-        public Task<LoginResult> ConfirmTotpCode(string authSessionId, string keyCode)
+        public async Task<LoginResult> ConfirmTotpCode(string authSessionId, string keyCode, string host, bool rememberMe)
         {
-            throw new NotImplementedException();
+            var twoFactorAuthenticationSession = await _twoFactorAuthenticationSessionStorage.Get(authSessionId);
+            var localAccount = await _localAccountService.GetLocalAccountAsync(twoFactorAuthenticationSession.IdentityId);
+
+            if (localAccount.TwoFactorTotpEnabled is null || localAccount.SharedTotpSecret is null)
+            {
+                throw new Exception("Totp is not enabled for this local account");
+            }
+
+            var totp = new Totp(localAccount.SharedTotpSecret);
+            if(totp.VerifyTotp(keyCode, out var timeStepMatched, VerificationWindow.RfcSpecifiedNetworkDelay))
+            {
+                await _usedTotpLogStorage.CreateLog(new UsedTotpLog { IdentityId = localAccount.IdentityId, Code = keyCode, UsedTime = DateTimeOffset.Now });
+                
+                var loginResult = await PrivateLogin(host, rememberMe, localAccount);
+
+                return loginResult;
+            }
+
+            throw new Exception("Totp key not valid");
         }
 
         private async Task<LoginResult> PrivateLogin(string host, bool rememberMe, LocalAccount localAccount)
@@ -126,7 +148,7 @@ namespace Rinsen.IdentityProvider
 
             await _httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authenticationProperties);
 
-            return LoginResult.Success(principal);
+            return LoginResult.Success(principal, localAccount.LoginId);
         }
 
         private async Task<List<Claim>> GetClaimsForIdentityAsync(Identity identity, string host, bool rememberMe, TimeSpan timeToExpiration)

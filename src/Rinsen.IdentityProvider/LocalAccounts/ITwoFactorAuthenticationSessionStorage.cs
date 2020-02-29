@@ -10,5 +10,6 @@ namespace Rinsen.IdentityProvider.LocalAccounts
         Task Create(TwoFactorAuthenticationSession twoFactorAuthenticationSession);
         Task<TwoFactorAuthenticationSession> Get(string sessionId);
         Task Update(TwoFactorAuthenticationSession twoFactorAuthenticationSession);
+        Task Delete(TwoFactorAuthenticationSession twoFactorAuthenticationSession);
     }
 }

@@ -1,0 +1,38 @@
+@model Rinsen.InnovationBoost.Models.TwoFactorModel
+
+<div class="container">
+    <div class="row">
+        <h1>2-Step Verification</h1>
+        <hr />
+        @if (User.Identity.IsAuthenticated)
+        {
+        <div class="row">
+            <div class="col-md-12">
+            </div>
+        </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    @using (Html.BeginForm("TwoFactor", "Identity"))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.ReturnUrl)
+                        @Html.HiddenFor(m => m.TypeSelected)
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.KeyCode, htmlAttributes: new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(m => m.KeyCode, new { @type = "text", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.KeyCode, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-default">Verify</button>
+                    }
+                </div>
+            </div>
+        }
+        </div>
+    </div>

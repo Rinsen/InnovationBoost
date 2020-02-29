@@ -4,7 +4,7 @@ namespace Rinsen.IdentityProvider
 {
     public class Session
     {
-        public int ClusteredId { get; set; }
+        public int Id { get; set; }
         public string SessionId { get; set; }
         public Guid CorrelationId { get; set; }
         public Guid IdentityId { get; set; }

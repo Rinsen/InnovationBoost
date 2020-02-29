@@ -9,5 +9,11 @@ namespace Rinsen.IdentityProvider
         public Guid IdentityId { get; set; }
 
         public string Attribute { get; set; }
+
+        public DateTimeOffset Created { get; set; }
+
+        public DateTimeOffset Updated { get; set; }
+
+        public DateTimeOffset? Deleted { get; set; }
     }
 }

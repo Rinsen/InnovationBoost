@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using OtpNet;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -30,30 +31,29 @@ namespace Rinsen.IdentityProvider.LocalAccounts
             _log = log;
         }
 
-
         public async Task ChangePasswordAsync(string oldPassword, string newPassword)
         {
             var localAccount = await GetLocalAccountAsync(oldPassword);
 
             localAccount.PasswordHash = GetPasswordHash(newPassword, localAccount);
-            localAccount.Updated = DateTimeOffset.Now;
 
             await _localAccountStorage.UpdateAsync(localAccount);
         }
 
         public async Task<CreateLocalAccountResult> CreateAsync(Guid identityId, string loginId, string password)
         {
-            var bytes = new byte[_options.NumberOfBytesInPasswordSalt];
-            CryptoRandom.GetBytes(bytes);
+            var passwordSalt = new byte[_options.NumberOfBytesInPasswordSalt];
+            var totpSecret = new byte[64];
+            CryptoRandom.GetBytes(passwordSalt);
+            CryptoRandom.GetBytes(totpSecret);
 
             var localAccount = new LocalAccount
             {
                 IdentityId = identityId,
                 IterationCount = _options.IterationCount,
-                PasswordSalt = bytes,
-                LoginId = loginId,
-                Created = DateTimeOffset.Now,
-                Updated = DateTimeOffset.Now
+                PasswordSalt = passwordSalt,
+                SharedTotpSecret = totpSecret,
+                LoginId = loginId
             };
 
             localAccount.PasswordHash = GetPasswordHash(password, localAccount);
@@ -143,6 +143,23 @@ namespace Rinsen.IdentityProvider.LocalAccounts
             await _localAccountStorage.UpdateFailedLoginCountAsync(localAccount);
 
             throw new UnauthorizedAccessException("Invalid password");
+        }
+
+        public Task<LocalAccount> GetLocalAccountAsync(Guid identityId)
+        {
+            return _localAccountStorage.GetAsync(identityId);
+        }
+
+        public async Task<string> EnableTotp()
+        {
+            var localAccount = await _localAccountStorage.GetAsync(_identityAccessor.IdentityId);
+            var result = Base32Encoding.ToString(localAccount.SharedTotpSecret);
+
+            localAccount.TwoFactorTotpEnabled = DateTimeOffset.Now;
+
+            await _localAccountStorage.UpdateAsync(localAccount);
+
+            return result;
         }
     }
 }

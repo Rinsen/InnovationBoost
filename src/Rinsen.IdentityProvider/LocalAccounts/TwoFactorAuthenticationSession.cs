@@ -18,6 +18,10 @@ namespace Rinsen.IdentityProvider.LocalAccounts
 
         public DateTimeOffset Created { get; set; }
 
+        public DateTimeOffset Updated { get; set; }
+
+        public DateTimeOffset? Deleted { get; set; }
+
     }
 
     public enum TwoFactorType

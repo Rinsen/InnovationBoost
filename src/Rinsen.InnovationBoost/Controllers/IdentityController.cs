@@ -60,23 +60,28 @@ namespace Rinsen.InnovationBoost.Controllers
 
                 if (result.Succeeded)
                 {
-                    return await LoginSuccess(model.Email, model.ReturnUrl, result.Principal);
+                    return await LoginSuccess(result.LoginId, model.ReturnUrl, result.Principal);
                 }
                 else if(result.TwoFactorRequired)
                 {
-                    model.RequestTwoFactor = true;
-                    model.TwoFactorAppNotificationEnabled = result.TwoFactorAppNotificationEnabled;
-                    model.TwoFactorEmailEnabled = result.TwoFactorEmailEnabled;
-                    model.TwoFactorSmsEnabled = result.TwoFactorSmsEnabled;
-                    model.TwoFactorTotpEnabled = result.TwoFactorTotpEnabled;
-
+                    var twoFactorModel = new TwoFactorModel
+                    {
+                        TypeSelected = TwoFactorType.Totp,
+                        TwoFactorAppNotificationEnabled = result.TwoFactorAppNotificationEnabled,
+                        ReturnUrl = model.ReturnUrl,
+                        RememberMe = model.RememberMe,
+                        TwoFactorEmailEnabled = result.TwoFactorEmailEnabled,
+                        TwoFactorSmsEnabled = result.TwoFactorSmsEnabled,
+                        TwoFactorTotpEnabled = result.TwoFactorTotpEnabled,
+                    };
+                    
                     Response.Cookies.Append("AuthSessionId", result.TwoFactorAuthenticationSessionId);
 
-                    return View("TwoFactor", model);
+                    return View("TwoFactor", twoFactorModel);
                 }
                 else
                 {
-                    await _auditLog.Log("InvalidLoginAttempt", $"Email '{model.Email}'", HttpContext.Connection.RemoteIpAddress.ToString());
+                    await CreateAuditLogEvent("InvalidLoginAttempt", $"Email '{model.Email}'");
 
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 }
@@ -85,9 +90,9 @@ namespace Rinsen.InnovationBoost.Controllers
             return View(model);
         }
 
-        private async Task<IActionResult> LoginSuccess(string email, string returnUrl, ClaimsPrincipal principal)
+        private async Task<IActionResult> LoginSuccess(string loginId, string returnUrl, ClaimsPrincipal principal)
         {
-            await _auditLog.Log("LoginSuccess", $"Email '{email}'", HttpContext.Connection.RemoteIpAddress.ToString());
+            await CreateAuditLogEvent("LoginSuccess", $"LoginId '{loginId}'");
 
             // Set loged in user to the one just created as this only will be provided at next request by the framework
             HttpContext.User = principal;
@@ -117,15 +122,26 @@ namespace Rinsen.InnovationBoost.Controllers
 
                             return View(model);
                         }
-                        var result = await _loginService.ConfirmTotpCode(authSessionId, model.KeyCode);
+
+                        Response.Cookies.Delete("AuthSessionId");
+                        LoginResult result;
+                        try
+                        {
+                            result = await _loginService.ConfirmTotpCode(authSessionId, model.KeyCode, Request.Host.Value, model.RememberMe);
+                        }
+                        catch (TotpCodeAlreadyUsedException)
+                        {
+                            await CreateAuditLogEvent("TotpCodeUsed", $"Code {model.KeyCode} is already used");
+                            throw;
+                        }
 
                         if (result.Succeeded)
                         {
-                            return await LoginSuccess("", model.ReturnUrl, result.Principal);
+                            return await LoginSuccess(result.LoginId, model.ReturnUrl, result.Principal);
                         }
                         else
                         {
-                            await _auditLog.Log("InvalidLoginAttempt", $"Totp key code not valid", HttpContext.Connection.RemoteIpAddress.ToString());
+                            await CreateAuditLogEvent("InvalidLoginAttempt", $"Totp key code not valid");
 
                             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                         }
@@ -133,7 +149,7 @@ namespace Rinsen.InnovationBoost.Controllers
                 }
                 else
                 {
-                    await _auditLog.Log("InvalidLoginAttempt", $"Auth Session Id not found", HttpContext.Connection.RemoteIpAddress.ToString());
+                    await CreateAuditLogEvent("InvalidLoginAttempt", $"Auth Session Id not found");
                 }
             }
 
@@ -144,9 +160,6 @@ namespace Rinsen.InnovationBoost.Controllers
         [AllowAnonymous]
         public IActionResult Create()
         {
-
-
-
             return View(new CreateIdentityModel());
         }
 
@@ -161,7 +174,7 @@ namespace Rinsen.InnovationBoost.Controllers
                 {
                     ModelState.AddModelError("InviteCode", "Invalid invite code.");
 
-                    await _auditLog.Log("InvalidInvitationCode", $"Email '{model.Email}', '{model.InviteCode}'", HttpContext.Connection.RemoteIpAddress.ToString());
+                    await CreateAuditLogEvent("InvalidInvitationCode", $"Email '{model.Email}', '{model.InviteCode}'");
 
                     return View(model);
                 }
@@ -170,7 +183,7 @@ namespace Rinsen.InnovationBoost.Controllers
 
                 if (createIdentityResult.Succeeded)
                 {
-                    await _auditLog.Log("IdentityCreated", $"Email '{model.Email}', ", HttpContext.Connection.RemoteIpAddress.ToString());
+                    await CreateAuditLogEvent("IdentityCreated", $"Email '{model.Email}'");
 
                     var createLocalAccountResult = await _localAccountService.CreateAsync(createIdentityResult.Identity.IdentityId, model.Email, model.Password);
 
@@ -180,19 +193,27 @@ namespace Rinsen.InnovationBoost.Controllers
 
                         if (loginResult.Succeeded)
                         {
-                            return View("UserCreated");    
+                            return View("UserCreated");
                         }
 
                         return View("UserCreated");
                     }
                 }
 
-                await _auditLog.Log("FailedToCreateIdentity", $"Email '{model.Email}', ", HttpContext.Connection.RemoteIpAddress.ToString());
+                await CreateAuditLogEvent("FailedToCreateIdentity", $"Email '{model.Email}'");
 
                 ModelState.AddModelError(string.Empty, "Create user invalid.");
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EnableTotp()
+        {
+            var totpSecret = await _localAccountService.EnableTotp();
+
+            return Ok(totpSecret);
         }
 
         [HttpGet]
@@ -206,6 +227,11 @@ namespace Rinsen.InnovationBoost.Controllers
         public IActionResult LoggedOut()
         {
             return View();
+        }
+
+        private Task CreateAuditLogEvent(string eventType, string details)
+        {
+            return _auditLog.Log(eventType, details, HttpContext.Connection.RemoteIpAddress.ToString());
         }
     }
 }

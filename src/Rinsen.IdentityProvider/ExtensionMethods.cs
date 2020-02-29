@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Linq;
+using System.Data.SqlClient;
 
 namespace Rinsen.IdentityProvider
 {
@@ -26,7 +27,6 @@ namespace Rinsen.IdentityProvider
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILocalAccountStorage, LocalAccountStorage>();
             services.AddScoped<IIdentityStorage, IdentityStorage>();
-            //services.AddScoped<ISessionStorage, SessionStorage>();
             services.AddScoped<IIdentityAccessor, IdentityAccessService>();
             services.AddScoped<IIdentityAttributeStorage, IdentityAttributeStorage>();
             services.AddTransient<IdentityServerClientBusiness, IdentityServerClientBusiness>();
@@ -34,8 +34,11 @@ namespace Rinsen.IdentityProvider
             services.AddTransient<IdentityServerIdentityResourceBusiness, IdentityServerIdentityResourceBusiness>();
             services.AddScoped<AuditLog, AuditLog>();
             services.AddScoped<AuditLogStorage, AuditLogStorage>();
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<ITwoFactorAuthenticationSessionStorage, TwoFactorAuthenticationSessionStorage>();
             services.AddScoped<IIdentityAccessor, IdentityAccessService>();
+            services.AddScoped<IUsedTotpLogStorage, UsedTotpLogStorage>();
+            services.AddScoped<IdentityServerDefaultInstaller>();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddSingleton<RandomStringGenerator, RandomStringGenerator>();
         }
 
@@ -118,6 +121,43 @@ namespace Rinsen.IdentityProvider
             {
                 throw new InvalidOperationException("The claims collection does not contain a element that match.");
             }
+        }
+
+        public static T GetValueOrDefault<T>(this SqlDataReader reader, string columnName)
+        {
+            object value = reader[columnName];
+
+            if (value != DBNull.Value)
+                return (T)value;
+
+            return default;
+        }
+
+        public static SqlParameter AddWithNullableValue(this SqlParameterCollection collection, string parameterName, object value)
+        {
+            if (value == null)
+                return collection.AddWithValue(parameterName, DBNull.Value);
+            else
+                return collection.AddWithValue(parameterName, value);
+        }
+
+        public static SqlParameter AddWithNullableValue(this SqlParameterCollection collection, string parameterName, byte?[] value)
+        {
+            var parameter = new SqlParameter(parameterName, System.Data.SqlDbType.VarBinary);
+            collection.Add(parameter);
+            if (value == null)
+                parameter.Value = DBNull.Value;
+            else
+                parameter.Value = value;
+
+            return parameter;
+        }
+public static SqlParameter AddWithNullableValue(this SqlParameterCollection collection, string parameterName, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return collection.AddWithValue(parameterName, DBNull.Value);
+            else
+                return collection.AddWithValue(parameterName, value);
         }
     }
 }

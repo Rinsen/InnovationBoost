@@ -7,6 +7,6 @@ namespace Rinsen.IdentityProvider
         Task<LoginResult> LoginAsync(string email, string password, string host, bool rememberMe);
         Task LogoutAsync();
         Task StartTotpFlow(string authSessionId);
-        Task<LoginResult> ConfirmTotpCode(string authSessionId, string keyCode);
+        Task<LoginResult> ConfirmTotpCode(string authSessionId, string keyCode, string host, bool rememberMe);
     }
 }

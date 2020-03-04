@@ -10,5 +10,11 @@ namespace Rinsen.IdentityProvider
 
         }
 
+        public SessionAlreadyExistException(string message)
+            : base(message)
+        {
+
+        }
+
     }
 }

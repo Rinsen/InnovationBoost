@@ -31,6 +31,8 @@ var npmPaths = {
     angularJs: "./node_modules/angular/*.js",
     angularSanitize: "./node_modules/angular-sanitize/*.js",
     jQuery: "./node_modules/jquery/dist/jquery*.js*",
+    jQueryValidate: "./node_modules/jquery-validation/dist/jquery*.js*",
+    jQueryValidateUnobtrusive: "./node_modules/jquery-validation-unobtrusive/dist/jquery*.js*",
     istevenMultiSelectCss: "./node_modules/isteven-angular-multiselect/*.css",
     istevenMultiSelectJs: "./node_modules/isteven-angular-multiselect/*.js",
     smartTableJs: "./node_modules/angular-smart-table/dist/*.js*",
@@ -91,7 +93,13 @@ gulp.task("angularSanitize", function () {
 });
 
 gulp.task("jQuery", function () {
-    return gulp.src([npmPaths.jQuery])
+    gulp.src([npmPaths.jQuery])
+        .pipe(gulp.dest(destPaths.js));
+
+    gulp.src([npmPaths.jQueryValidate])
+        .pipe(gulp.dest(destPaths.js));
+
+    return gulp.src([npmPaths.jQueryValidateUnobtrusive])
         .pipe(gulp.dest(destPaths.js));
 });
 

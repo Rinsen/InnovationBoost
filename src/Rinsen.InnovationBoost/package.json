@@ -5,15 +5,16 @@
   "devDependencies": {
   },
   "dependencies": {
-    "bootstrap": "3.4.1",
+    "bootstrap": "4.4.1",
     "gulp": "4.0.2",
     "gulp-concat": "2.6.1",
     "gulp-cssmin": "0.2.0",
     "gulp-uglify": "3.0.2",
-    "rimraf": "2.6.3",
+    "rimraf": "3.0.2",
     "angular": "1.7.9",
     "angular-sanitize": "1.7.9",
     "jquery": "3.4.1",
+    "jquery-validation-unobtrusive": "3.2.11",
     "isteven-angular-multiselect": "4.0.0",
     "angular-smart-table": "2.1.11",
     "toastr": "2.1.4"

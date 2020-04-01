@@ -16,8 +16,8 @@ namespace Rinsen.InnovationBoost.Installation
             var settingTable = dbChangeList.AddNewTable<Setting>();
 
             settingTable.AddAutoIncrementColumn(m => m.Id);
-            settingTable.AddColumn(m => m.IdentityId).Unique("UX_Settings_IdentityId_KeyField");
-            settingTable.AddColumn(m => m.KeyField, length: 100).Unique("UX_Settings_IdentityId_KeyField");
+            settingTable.AddColumn(m => m.IdentityId).ForeignKey("Identities").Unique("UQ_Settings_IdentityId_KeyField");
+            settingTable.AddColumn(m => m.KeyField, length: 256).Unique("UQ_Settings_IdentityId_KeyField");
             settingTable.AddColumn(m => m.ValueField, length: 4000);
             settingTable.AddColumn(m => m.Accessed);
         }

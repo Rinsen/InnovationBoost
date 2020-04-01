@@ -14,33 +14,33 @@ namespace Rinsen.InnovationBoost.Installation
         public override void AddDbChanges(List<IDbChange> dbChangeList)
         {
             var identitiesTable = dbChangeList.AddNewTable<Identity>("Identities").SetPrimaryKeyNonClustered();
-            identitiesTable.AddAutoIncrementColumn(m => m.ClusteredId, primaryKey: false).Unique().Clustered();
-            identitiesTable.AddColumn(m => m.IdentityId).PrimaryKey();
-            identitiesTable.AddColumn(m => m.Email, 256).Unique();
+            identitiesTable.AddAutoIncrementColumn(m => m.Id, primaryKey: false).Unique("UQ_Identities_Id").Clustered();
+            identitiesTable.AddColumn(m => m.IdentityId).PrimaryKey("PK_Identities_IdentityId");
+            identitiesTable.AddColumn(m => m.Email, 256).Unique("UQ_Identities_Email");
             identitiesTable.AddColumn(m => m.EmailConfirmed);
             identitiesTable.AddColumn(m => m.GivenName, 128);
             identitiesTable.AddColumn(m => m.Surname, 128);
-            identitiesTable.AddColumn(m => m.PhoneNumber, 128);
+            identitiesTable.AddColumn(m => m.PhoneNumber, 128).Unique("UQ_Identities_PhoneNumber");
             identitiesTable.AddColumn(m => m.PhoneNumberConfirmed);
             identitiesTable.AddColumn(m => m.Created);
             identitiesTable.AddColumn(m => m.Updated);
             identitiesTable.AddColumn(m => m.Deleted);
 
             var identityAttributesTable = dbChangeList.AddNewTable<IdentityAttribute>().SetPrimaryKeyNonClustered();
-            identityAttributesTable.AddAutoIncrementColumn(m => m.ClusteredId, primaryKey: false).Unique().Clustered();
-            identityAttributesTable.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId").Unique("UQ_IdentityAndAttribute");
-            identityAttributesTable.AddColumn(m => m.Attribute, 256).Unique("UQ_IdentityAndAttribute");
+            identityAttributesTable.AddAutoIncrementColumn(m => m.Id, primaryKey: false).Unique("UQ_IdentityAttributes_Id").Clustered();
+            identityAttributesTable.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId").Unique("UQ_IdentityAttributes_Attribute");
+            identityAttributesTable.AddColumn(m => m.Attribute, 256).Unique("UQ_IdentityAttributes_Attribute");
             identityAttributesTable.AddColumn(m => m.Created);
             identityAttributesTable.AddColumn(m => m.Updated);
             identityAttributesTable.AddColumn(m => m.Deleted);
 
             var localAccountsTable = dbChangeList.AddNewTable<LocalAccount>();
             localAccountsTable.AddAutoIncrementColumn(m => m.Id);
-            localAccountsTable.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId").Unique();
+            localAccountsTable.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId").Unique("UQ_LocalAccounts_IdentityId");
             localAccountsTable.AddColumn(m => m.FailedLoginCount);
             localAccountsTable.AddColumn(m => m.IsDisabled);
             localAccountsTable.AddColumn(m => m.IterationCount);
-            localAccountsTable.AddColumn(m => m.LoginId, 256).Unique();
+            localAccountsTable.AddColumn(m => m.LoginId, 256).Unique("UQ_LocalAccounts_LoginId");
             localAccountsTable.AddColumn(m => m.PasswordHash, 16);
             localAccountsTable.AddColumn(m => m.PasswordSalt, 16);
             localAccountsTable.AddColumn(m => m.SharedTotpSecret, length: 64);
@@ -53,9 +53,9 @@ namespace Rinsen.InnovationBoost.Installation
             localAccountsTable.AddColumn(m => m.Deleted);
 
             var sessionsTable = dbChangeList.AddNewTable<Session>().SetPrimaryKeyNonClustered();
-            sessionsTable.AddAutoIncrementColumn(m => m.Id, primaryKey: false).Unique().Clustered();
-            sessionsTable.AddColumn(m => m.SessionId, 60).PrimaryKey();
-            sessionsTable.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId");
+            sessionsTable.AddAutoIncrementColumn(m => m.Id, primaryKey: false).Unique("UQ_Sessions_Id").Clustered();
+            sessionsTable.AddColumn(m => m.SessionId, 60).PrimaryKey("PK_Sessions_SessionId");
+            sessionsTable.AddColumn(m => m.IdentityId).ForeignKey("Identities");
             sessionsTable.AddColumn(m => m.CorrelationId);
             sessionsTable.AddColumn(m => m.IpAddress, 45);
             sessionsTable.AddColumn(m => m.UserAgent, 200);
@@ -77,7 +77,7 @@ namespace Rinsen.InnovationBoost.Installation
 
             var usedTotpLogTable = dbChangeList.AddNewTable<UsedTotpLog>();
             usedTotpLogTable.AddAutoIncrementColumn(m => m.Id);
-            usedTotpLogTable.AddColumn(m => m.IdentityId).Unique("UX_UsedTotpLogs_IdentityId");
+            usedTotpLogTable.AddColumn(m => m.IdentityId).ForeignKey("Identities").Unique("UX_UsedTotpLogs_IdentityId");
             usedTotpLogTable.AddColumn(m => m.Code, 256).Unique("UX_UsedTotpLogs_IdentityId");
             usedTotpLogTable.AddColumn(m => m.UsedTime);
         }

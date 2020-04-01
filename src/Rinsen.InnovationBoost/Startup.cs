@@ -163,9 +163,7 @@ namespace Rinsen.InnovationBoost
                     options.DatabaseVersions.Add(new CreateTables());
                     options.DatabaseVersions.Add(new CreateSettingsTable());
                     options.DatabaseVersions.Add(new IdentityServerTableInstallation());
-                    options.DatabaseVersions.Add(new IdentityServerDeviceFlowCodesAdded());
                     options.DatabaseVersions.Add(new CreateLogTables());
-                    options.DatabaseVersions.Add(new IdentityServerClientTypeTableAdded());
                     options.DatabaseVersions.Add(new CreateAuditLog());
                 });
 

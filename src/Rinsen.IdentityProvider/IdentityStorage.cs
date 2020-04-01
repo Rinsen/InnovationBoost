@@ -74,7 +74,7 @@ namespace Rinsen.IdentityProvider
 
                     await connection.OpenAsync();
 
-                    identity.ClusteredId = (int)await command.ExecuteScalarAsync();
+                    identity.Id = (int)await command.ExecuteScalarAsync();
                 }
             }
             catch (SqlException ex)
@@ -108,7 +108,7 @@ namespace Rinsen.IdentityProvider
                             EmailConfirmed = (bool)reader["EmailConfirmed"],
                             GivenName = (string)reader["GivenName"],
                             Surname = (string)reader["Surname"],
-                            ClusteredId = (int)reader["ClusteredId"],
+                            Id = (int)reader["ClusteredId"],
                             IdentityId = (Guid)reader["IdentityId"],
                             PhoneNumber = (string)reader["PhoneNumber"],
                             PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"],

@@ -68,6 +68,12 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             identityServerApiResourcePropertiesTable.AddColumn(m => m.Created);
             identityServerApiResourcePropertiesTable.AddColumn(m => m.Updated);
 
+            var identityServerClientTypeTable = dbChangeList.AddNewTable<IdentityServerClientType>();
+            identityServerClientTypeTable.AddAutoIncrementColumn(m => m.Id);
+            identityServerClientTypeTable.AddColumn(m => m.Name, 256).Unique("UX_IdentityServerClientTypes_Name");
+            identityServerClientTypeTable.AddColumn(m => m.Created);
+            identityServerClientTypeTable.AddColumn(m => m.Updated);
+
             var identityServerClientsTable = dbChangeList.AddNewTable<IdentityServerClient>();
             identityServerClientsTable.AddAutoIncrementColumn(m => m.Id);
             identityServerClientsTable.AddColumn(m => m.ClientId, 200).Unique("UX_IdentityServerClients_ClientId");
@@ -107,6 +113,7 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             identityServerClientsTable.AddColumn(m => m.UpdateAccessTokenClaimsOnRefresh);
             identityServerClientsTable.AddColumn(m => m.UserCodeType, 250).Null();
             identityServerClientsTable.AddColumn(m => m.UserSsoLifetime);
+            identityServerClientsTable.AddColumn(m => m.ClientTypeId).Null().ForeignKey<IdentityServerClientType>(m => m.Id);
             identityServerClientsTable.AddColumn(m => m.Created);
             identityServerClientsTable.AddColumn(m => m.Updated);
 
@@ -206,28 +213,17 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             identityServerPersistedGrantsTable.AddColumn(m => m.Key, 250);
             identityServerPersistedGrantsTable.AddColumn(m => m.SubjectId, 250).Null();
             identityServerPersistedGrantsTable.AddColumn(m => m.Type, 250);
+
+            var identityServerDeviceFlowCode = dbChangeList.AddNewTable<IdentityServerDeviceFlowCode>();
+            identityServerDeviceFlowCode.AddAutoIncrementColumn(m => m.Id);
+            identityServerDeviceFlowCode.AddColumn(m => m.DeviceCode, length: 200).Unique("UX_IdentityServerDeviceFlowCodes_DeviceCode");
+            identityServerDeviceFlowCode.AddColumn(m => m.UserCode, length: 200).Unique("UX_IdentityServerDeviceFlowCodes_UserCode"); ;
+            identityServerDeviceFlowCode.AddColumn(m => m.ClientId, length: 200).ForeignKey<IdentityServerClient>(m => m.ClientId);
+            identityServerDeviceFlowCode.AddColumn(m => m.CreationTime);
+            identityServerDeviceFlowCode.AddColumn(m => m.Expiration);
+            identityServerDeviceFlowCode.AddColumn(m => m.IdentityId).ForeignKey("Identities", "IdentityId");
+            identityServerDeviceFlowCode.AddColumn(m => m.SerializedDeviceFlowCode, int.MaxValue);
+
         }
     }
 }
-
-
-
-//drop table IdentityServerApiResourceClaims
-//drop table IdentityServerApiResourceScopeClaims
-//drop table IdentityServerApiResourceScopes
-//drop table IdentityServerApiResourceSecrets
-//drop table IdentityServerApiResourceProperties
-//drop table IdentityServerApiResources
-//drop table IdentityServerClientClaims
-//drop table IdentityServerClientCorsOrigin
-//drop table IdentityServerClientGrantTypes
-//drop table IdentityServerClientIdpRestrictions
-//drop table IdentityServerClientPostLogoutRedirectUris
-//drop table IdentityServerClientRedirectUris
-//drop table IdentityServerClientScopes
-//drop table IdentityServerClientSecrets
-//drop table IdentityServerPersistedGrants
-//drop table IdentityServerClients
-//drop table IdentityServerIdentityResourceClaims
-//drop table IdentityServerIdentityResourceProperties
-//drop table IdentityServerIdentityResources

@@ -19,8 +19,8 @@ namespace Rinsen.InnovationBoost.Installation
 
             auditLogItems.AddAutoIncrementColumn(m => m.Id);
             auditLogItems.AddColumn(m => m.EventType, 256);
-            auditLogItems.AddColumn(m => m.Details, 2000);
-            auditLogItems.AddColumn(m => m.IpAddress, 256);
+            auditLogItems.AddColumn(m => m.Details, 4000);
+            auditLogItems.AddColumn(m => m.IpAddress, 45);
             auditLogItems.AddColumn(m => m.Timestamp);
         }
     }

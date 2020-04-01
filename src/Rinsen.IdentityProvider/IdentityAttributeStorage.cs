@@ -44,7 +44,7 @@ namespace Rinsen.IdentityProvider
                                 result.Add(new IdentityAttribute
                                 {
                                     Attribute = (string)reader["Attribute"],
-                                    ClusteredId = (int)reader["ClusteredId"],
+                                    Id = (int)reader["ClusteredId"],
                                     IdentityId = (Guid)reader["IdentityId"],
                                 });
                             }

@@ -18,15 +18,15 @@ namespace Rinsen.InnovationBoost.Installation
         {
             var logSource = dbChangeList.AddNewTable<LogSource>();
             logSource.AddAutoIncrementColumn(m => m.Id);
-            logSource.AddColumn(m => m.Name, 100).Unique().NotNull();
+            logSource.AddColumn(m => m.Name, 100).Unique("UQ_LogSources_Name").NotNull();
 
             var logEnvironmentTable = dbChangeList.AddNewTable<LogEnvironment>();
             logEnvironmentTable.AddAutoIncrementColumn(m => m.Id);
-            logEnvironmentTable.AddColumn(m => m.Name, 100).Unique().NotNull();
+            logEnvironmentTable.AddColumn(m => m.Name, 100).Unique("UQ_LogEnvironments_Name").NotNull();
 
             var logApplicationTable = dbChangeList.AddNewTable<LogApplication>();
             logApplicationTable.AddAutoIncrementColumn(m => m.Id);
-            logApplicationTable.AddColumn(m => m.ApplicationId, 100).Unique().NotNull();
+            logApplicationTable.AddColumn(m => m.ApplicationId, 100).Unique("UQ_LogApplications_Name").NotNull();
             logApplicationTable.AddColumn(m => m.DisplayName, 100).NotNull();
 
             var logsTable = dbChangeList.AddNewTable<Log>();

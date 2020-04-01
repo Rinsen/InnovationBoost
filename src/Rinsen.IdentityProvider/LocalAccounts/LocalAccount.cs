@@ -14,6 +14,16 @@ namespace Rinsen.IdentityProvider.LocalAccounts
 
         public byte[] PasswordSalt { get; set; }
 
+        public byte[] SharedTotpSecret { get; set; }
+
+        public DateTimeOffset? TwoFactorEmailEnabled { get; set; }
+
+        public DateTimeOffset? TwoFactorSmsEnabled { get; set; }
+
+        public DateTimeOffset? TwoFactorTotpEnabled { get; set; }
+
+        public DateTimeOffset? TwoFactorAppNotificationEnabled { get; set; }
+
         public int IterationCount { get; set; }
 
         public int FailedLoginCount { get; set; }
@@ -23,5 +33,7 @@ namespace Rinsen.IdentityProvider.LocalAccounts
         public DateTimeOffset Created { get; set; }
 
         public DateTimeOffset Updated { get; set; }
+
+        public DateTimeOffset? Deleted { get; set; }
     }
 }

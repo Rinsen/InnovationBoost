@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rinsen.IdentityProvider.Core;
 using Rinsen.InnovationBoost.Models;
-using Rinsen.Logger;
 using Rinsen.Logger.Service;
 using System;
 using System.Collections.Generic;
@@ -10,6 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Elmah;
+using Rinsen.IdentityProvider;
 
 namespace Rinsen.InnovationBoost.Controllers
 {
@@ -17,8 +16,6 @@ namespace Rinsen.InnovationBoost.Controllers
     public class LoggerController : Controller
     {
         private readonly ILogReader _logReader;
-        private readonly ILogWriter _logWriter;
-        private readonly LogHandler _logHandler;
         private readonly ISettingsManager _settingsManager;
 
         public LoggerController(ILogReader logReader,
@@ -27,8 +24,6 @@ namespace Rinsen.InnovationBoost.Controllers
             ISettingsManager settingsManager)
         {
             _logReader = logReader;
-            _logWriter = logWriter;
-            _logHandler = logHandler;
             _settingsManager = settingsManager;
         }
 

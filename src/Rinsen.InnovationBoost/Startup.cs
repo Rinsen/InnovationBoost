@@ -14,7 +14,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Rinsen.DatabaseInstaller;
 using Rinsen.IdentityProvider;
-using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.InnovationBoost.Installation.IdentityServer;
 using Rinsen.InnovationBoost.Installation;
@@ -23,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using IdentityServer4.Configuration;
 using IdentityServer4;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Rinsen.InnovationBoost
 {
@@ -40,6 +40,9 @@ namespace Rinsen.InnovationBoost
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var httpContextAccessor = new HttpContextAccessor();
+            services.AddSingleton<IHttpContextAccessor>(httpContextAccessor);
+
             if (_env.IsDevelopment())
             {
                 services.AddDatabaseInstaller(Configuration["Rinsen:ConnectionString"]);
@@ -87,8 +90,9 @@ namespace Rinsen.InnovationBoost
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]));
+                    options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]), httpContextAccessor);
                     options.LoginPath = "/Identity/Login";
+                    options.LogoutPath = "/Identity/LogOut";
 
                     options.ForwardDefaultSelector = ctx =>
                     {
@@ -159,8 +163,8 @@ namespace Rinsen.InnovationBoost
                     options.DatabaseVersions.Add(new CreateTables());
                     options.DatabaseVersions.Add(new CreateSettingsTable());
                     options.DatabaseVersions.Add(new IdentityServerTableInstallation());
-                    options.DatabaseVersions.Add(new IdentityServerDeviceFlowCodesAdded());
                     options.DatabaseVersions.Add(new CreateLogTables());
+                    options.DatabaseVersions.Add(new CreateAuditLog());
                 });
 
                 // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -249,4 +253,5 @@ namespace Rinsen.InnovationBoost
         }
     }
 }
+
 

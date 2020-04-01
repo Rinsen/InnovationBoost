@@ -14,13 +14,20 @@ namespace Rinsen.Logger.Service
             _logWriter = logWriter;
         }
 
-        public async Task<LogApplication> GetLogApplicationAsync(string applicationName)
+        public async Task<LogApplication> GetLogApplicationAsync(string applicationId, string displayName)
         {
-            var logApplication = await _logReader.GetLogApplicationAsync(applicationName);
+            var logApplication = await _logReader.GetLogApplicationAsync(applicationId);
 
             if (logApplication == default)
             {
-                return await _logWriter.CreateLogApplicationAsync(applicationName, "");
+                return await _logWriter.CreateLogApplicationAsync(applicationId, displayName);
+            }
+
+            if (logApplication.DisplayName != displayName)
+            {
+                logApplication.DisplayName = displayName;
+
+                await _logWriter.UpdateLogApplicationAsync(logApplication);
             }
 
             return logApplication;

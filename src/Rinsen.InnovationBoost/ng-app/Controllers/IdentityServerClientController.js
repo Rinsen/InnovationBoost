@@ -5,17 +5,19 @@
         .module('app')
         .controller('IdentityServerClientController', IdentityServerClientController);
 
-    IdentityServerClientController.$inject = ['IdentityServerClientService'];
+    IdentityServerClientController.$inject = ['IdentityServerClientService', 'IdentityServerApiResourceService', 'IdentityServerIdentityResourceService'];
 
-    function IdentityServerClientController(identityServerClientService) {
+    function IdentityServerClientController(identityServerClientService, identityServerApiResourceService, identityServerIdentityResourceService) {
         /* jshint validthis:true */
         var vm = this;
         vm.clients = [];
+        vm.types = [];
         vm.selectedClient = null;
+        vm.selectedClientIndex = null;
         vm.selectedTab = 'General';
         vm.saving = false;
         vm.create = {
-            allowedScope: '',
+            active: false,
             allowedCorsOrigin: '',
             allowedGrantType: '',
             claimType: '',
@@ -32,34 +34,68 @@
         };
 
         vm.selectClient = function (client) {
+            for (var i = 0; i < vm.clients.length; i++) {
+                if (client.id === vm.clients[i].id) {
+                    vm.selectedClientIndex = i;
+                }
+            }
+
             vm.selectedClient = JSON.parse(JSON.stringify(client));
+
+            
+        };
+
+        vm.selectPreviousClient = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            if (vm.selectedClientIndex > 0) {
+                vm.selectedClientIndex--;
+                var client = vm.clients[vm.selectedClientIndex];
+                vm.selectClient(client);
+            }
+        };
+
+        vm.selectNextClient = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            if (vm.selectedClientIndex < vm.clients.length - 1) {
+                vm.selectedClientIndex++;
+                var client = vm.clients[vm.selectedClientIndex];
+                vm.selectClient(client);
+            }
+        };
+
+        vm.closeEdit = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            vm.selectedClient = null;
         };
 
         vm.undoChanges = function () {
-            for (var i = 0; i < vm.clients.length; i++) {
-                if (vm.clients[i].clientId === vm.selectedClient.clientId) {
-                    vm.selectedClient = vm.clients[i];
+            vm.selectedClient = vm.clients[vm.selectedClientIndex];
 
-                    toastr.success("Undo comleted");
-                }
-            }
+            toastr.success("Undo comleted");
         };
 
         vm.saveClient = function () {
             vm.saving = true;
-
+            
             identityServerClientService.saveClient(vm.selectedClient)
                 .then(function (saveResponse) {
                     if (saveResponse.status === 200) {
                         identityServerClientService.getClient(vm.selectedClient.clientId).
                             then(function (response) {
-                                for (var i = 0; i < vm.clients.length; i++) {
-                                    if (vm.clients[i].clientId === vm.selectedClient.clientId) {
-                                        vm.clients[i] = response.data;
-                                    }
-                                }
+                                var client = response.data;
 
-                                vm.selectClient(response.data);
+                                addClientToClientsList(client, true);
+
+                                vm.selectClient(client);
 
                                 toastr.success("Saved");
                                 vm.saving = false;
@@ -73,31 +109,48 @@
                 });
         };
 
-        vm.createNewClient = function () {
+        vm.createNewNodeClient = function () {
             vm.saving = true;
 
-            identityServerClientService.createClient(vm.create.clientId, vm.create.clientName, vm.create.clientDescription)
-                .then(function (saveResponse) {
-                    if (saveResponse.status === 201) {
-                        vm.clients.push(saveResponse.data);
-
-                        toastr.success("Saved");
-                        vm.saving = false;
-
-                        vm.create.clientId = '';
-                        vm.create.clientName = '';
-                        vm.create.clientDescription = '';
-                    }
-                    else {
-                        toastr.error("Failed");
-                        vm.saving = false;
-                    }
-                },
+            identityServerClientService.createNodeClient(vm.create.clientName, vm.create.clientDescription)
+                .then(clientCreated,
                     function (response) {
                         toastr.error("Failed");
                         vm.saving = false;
                     });
         };
+
+        vm.createNewWebsiteClient = function () {
+            vm.saving = true;
+
+            identityServerClientService.createWebsiteClient(vm.create.clientName, vm.create.clientDescription)
+                .then(clientCreated,
+                    function (response) {
+                        toastr.error("Failed");
+                        vm.saving = false;
+                    });
+        };
+
+        function clientCreated(saveResponse) {
+            if (saveResponse.status === 201) {
+                var client = saveResponse.data;
+                
+                addClientToClientsList(client);
+
+                toastr.success("Saved");
+                vm.saving = false;
+
+                vm.create.clientId = '';
+                vm.create.clientName = '';
+                vm.create.clientDescription = '';
+                vm.create.active = false;
+                vm.selectClient(client);
+            }
+            else {
+                toastr.error("Failed");
+                vm.saving = false;
+            }
+        }
 
         vm.deleteClient = function (client) {
             if (window.confirm("Delete " + client.clientName)) {
@@ -144,15 +197,19 @@
         vm.createNewClientSecret = function () {
             identityServerClientService.getRandomString(40)
                 .then(function (response) {
-                    vm.selectedClient.clientSecrets.push({ type: vm.create.clientSecretType, value: response.data, description: vm.create.clientSecretDescription, expiration: vm.create.clientSecretExpiration, state: 1 });
+                    if (vm.create.clientSecretExpiration === '') {
+                        vm.selectedClient.clientSecrets.push({ type: vm.create.clientSecretType, value: response.data, description: vm.create.clientSecretDescription, state: 1 });
+                    }
+                    else {
+                        vm.selectedClient.clientSecrets.push({ type: vm.create.clientSecretType, value: response.data, description: vm.create.clientSecretDescription, expiration: vm.create.clientSecretExpiration, state: 1 });
+                    }
 
                     vm.create.clientSecretType = 'SharedSecret';
                     vm.create.clientSecretDescription = '';
                     vm.create.clientSecretExpiration = '';
                 });
-
-            
         };
+
 
         vm.createNewIdentityProviderRestriction = function () {
             vm.selectedClient.identityProviderRestrictions.push({ provider: vm.create.identityProviderRestriction, state: 1 });
@@ -200,18 +257,59 @@
             object.state = 3;
         };
 
+        function stopActionBecauseOfUnsavedChanges() {
+            if (!angular.equals(vm.selectedClient, vm.clients[vm.selectedClientIndex])) {
+                if (!window.confirm("Unsaved changes to " + vm.clients[vm.selectedClientIndex].clientName + " will be lost")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function addClientToClientsList(client, updated) {
+            client.clientTypeName = '';
+
+            if (client.clientTypeId !== undefined) {
+                vm.types.forEach(function (type) {
+                    if (type.id === client.clientTypeId) {
+                        client.clientTypeName = type.name;
+                    }
+                });
+            }
+
+            if (updated !== undefined && updated !== false) {
+                for (var i = 0; i < vm.clients.length; i++) {
+                    if (vm.clients[i].clientId === client.clientId) {
+                        vm.clients[i] = client;
+                    }
+                }
+            }
+            else {
+                vm.clients.push(client);
+            }
+        }
+
         activate();
 
         function activate() {
-            identityServerClientService.getClients().then(function (response) {
-                vm.clients.length = 0;
-
-                response.data.forEach(function (client) {
-                    vm.clients.push(client);
+            // All of these could be fetched in paralell as long as the last one is defered until the first three is done
+            identityServerClientService.getClientTypes().then(function (typeResponse) {
+                typeResponse.data.forEach(function (type) {
+                    vm.types.push(type);
                 });
 
-            });
+                
 
+                identityServerClientService.getClients().then(function (clientResponse) {
+                    vm.clients.length = 0;
+
+                    clientResponse.data.forEach(function (client) {
+                        addClientToClientsList(client);
+                    });
+                });
+            });
         }
     }
 })();
+
+

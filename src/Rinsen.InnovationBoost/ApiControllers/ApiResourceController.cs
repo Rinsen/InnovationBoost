@@ -28,7 +28,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(403)]
         public async Task<ActionResult<List<IdentityServerApiResource>>> GetAll()
         {
-            var identityServerApiResources = await _identityServerApiResourceBusiness.GetIdentityServerApiResources();
+            var identityServerApiResources = await _identityServerApiResourceBusiness.GetIdentityServerApiResourcesAsync();
 
             return identityServerApiResources;
         }

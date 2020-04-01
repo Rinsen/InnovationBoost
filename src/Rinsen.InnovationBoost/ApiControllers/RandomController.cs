@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rinsen.IdentityProvider.Core;
+using Rinsen.IdentityProvider;
 
 namespace Rinsen.InnovationBoost.ApiControllers
 {

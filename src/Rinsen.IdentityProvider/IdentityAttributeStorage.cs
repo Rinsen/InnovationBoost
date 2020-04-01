@@ -33,19 +33,21 @@ namespace Rinsen.IdentityProvider
                 using (var command = new SqlCommand(_getSql, connection))
                 {
                     command.Parameters.Add(new SqlParameter("@IdentityId", identityId));
-                    connection.Open();
-                    var reader = await command.ExecuteReaderAsync();
 
-                    if (reader.HasRows)
+                    await connection.OpenAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        if (reader.HasRows)
                         {
-                            result.Add(new IdentityAttribute
+                            while (await reader.ReadAsync())
                             {
-                                Attribute = (string)reader["Attribute"],
-                                ClusteredId = (int)reader["ClusteredId"],
-                                IdentityId = (Guid)reader["IdentityId"],
-                            });
+                                result.Add(new IdentityAttribute
+                                {
+                                    Attribute = (string)reader["Attribute"],
+                                    Id = (int)reader["ClusteredId"],
+                                    IdentityId = (Guid)reader["IdentityId"],
+                                });
+                            }
                         }
                     }
                 }

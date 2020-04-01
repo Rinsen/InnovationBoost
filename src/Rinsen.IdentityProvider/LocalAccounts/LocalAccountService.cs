@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using OtpNet;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -30,30 +31,29 @@ namespace Rinsen.IdentityProvider.LocalAccounts
             _log = log;
         }
 
-
         public async Task ChangePasswordAsync(string oldPassword, string newPassword)
         {
             var localAccount = await GetLocalAccountAsync(oldPassword);
 
             localAccount.PasswordHash = GetPasswordHash(newPassword, localAccount);
-            localAccount.Updated = DateTimeOffset.Now;
 
             await _localAccountStorage.UpdateAsync(localAccount);
         }
 
         public async Task<CreateLocalAccountResult> CreateAsync(Guid identityId, string loginId, string password)
         {
-            var bytes = new byte[_options.NumberOfBytesInPasswordSalt];
-            CryptoRandom.GetBytes(bytes);
+            var passwordSalt = new byte[_options.NumberOfBytesInPasswordSalt];
+            var totpSecret = new byte[64];
+            CryptoRandom.GetBytes(passwordSalt);
+            CryptoRandom.GetBytes(totpSecret);
 
             var localAccount = new LocalAccount
             {
                 IdentityId = identityId,
                 IterationCount = _options.IterationCount,
-                PasswordSalt = bytes,
-                LoginId = loginId,
-                Created = DateTimeOffset.Now,
-                Updated = DateTimeOffset.Now
+                PasswordSalt = passwordSalt,
+                SharedTotpSecret = totpSecret,
+                LoginId = loginId
             };
 
             localAccount.PasswordHash = GetPasswordHash(password, localAccount);
@@ -88,12 +88,12 @@ namespace Rinsen.IdentityProvider.LocalAccounts
         {
             var localAccount = await _localAccountStorage.GetAsync(_identityAccessor.IdentityId);
 
-            ValidatePassword(localAccount, password);
+            await ValidatePassword(localAccount, password);
 
             return localAccount;
         }
         
-        public async Task<Guid?> GetIdentityIdAsync(string loginId, string password)
+        public async Task<LocalAccount> GetLocalAccountAsync(string loginId, string password)
         {
             var localAccount = await _localAccountStorage.GetAsync(loginId);
 
@@ -102,47 +102,64 @@ namespace Rinsen.IdentityProvider.LocalAccounts
                 return null;
             }
 
-            ValidatePassword(localAccount, password);
+            await ValidatePassword(localAccount, password);
             
             if (localAccount.FailedLoginCount > 0)
             {
-                SetFailedLoginCountToZero(localAccount);
+                await SetFailedLoginCountToZero(localAccount);
             }
 
-            return localAccount.IdentityId;
+            return localAccount;
         }
 
-        private void SetFailedLoginCountToZero(LocalAccount localAccount)
+        private Task SetFailedLoginCountToZero(LocalAccount localAccount)
         {
             localAccount.FailedLoginCount = 0;
             localAccount.Updated = DateTimeOffset.Now;
-            _localAccountStorage.UpdateFailedLoginCountAsync(localAccount);
+            return _localAccountStorage.UpdateFailedLoginCountAsync(localAccount);
         }
 
         public async Task ValidatePasswordAsync(string password)
         {
             var localAccount = await _localAccountStorage.GetAsync(_identityAccessor.IdentityId);
-            ValidatePassword(localAccount, password);
+            await ValidatePassword(localAccount, password);
         }
 
-        private void ValidatePassword(LocalAccount localAccount, string password)
+        private async Task ValidatePassword(LocalAccount localAccount, string password)
         {
             if (!localAccount.PasswordHash.SequenceEqual(GetPasswordHash(password, localAccount)))
             {
-                InvalidPassword(localAccount);
+                await InvalidPassword(localAccount);
             }
         }
 
-        private void InvalidPassword(LocalAccount localAccount)
+        private async Task InvalidPassword(LocalAccount localAccount)
         {
             localAccount.FailedLoginCount++;
             localAccount.Updated = DateTimeOffset.Now;
 
             _log.LogWarning("Invalid password for local account {0} with iteration count {1}", localAccount.IdentityId, localAccount.IterationCount);
 
-            _localAccountStorage.UpdateFailedLoginCountAsync(localAccount);
+            await _localAccountStorage.UpdateFailedLoginCountAsync(localAccount);
 
             throw new UnauthorizedAccessException("Invalid password");
+        }
+
+        public Task<LocalAccount> GetLocalAccountAsync(Guid identityId)
+        {
+            return _localAccountStorage.GetAsync(identityId);
+        }
+
+        public async Task<string> EnableTotp()
+        {
+            var localAccount = await _localAccountStorage.GetAsync(_identityAccessor.IdentityId);
+            var result = Base32Encoding.ToString(localAccount.SharedTotpSecret);
+
+            localAccount.TwoFactorTotpEnabled = DateTimeOffset.Now;
+
+            await _localAccountStorage.UpdateAsync(localAccount);
+
+            return result;
         }
     }
 }

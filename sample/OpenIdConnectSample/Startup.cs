@@ -45,7 +45,7 @@ namespace OpenIdConnectSample
                 options.ClientId = "mvc";
                 options.ClientSecret = "secret";
                 //options.Authority = "https://innovationboost.azurewebsites.net/";
-                options.Authority = "https://localhost:44317/";
+                options.Authority = "https://localhost:44355/";
 
             });
 

@@ -29,10 +29,31 @@ namespace Rinsen.InnovationBoost.ApiControllers
         {
             var logItemsList = logItems.ToList();
 
-            var logApplication = await _logApplicationHandler.GetLogApplicationAsync(User.Claims.First(m => m.Type == "client_id").Value);
+            var applicationId = User.Claims.First(m => m.Type == "client_id").Value;
+            var displayName = GetDisplayName();
+
+            var logApplication = await _logApplicationHandler.GetLogApplicationAsync(applicationId, displayName);
 
             await _logHandler.CreateLogs(logItemsList, logApplication.Id);
         }
 
+        private string GetDisplayName()
+        {
+            var nameClaim = User.Claims.FirstOrDefault(m => m.Type == "client_name");
+
+            if (nameClaim != default)
+            {
+                return nameClaim.Value;
+            }
+
+            nameClaim = User.Claims.FirstOrDefault(m => m.Type == "client_nodename");
+
+            if (nameClaim != default)
+            {
+                return nameClaim.Value;
+            }
+
+            return string.Empty;
+        }
     }
 }

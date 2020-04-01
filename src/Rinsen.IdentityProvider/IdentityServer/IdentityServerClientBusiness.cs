@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
-using Rinsen.IdentityProvider.Core;
 using Rinsen.IdentityProvider.IdentityServer.Entities;
 
 namespace Rinsen.IdentityProvider.IdentityServer
@@ -83,13 +82,22 @@ namespace Rinsen.IdentityProvider.IdentityServer
             client.AllowedCorsOrigins = identityServerClient.AllowedCorsOrigins.Select(aco => aco.Origin).ToArray();
             client.AllowedGrantTypes= identityServerClient.AllowedGrantTypes.Select(agt => agt.GrantType ).ToArray();
             client.AllowedScopes = identityServerClient.AllowedScopes.Select(s => s.Scope).ToArray();
-            client.Claims = identityServerClient.Claims.Select(s => new Claim(s.Type, s.Value, RinsenIdentityConstants.RinsenIdentityProvider)).ToArray();
             client.ClientSecrets = identityServerClient.ClientSecrets.Select(s => new Secret { Description = s.Description, Expiration = s.Expiration.HasValue ? s.Expiration.Value.DateTime : (DateTime?)null, Type = s.Type, Value = s.Value }).ToArray();
             client.IdentityProviderRestrictions = identityServerClient.IdentityProviderRestrictions.Select(s => s.Provider).ToArray();
             client.PostLogoutRedirectUris = identityServerClient.PostLogoutRedirectUris.Select(s => s.PostLogoutRedirectUri).ToArray();
             client.RedirectUris = identityServerClient.RedirectUris.Select(s => s.RedirectUri).ToArray();
 
+            client.Claims = identityServerClient.Claims.Select(s => new Claim(s.Type, s.Value, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider)).ToList();
+            client.Claims.Add(new Claim("name", identityServerClient.ClientName, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider));
+
             return client;
+        }
+
+        public Task<List<IdentityServerClientType>> GetAllClientTypes()
+        {
+            var clientTypes = _identityServerDbContext.IdentityServerClientTypes.ToListAsync();
+
+            return clientTypes;
         }
 
         public Task<IdentityServerClient> GetIdentityServerClient(string clientId)
@@ -161,64 +169,101 @@ namespace Rinsen.IdentityProvider.IdentityServer
             await SaveClient(exampleClient);
         }
 
-        private async Task SaveClient(Client exampleClient)
+        public async Task<string> CreateNewTypedClient(string clientName, string description, string typeName)
+        {
+            var exampleClient = new Client
+            {
+                ClientId = Guid.NewGuid().ToString(),
+                ClientName = clientName,
+                Description = description
+            };
+            var id = await GetClientTypeId(typeName);
+
+            await SaveClient(exampleClient, id);
+
+            return exampleClient.ClientId;
+        }
+
+        private async Task<int> GetClientTypeId(string typeName)
+        {
+            var identityServerClientType = await _identityServerDbContext.IdentityServerClientTypes.FirstOrDefaultAsync(m => m.Name == typeName);
+
+            if (identityServerClientType == default)
+            {
+                identityServerClientType = new IdentityServerClientType
+                {
+                    Created = DateTimeOffset.Now,
+                    Name = typeName,
+                    Updated = DateTimeOffset.Now
+                };
+
+                await _identityServerDbContext.IdentityServerClientTypes.AddAsync(identityServerClientType);
+
+                await _identityServerDbContext.SaveChangesAsync();
+            }
+
+            return identityServerClientType.Id;
+        }
+
+        private async Task SaveClient(Client clientToCreate, int? typeId = default)
         {
             var client = new IdentityServerClient
             {
-                AbsoluteRefreshTokenLifetime = exampleClient.AbsoluteRefreshTokenLifetime,
-                AccessTokenLifetime = exampleClient.AccessTokenLifetime,
-                AccessTokenType = exampleClient.AccessTokenType,
-                AllowAccessTokensViaBrowser = exampleClient.AllowAccessTokensViaBrowser,
+                AbsoluteRefreshTokenLifetime = clientToCreate.AbsoluteRefreshTokenLifetime,
+                AccessTokenLifetime = clientToCreate.AccessTokenLifetime,
+                AccessTokenType = clientToCreate.AccessTokenType,
+                AllowAccessTokensViaBrowser = clientToCreate.AllowAccessTokensViaBrowser,
                 AllowedCorsOrigins = new List<IdentityServerClientCorsOrigin>(),
                 AllowedGrantTypes = new List<IdentityServerClientGrantType>(),
                 AllowedScopes = new List<IdentityServerClientScope>(),
-                AllowOfflineAccess = exampleClient.AllowOfflineAccess,
-                AllowPlainTextPkce = exampleClient.AllowPlainTextPkce,
-                AllowRememberConsent = exampleClient.AllowRememberConsent,
-                AlwaysIncludeUserClaimsInIdToken = exampleClient.AlwaysIncludeUserClaimsInIdToken,
-                AlwaysSendClientClaims = exampleClient.AlwaysSendClientClaims,
-                AuthorizationCodeLifetime = exampleClient.AuthorizationCodeLifetime,
-                BackChannelLogoutSessionRequired = exampleClient.BackChannelLogoutSessionRequired,
-                BackChannelLogoutUri = exampleClient.BackChannelLogoutUri,
+                AllowOfflineAccess = clientToCreate.AllowOfflineAccess,
+                AllowPlainTextPkce = clientToCreate.AllowPlainTextPkce,
+                AllowRememberConsent = clientToCreate.AllowRememberConsent,
+                AlwaysIncludeUserClaimsInIdToken = clientToCreate.AlwaysIncludeUserClaimsInIdToken,
+                AlwaysSendClientClaims = clientToCreate.AlwaysSendClientClaims,
+                AuthorizationCodeLifetime = clientToCreate.AuthorizationCodeLifetime,
+                BackChannelLogoutSessionRequired = clientToCreate.BackChannelLogoutSessionRequired,
+                BackChannelLogoutUri = clientToCreate.BackChannelLogoutUri,
                 Claims = new List<IdentityServerClientClaim>(),
-                ClientClaimsPrefix = exampleClient.ClientClaimsPrefix,
-                ClientId = exampleClient.ClientId,
-                ClientName = exampleClient.ClientName,
+                ClientClaimsPrefix = clientToCreate.ClientClaimsPrefix,
+                ClientId = clientToCreate.ClientId,
+                ClientName = clientToCreate.ClientName,
                 ClientSecrets = new List<IdentityServerClientSecret>(),
-                ClientUri = exampleClient.ClientUri,
-                ConsentLifetime = exampleClient.ConsentLifetime,
-                Description = exampleClient.Description,
-                DeviceCodeLifetime = exampleClient.DeviceCodeLifetime,
-                Enabled = exampleClient.Enabled,
-                EnableLocalLogin = exampleClient.EnableLocalLogin,
-                FrontChannelLogoutSessionRequired = exampleClient.FrontChannelLogoutSessionRequired,
-                FrontChannelLogoutUri = exampleClient.FrontChannelLogoutUri,
+                ClientTypeId = typeId,
+                ClientUri = clientToCreate.ClientUri,
+                ConsentLifetime = clientToCreate.ConsentLifetime,
+                Description = clientToCreate.Description,
+                DeviceCodeLifetime = clientToCreate.DeviceCodeLifetime,
+                Enabled = clientToCreate.Enabled,
+                EnableLocalLogin = clientToCreate.EnableLocalLogin,
+                FrontChannelLogoutSessionRequired = clientToCreate.FrontChannelLogoutSessionRequired,
+                FrontChannelLogoutUri = clientToCreate.FrontChannelLogoutUri,
                 IdentityProviderRestrictions = new List<IdentityServerClientIdpRestriction>(),
-                IdentityTokenLifetime = exampleClient.IdentityTokenLifetime,
-                IncludeJwtId = exampleClient.IncludeJwtId,
-                LogoUri = exampleClient.LogoUri,
-                PairWiseSubjectSalt = exampleClient.PairWiseSubjectSalt,
+                IdentityTokenLifetime = clientToCreate.IdentityTokenLifetime,
+                IncludeJwtId = clientToCreate.IncludeJwtId,
+                LogoUri = clientToCreate.LogoUri,
+                PairWiseSubjectSalt = clientToCreate.PairWiseSubjectSalt,
                 PostLogoutRedirectUris = new List<IdentityServerClientPostLogoutRedirectUri>(),
-                ProtocolType = exampleClient.ProtocolType,
+                ProtocolType = clientToCreate.ProtocolType,
                 RedirectUris = new List<IdentityServerClientRedirectUri>(),
-                RefreshTokenExpiration = exampleClient.RefreshTokenExpiration,
-                RefreshTokenUsage = exampleClient.RefreshTokenUsage,
-                RequireClientSecret = exampleClient.RequireClientSecret,
-                RequireConsent = exampleClient.RequireConsent,
-                RequirePkce = exampleClient.RequirePkce,
-                SlidingRefreshTokenLifetime = exampleClient.SlidingRefreshTokenLifetime,
-                UpdateAccessTokenClaimsOnRefresh = exampleClient.UpdateAccessTokenClaimsOnRefresh,
-                UserCodeType = exampleClient.UserCodeType,
-                UserSsoLifetime = exampleClient.UserSsoLifetime
+                RefreshTokenExpiration = clientToCreate.RefreshTokenExpiration,
+                RefreshTokenUsage = clientToCreate.RefreshTokenUsage,
+                RequireClientSecret = clientToCreate.RequireClientSecret,
+                RequireConsent = clientToCreate.RequireConsent,
+                RequirePkce = clientToCreate.RequirePkce,
+                SlidingRefreshTokenLifetime = clientToCreate.SlidingRefreshTokenLifetime,
+                UpdateAccessTokenClaimsOnRefresh = clientToCreate.UpdateAccessTokenClaimsOnRefresh,
+                UserCodeType = clientToCreate.UserCodeType,
+                UserSsoLifetime = clientToCreate.UserSsoLifetime,
             };
 
-            client.AllowedCorsOrigins.AddRange(exampleClient.AllowedCorsOrigins.Select(aco => new IdentityServerClientCorsOrigin { Origin = aco }));
-            client.AllowedGrantTypes.AddRange(exampleClient.AllowedGrantTypes.Select(agt => new IdentityServerClientGrantType { GrantType = agt }));
-            client.AllowedScopes.AddRange(exampleClient.AllowedScopes.Select(s => new IdentityServerClientScope { Scope = s }));
-            client.Claims.AddRange(exampleClient.Claims.Select(s => new IdentityServerClientClaim { Type = s.Type, Value = s.Value }));
-            client.ClientSecrets.AddRange(exampleClient.ClientSecrets.Select(s => new IdentityServerClientSecret { Description = s.Description, Expiration = s.Expiration, Type = s.Type, Value = s.Value }));
-            client.IdentityProviderRestrictions.AddRange(exampleClient.IdentityProviderRestrictions.Select(s => new IdentityServerClientIdpRestriction { Provider = s }));
-            client.PostLogoutRedirectUris.AddRange(exampleClient.PostLogoutRedirectUris.Select(s => new IdentityServerClientPostLogoutRedirectUri { PostLogoutRedirectUri = s }));
+            client.AllowedCorsOrigins.AddRange(clientToCreate.AllowedCorsOrigins.Select(aco => new IdentityServerClientCorsOrigin { Origin = aco }));
+            client.AllowedGrantTypes.AddRange(clientToCreate.AllowedGrantTypes.Select(agt => new IdentityServerClientGrantType { GrantType = agt }));
+            client.AllowedScopes.AddRange(clientToCreate.AllowedScopes.Select(s => new IdentityServerClientScope { Scope = s }));
+            client.Claims.AddRange(clientToCreate.Claims.Select(s => new IdentityServerClientClaim { Type = s.Type, Value = s.Value }));
+            client.ClientSecrets.AddRange(clientToCreate.ClientSecrets.Select(s => new IdentityServerClientSecret { Description = s.Description, Expiration = s.Expiration, Type = s.Type, Value = s.Value }));
+            client.IdentityProviderRestrictions.AddRange(clientToCreate.IdentityProviderRestrictions.Select(s => new IdentityServerClientIdpRestriction { Provider = s }));
+            client.PostLogoutRedirectUris.AddRange(clientToCreate.PostLogoutRedirectUris.Select(s => new IdentityServerClientPostLogoutRedirectUri { PostLogoutRedirectUri = s }));
 
             _identityServerDbContext.IdentityServerClients.Add(client);
 

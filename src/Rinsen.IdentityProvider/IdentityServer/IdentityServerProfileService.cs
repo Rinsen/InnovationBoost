@@ -7,7 +7,6 @@ using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
-using Rinsen.IdentityProvider.Core;
 
 namespace Rinsen.IdentityProvider.IdentityServer
 {

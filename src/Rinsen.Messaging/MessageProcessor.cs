@@ -37,7 +37,7 @@ namespace Rinsen.Messaging
             await _messageDbContext.SaveChangesAsync();
 
             // Call handlers
-            var preferedMessageTypes = await _messageDbContext.PreferedMessageTypes.Where(m => m.IdentityId == senderId).ToListAsync();
+            var preferedMessageTypes = await _messageDbContext.PreferedMessageTypes.Where(m => m.IdentityId == receiverId).ToListAsync();
 
             foreach (var messageHandler in _messageHandlerFactory.CreateHandlers())
             {

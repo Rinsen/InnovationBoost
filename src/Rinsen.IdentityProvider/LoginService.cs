@@ -3,13 +3,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Rinsen.IdentityProvider.Core;
+using OtpNet;
 using Rinsen.IdentityProvider.LocalAccounts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace Rinsen.IdentityProvider
@@ -22,17 +21,23 @@ namespace Rinsen.IdentityProvider
         private readonly ILogger<LoginService> _log;
         private readonly ILocalAccountService _localAccountService;
         private readonly IIdentityAttributeStorage _identityAttributeStorage;
+        private readonly IUsedTotpLogStorage _usedTotpLogStorage;
+        private readonly ITwoFactorAuthenticationSessionStorage _twoFactorAuthenticationSessionStorage;
 
         public LoginService(ILocalAccountService localAccountService,
             IIdentityService identityService,
             IIdentityAttributeStorage identityAttributeStorage,
+            IUsedTotpLogStorage usedTotpLogStorage,
+            ITwoFactorAuthenticationSessionStorage twoFactorAuthenticationSessionStorage,
             IHttpContextAccessor httpContextAccessor,
-            RandomStringGenerator randomStringGenerator, 
+            RandomStringGenerator randomStringGenerator,
             ILogger<LoginService> log)
         {
             _localAccountService = localAccountService;
             _identityService = identityService;
             _identityAttributeStorage = identityAttributeStorage;
+            _usedTotpLogStorage = usedTotpLogStorage;
+            _twoFactorAuthenticationSessionStorage = twoFactorAuthenticationSessionStorage;
             _httpContextAccessor = httpContextAccessor;
             _randomStringGenerator = randomStringGenerator;
             _log = log;
@@ -40,10 +45,10 @@ namespace Rinsen.IdentityProvider
 
         public async Task<LoginResult> LoginAsync(string email, string password, string host, bool rememberMe)
         {
-            Guid? identityId;
+            LocalAccount localAccount;
             try
             {
-                identityId = await _localAccountService.GetIdentityIdAsync(email, password);
+                localAccount = await _localAccountService.GetLocalAccountAsync(email, password);
             }
             catch (UnauthorizedAccessException e)
             {
@@ -51,13 +56,81 @@ namespace Rinsen.IdentityProvider
 
                 return LoginResult.Failure();
             }
-            
-            if (identityId == null)
+
+            if (localAccount == null)
             {
                 return LoginResult.Failure();
             }
 
-            var identity = await _identityService.GetIdentityAsync((Guid)identityId);
+            if (localAccount.TwoFactorAppNotificationEnabled is object || localAccount.TwoFactorEmailEnabled is object
+                || localAccount.TwoFactorSmsEnabled is object|| localAccount.TwoFactorTotpEnabled is object)
+            {
+                string keyCode = string.Empty;
+                if (localAccount.TwoFactorEmailEnabled is object || localAccount.TwoFactorSmsEnabled is object)
+                {
+                    keyCode = _randomStringGenerator.GetRandomString(10);
+                }
+
+                var sessionId = _randomStringGenerator.GetRandomString(50);
+                var twoFactorAuthenticationSession = new TwoFactorAuthenticationSession
+                {
+                    Created = DateTimeOffset.Now,
+                    IdentityId = localAccount.IdentityId,
+                    KeyCode = keyCode,
+                    SessionId = sessionId,
+                    Type = TwoFactorType.NotSelected
+                };
+
+                await _twoFactorAuthenticationSessionStorage.Create(twoFactorAuthenticationSession);
+
+                return LoginResult.RequireTwoFactor(twoFactorAuthenticationSession.SessionId, localAccount.TwoFactorEmailEnabled is object, localAccount.TwoFactorSmsEnabled is object, localAccount.TwoFactorTotpEnabled is object, localAccount.TwoFactorAppNotificationEnabled is object);
+            }
+
+            return await PrivateLogin(host, rememberMe, localAccount);
+        }
+
+        public async Task StartTotpFlow(string authSessionId)
+        {
+            var twoFactorAuthenticationSession = await _twoFactorAuthenticationSessionStorage.Get(authSessionId);
+
+            if (twoFactorAuthenticationSession is object)
+            {
+                twoFactorAuthenticationSession.Type = TwoFactorType.Totp;
+
+                await _twoFactorAuthenticationSessionStorage.Update(twoFactorAuthenticationSession);
+            }
+            else
+            {
+                throw new Exception("Two factor auth session not found");
+            }
+        }
+
+        public async Task<LoginResult> ConfirmTotpCode(string authSessionId, string keyCode, string host, bool rememberMe)
+        {
+            var twoFactorAuthenticationSession = await _twoFactorAuthenticationSessionStorage.Get(authSessionId);
+            var localAccount = await _localAccountService.GetLocalAccountAsync(twoFactorAuthenticationSession.IdentityId);
+
+            if (localAccount.TwoFactorTotpEnabled is null || localAccount.SharedTotpSecret is null)
+            {
+                throw new Exception("Totp is not enabled for this local account");
+            }
+
+            var totp = new Totp(localAccount.SharedTotpSecret);
+            if(totp.VerifyTotp(keyCode, out var timeStepMatched, VerificationWindow.RfcSpecifiedNetworkDelay))
+            {
+                await _usedTotpLogStorage.CreateLog(new UsedTotpLog { IdentityId = localAccount.IdentityId, Code = keyCode, UsedTime = DateTimeOffset.Now });
+                
+                var loginResult = await PrivateLogin(host, rememberMe, localAccount);
+
+                return loginResult;
+            }
+
+            throw new Exception("Totp key not valid");
+        }
+
+        private async Task<LoginResult> PrivateLogin(string host, bool rememberMe, LocalAccount localAccount)
+        {
+            var identity = await _identityService.GetIdentityAsync(localAccount.IdentityId);
 
             var expiration = DateTimeOffset.UtcNow.AddMonths(1);
             var timeToExpiration = expiration.Subtract(DateTimeOffset.Now);
@@ -75,7 +148,7 @@ namespace Rinsen.IdentityProvider
 
             await _httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authenticationProperties);
 
-            return LoginResult.Success(principal);
+            return LoginResult.Success(principal, localAccount.LoginId);
         }
 
         private async Task<List<Claim>> GetClaimsForIdentityAsync(Identity identity, string host, bool rememberMe, TimeSpan timeToExpiration)

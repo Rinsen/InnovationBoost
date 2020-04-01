@@ -1,9 +1,7 @@
 @model Rinsen.InnovationBoost.Models.LoggerModel
-@using Microsoft.AspNetCore.Hosting;
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Serialization;
 
-@inject IWebHostEnvironment HostingEnvironment
 @{
     ViewBag.NgAppName = "app";
 }
@@ -51,16 +49,16 @@
             <table st-table="logTable" st-safe-src="vm.logs" class="table table-striped table-bordered">
                 <thead>
                     <tr>
+                        <th colspan="7"><input st-search="" class="form-control" placeholder="global search ..." type="text" /></th>
+                    </tr>
+                    <tr>
                         <th st-sort="id">Id</th>
                         <th st-sort="sourceName">SourceName</th>
                         <th st-sort="message">Message</th>
                         <th st-sort="applicationName">ApplicationName</th>
                         <th st-sort="logLevelName">LogLevel</th>
-                        <th st-sort="logLevelName">Environment</th>
+                        <th st-sort="environmentName">Environment</th>
                         <th st-sort="timestamp">Timestamp</th>
-                    </tr>
-                    <tr>
-                        <th colspan="7"><input st-search="" class="form-control" placeholder="Global search ..." type="text" /></th>
                     </tr>
                 </thead>
                 <tbody>

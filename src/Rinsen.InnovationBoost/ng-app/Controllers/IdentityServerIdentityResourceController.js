@@ -12,6 +12,7 @@
         var vm = this;
         vm.identityResources = [];
         vm.selectedIdentityResource = null;
+        vm.selectedIdentityResourceIndex = null;
         vm.selectedTab = 'General';
         vm.saving = false;
         vm.create = {
@@ -25,17 +26,51 @@
         };
 
         vm.selectIdentityResource = function (identityResource) {
+            for (var i = 0; i < vm.identityResources.length; i++) {
+                if (identityResource.id === vm.identityResources[i].id) {
+                    vm.selectedIdentityResourceIndex = i;
+                }
+            }
+
             vm.selectedIdentityResource = JSON.parse(JSON.stringify(identityResource));
         };
 
         vm.undoChanges = function () {
-            for (var i = 0; i < vm.identityResources.length; i++) {
-                if (vm.identityResources[i].name === vm.selectedIdentityResource.name) {
-                    vm.selectedIdentityResource = vm.identityResources[i];
+            vm.selectedIdentityResource = vm.identityResources[vm.selectedIdentityResourceIndex];
 
-                    toastr.success("Undo comleted");
-                }
+            toastr.success("Undo comleted");
+        };
+
+        vm.selectPreviousIdentityResource = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
             }
+
+            if (vm.selectedIdentityResourceIndex > 0) {
+                vm.selectedIdentityResourceIndex--;
+                var identityResource = vm.identityResources[vm.selectedIdentityResourceIndex];
+                vm.selectIdentityResource(identityResource);
+            }
+        };
+
+        vm.selectNextIdentityResource = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            if (vm.selectedIdentityResourceIndex < vm.identityResources.length - 1) {
+                vm.selectedIdentityResourceIndex++;
+                var identityResource = vm.identityResources[vm.selectedIdentityResourceIndex];
+                vm.selectIdentityResource(identityResource);
+            }
+        };
+
+        vm.closeEdit = function () {
+            if (stopActionBecauseOfUnsavedChanges()) {
+                return;
+            }
+
+            vm.selectedIdentityResource = null;
         };
 
         vm.saveIdentityResource = function () {
@@ -154,6 +189,15 @@
 
             object.state = 3;
         };
+
+        function stopActionBecauseOfUnsavedChanges() {
+            if (!angular.equals(vm.selectedIdentityResource, vm.identityResources[vm.selectedIdentityResourceIndex])) {
+                if (!window.confirm("Unsaved changes to " + vm.identityResources[vm.selectedIdentityResourceIndex].displayName + " will be lost")) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         activate();
 

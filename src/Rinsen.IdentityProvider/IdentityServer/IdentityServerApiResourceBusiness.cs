@@ -18,7 +18,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
             _identityServerDbContext = identityServerDbContext;
         }
 
-        public Task<List<IdentityServerApiResource>> GetIdentityServerApiResources()
+        public Task<List<IdentityServerApiResource>> GetIdentityServerApiResourcesAsync()
         {
             return _identityServerDbContext.IdentityServerApiResources
                 .Include(m => m.Scopes)
@@ -118,7 +118,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
 
         public async Task<List<ApiResource>> GetApiResourcesAsync()
         {
-            var identityServerApiResources = await GetIdentityServerApiResources();
+            var identityServerApiResources = await GetIdentityServerApiResourcesAsync();
 
             return identityServerApiResources.Select(isar => MapApiResourceFromIdentityServerApiResource(isar)).ToList();
         }

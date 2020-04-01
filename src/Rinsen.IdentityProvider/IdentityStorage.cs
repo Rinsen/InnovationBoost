@@ -1,5 +1,4 @@
-﻿using Rinsen.IdentityProvider;
-using System;
+﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 
@@ -18,7 +17,8 @@ namespace Rinsen.IdentityProvider
                                                 Surname,
                                                 PhoneNumber,
                                                 PhoneNumberConfirmed,
-                                                Updated) 
+                                                Updated,
+                                                Deleted) 
                                             VALUES (
                                                 @Created,
                                                 @Email,
@@ -28,7 +28,8 @@ namespace Rinsen.IdentityProvider
                                                 @Surname,
                                                 @PhoneNumber,
                                                 @PhoneNumberConfirmed,
-                                                @Updated); 
+                                                @Updated,
+                                                @Deleted); 
                                             SELECT CAST(SCOPE_IDENTITY() as int)";
 
         private const string _getSql = @"SELECT 
@@ -41,7 +42,8 @@ namespace Rinsen.IdentityProvider
                                             Surname,
                                             PhoneNumber, 
                                             PhoneNumberConfirmed, 
-                                            Updated 
+                                            Updated,
+                                            Deleted
                                         FROM 
                                             Identities 
                                         WHERE 
@@ -54,88 +56,69 @@ namespace Rinsen.IdentityProvider
 
         public async Task CreateAsync(Identity identity)
         {
-            using (var connection = new SqlConnection(_identityOptions.ConnectionString))
+            try
             {
-                try
+                using (var connection = new SqlConnection(_identityOptions.ConnectionString))
+                using (var command = new SqlCommand(_createSql, connection))
                 {
-                    using (var command = new SqlCommand(_createSql, connection))
-                    {
-                        command.Parameters.Add(new SqlParameter("@Created", identity.Created));
-                        command.Parameters.Add(new SqlParameter("@Email", identity.Email));
-                        command.Parameters.Add(new SqlParameter("@EmailConfirmed", identity.EmailConfirmed));
-                        command.Parameters.Add(new SqlParameter("@GivenName", identity.GivenName));
-                        command.Parameters.Add(new SqlParameter("@IdentityId", identity.IdentityId));
-                        command.Parameters.Add(new SqlParameter("@Surname", identity.Surname));
-                        command.Parameters.Add(new SqlParameter("@PhoneNumber", identity.PhoneNumber));
-                        command.Parameters.Add(new SqlParameter("@PhoneNumberConfirmed", identity.PhoneNumberConfirmed));
-                        command.Parameters.Add(new SqlParameter("@Updated", identity.Updated));
-                        
-                        connection.Open();
+                    command.Parameters.AddWithValue("@Created", identity.Created);
+                    command.Parameters.AddWithValue("@Email", identity.Email);
+                    command.Parameters.AddWithValue("@EmailConfirmed", identity.EmailConfirmed);
+                    command.Parameters.AddWithValue("@GivenName", identity.GivenName);
+                    command.Parameters.AddWithValue("@IdentityId", identity.IdentityId);
+                    command.Parameters.AddWithValue("@Surname", identity.Surname);
+                    command.Parameters.AddWithValue("@PhoneNumber", identity.PhoneNumber);
+                    command.Parameters.AddWithValue("@PhoneNumberConfirmed", identity.PhoneNumberConfirmed);
+                    command.Parameters.AddWithValue("@Updated", identity.Updated);
+                    command.Parameters.AddWithNullableValue("@Deleted", identity.Deleted);
 
-                        identity.ClusteredId = (int)await command.ExecuteScalarAsync();
-                    }
+                    await connection.OpenAsync();
+
+                    identity.Id = (int)await command.ExecuteScalarAsync();
                 }
-                catch (SqlException ex)
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == 2601 || ex.Number == 2627)
                 {
-                    if (ex.Number == 2601 || ex.Number == 2627)
-                    {
-                        throw new IdentityAlreadyExistException($"Identity {identity.IdentityId} already exist", ex);
-                    }
-                    throw;
+                    throw new IdentityAlreadyExistException($"Identity {identity.IdentityId} already exist", ex);
                 }
+                throw;
             }
         }
         
         public async Task<Identity> GetAsync(Guid identityId)
         {
             using (var connection = new SqlConnection(_identityOptions.ConnectionString))
+            using (var command = new SqlCommand(_getSql, connection))
             {
-                using (var command = new SqlCommand(_getSql, connection))
-                {
-                    command.Parameters.Add(new SqlParameter("@IdentityId", identityId));
-                    connection.Open();
-                    var reader = await command.ExecuteReaderAsync();
+                command.Parameters.AddWithValue("@IdentityId", identityId);
 
-                    if (reader.HasRows)
+                await connection.OpenAsync();
+                var reader = await command.ExecuteReaderAsync();
+
+                if (reader.HasRows)
+                {
+                    while (await reader.ReadAsync())
                     {
-                        while (reader.Read())
+                        return new Identity
                         {
-                            return new Identity
-                            {
-                                Created = (DateTimeOffset)reader["Created"],
-                                Email = (string)reader["Email"],
-                                EmailConfirmed = (bool)reader["EmailConfirmed"],
-                                GivenName = (string)reader["GivenName"],
-                                Surname = (string)reader["Surname"],
-                                ClusteredId = (int)reader["ClusteredId"],
-                                IdentityId = (Guid)reader["IdentityId"],
-                                PhoneNumber = (string)reader["PhoneNumber"],
-                                PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"],
-                                Updated = (DateTimeOffset)reader["Updated"]
-                            };
-                        }
+                            Created = (DateTimeOffset)reader["Created"],
+                            Email = (string)reader["Email"],
+                            EmailConfirmed = (bool)reader["EmailConfirmed"],
+                            GivenName = (string)reader["GivenName"],
+                            Surname = (string)reader["Surname"],
+                            Id = (int)reader["ClusteredId"],
+                            IdentityId = (Guid)reader["IdentityId"],
+                            PhoneNumber = (string)reader["PhoneNumber"],
+                            PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"],
+                            Updated = (DateTimeOffset)reader["Updated"]
+                        };
                     }
                 }
             }
 
-            return default(Identity);
-        }
-
-        private Identity MapIdentityFromReader(SqlDataReader reader)
-        {
-            return new Identity
-            {
-                Created = (DateTimeOffset)reader["Created"],
-                Email = (string)reader["Email"],
-                EmailConfirmed = (bool)reader["EmailConfirmed"],
-                GivenName = (string)reader["GivenName"],
-                Surname = (string)reader["Surname"],
-                ClusteredId = (int)reader["ClusteredId"],
-                IdentityId = (Guid)reader["IdentityId"],
-                PhoneNumber = (string)reader["PhoneNumber"],
-                PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"],
-                Updated = (DateTimeOffset)reader["Updated"]
-            };
+            return default;
         }
     }
 }

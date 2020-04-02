@@ -23,6 +23,7 @@ using IdentityServer4.Configuration;
 using IdentityServer4;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace Rinsen.InnovationBoost
 {
@@ -40,13 +41,12 @@ namespace Rinsen.InnovationBoost
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration["Rinsen:ConnectionString"];
             var httpContextAccessor = new HttpContextAccessor();
             services.AddSingleton<IHttpContextAccessor>(httpContextAccessor);
 
             if (_env.IsDevelopment())
             {
-                services.AddDatabaseInstaller(Configuration["Rinsen:ConnectionString"]);
-
                 // Register the Swagger generator, defining 1 or more Swagger documents
                 services.AddSwaggerGen(c =>
                 {
@@ -78,7 +78,7 @@ namespace Rinsen.InnovationBoost
                     });
                 });
             }
-            services.AddRinsenIdentity(options => options.ConnectionString = Configuration["Rinsen:ConnectionString"]);
+            services.AddRinsenIdentity(options => options.ConnectionString = connectionString);
 
             ConfigureIdentityServer(services);
 
@@ -90,7 +90,7 @@ namespace Rinsen.InnovationBoost
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    options.SessionStore = new SqlTicketStore(new SessionStorage(Configuration["Rinsen:ConnectionString"]), httpContextAccessor);
+                    options.SessionStore = new SqlTicketStore(new SessionStorage(connectionString), httpContextAccessor);
                     options.LoginPath = "/Identity/Login";
                     options.LogoutPath = "/Identity/LogOut";
 
@@ -127,10 +127,10 @@ namespace Rinsen.InnovationBoost
             services.AddRinsenMessaging();
 
             services.AddDbContext<MessageDbContext>(options =>
-                options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
+                options.UseSqlServer(connectionString));
 
             services.AddDbContext<IdentityServerDbContext>(options =>
-            options.UseSqlServer(Configuration["Rinsen:ConnectionString"]));
+            options.UseSqlServer(connectionString));
 
             var builder = services.AddMvc(o =>
             {
@@ -153,19 +153,11 @@ namespace Rinsen.InnovationBoost
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
         {
+            
             if (_env.IsDevelopment())
             {
                 //app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-
-                app.UseDatabaseInstaller(options =>
-                {
-                    options.DatabaseVersions.Add(new CreateTables());
-                    options.DatabaseVersions.Add(new CreateSettingsTable());
-                    options.DatabaseVersions.Add(new IdentityServerTableInstallation());
-                    options.DatabaseVersions.Add(new CreateLogTables());
-                    options.DatabaseVersions.Add(new CreateAuditLog());
-                });
 
                 // Enable middleware to serve generated Swagger as a JSON endpoint.
                 app.UseSwagger();
@@ -182,7 +174,7 @@ namespace Rinsen.InnovationBoost
             {
                 app.UseExceptionHandler("/Error");
             }
-
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -194,7 +186,7 @@ namespace Rinsen.InnovationBoost
             app.UseStaticFiles();
 
             app.UseIdentityServer();
-
+            
             app.UseEndpoints(routes =>
             {
                 routes.MapDefaultControllerRoute();
@@ -226,12 +218,19 @@ namespace Rinsen.InnovationBoost
 
         private void AddSigningCredentials(IIdentityServerBuilder identityServerBuilder)
         {
-            var base64EncodedBytes = Convert.FromBase64String(Configuration["Rinsen:RsaKeyFile"]);
-            var rsaKeyFile = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            try
+            {
+                var base64EncodedBytes = Convert.FromBase64String(Configuration["Rinsen:RsaKeyFile"]);
+                var rsaKeyFile = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
 
-            var rsaKey = JsonConvert.DeserializeObject<RsaKey>(rsaKeyFile, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() });
+                var rsaKey = JsonConvert.DeserializeObject<RsaKey>(rsaKeyFile, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() });
 
-            identityServerBuilder.AddSigningCredential(CryptoHelper.CreateRsaSecurityKey(rsaKey.Parameters, rsaKey.KeyId), IdentityServerConstants.RsaSigningAlgorithm.RS256);
+                identityServerBuilder.AddSigningCredential(CryptoHelper.CreateRsaSecurityKey(rsaKey.Parameters, rsaKey.KeyId), IdentityServerConstants.RsaSigningAlgorithm.RS256);
+            }
+            catch (Exception)
+            {
+                
+            }
         }
 
         private class RsaKey

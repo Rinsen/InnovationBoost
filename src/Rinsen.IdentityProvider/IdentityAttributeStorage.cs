@@ -12,7 +12,7 @@ namespace Rinsen.IdentityProvider
 
         private const string _getSql = @"SELECT 
                                             Attribute,
-                                            ClusteredId,
+                                            Id,
                                             IdentityId
                                         FROM 
                                             IdentityAttributes 
@@ -44,7 +44,7 @@ namespace Rinsen.IdentityProvider
                                 result.Add(new IdentityAttribute
                                 {
                                     Attribute = (string)reader["Attribute"],
-                                    Id = (int)reader["ClusteredId"],
+                                    Id = (int)reader["Id"],
                                     IdentityId = (Guid)reader["IdentityId"],
                                 });
                             }

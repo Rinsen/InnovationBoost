@@ -2,10 +2,10 @@
   "version": "1.0.0",
   "name": "RinsenInnovationBoost",
   "private": true,
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
     "bootstrap": "4.4.1",
+    "bootstrap-icons": "1.0.0-alpha3",
     "gulp": "4.0.2",
     "gulp-concat": "2.6.1",
     "gulp-cssmin": "0.2.0",

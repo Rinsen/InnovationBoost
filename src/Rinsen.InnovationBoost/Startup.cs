@@ -12,18 +12,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Rinsen.DatabaseInstaller;
 using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.IdentityServer;
-using Rinsen.InnovationBoost.Installation.IdentityServer;
-using Rinsen.InnovationBoost.Installation;
 using Rinsen.Messaging;
 using Microsoft.Extensions.Hosting;
 using IdentityServer4.Configuration;
 using IdentityServer4;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 
 namespace Rinsen.InnovationBoost
 {

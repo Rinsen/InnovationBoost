@@ -24,6 +24,7 @@
         <link href="~/css/isteven-multi-select.css" rel="stylesheet" />
         <link href="~/css/toastr.min.css" rel="stylesheet" />
     }
+    <link href="~/css/dashboard.css" rel="stylesheet" />
     <style>
         .loader {
             border: 16px solid #f3f3f3; /* Light grey */
@@ -66,41 +67,69 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">Innovation boost</a>
-            </div>
-            <div id="navbar" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav">
-                    @Html.MenuItem("Home")
-                    @if (User.HasClaim(c => c.Type == Rinsen.IdentityProvider.RinsenClaimTypes.Administrator && c.Value == "True"))
-                    {
-                        @Html.MenuItem("Logger")
-                        <li><p class="navbar-text">Identity Server</p></li>
-                        @Html.MenuItem("Clients", "IdentityServer", "Clients")
-                        @Html.MenuItem("ApiResources", "IdentityServer", "ApiResources")
-                        @Html.MenuItem("IdentityResources", "IdentityServer", "IdentityResources")
-                    }
-                </ul>
-
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <div class="navbar-right">
-                        <a asp-area="" asp-controller="Identity" asp-action="Logout" class="navbar-brand pull-right">Log out</a>
-                    </div>
-                }
-            </div><!--/.nav-collapse -->
-        </div>
+    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Rinsen</a>
+        <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+        <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+                <a asp-area="" asp-controller="Identity" asp-action="Logout" class="nav-link">Sign out</a>
+            </li>
+        </ul>
     </nav>
-    <div>
-        @RenderBody()
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        @if (User.HasClaim(c => c.Type == Rinsen.IdentityProvider.RinsenClaimTypes.Administrator && c.Value == "True"))
+                        {
+                            @Html.MenuItem("house", "Dashboard")
+                            @Html.MenuItem("file-earmark-text", "Logger")
+                            @Html.MenuItem("person", "Identities")
+                            @Html.MenuItem("app", "Clients", "IdentityServer", "Clients")
+                            @Html.MenuItem("archive", "Api Resources", "IdentityServer", "ApiResources")
+                            @Html.MenuItem("person-bounding-box", "Identity Resources", "IdentityServer", "IdentityResources")
+                        }
+                    </ul>
+
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Saved reports</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <ul class="nav flex-column mb-2">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="file-text"></span>
+                                Current month
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="file-text"></span>
+                                Last quarter
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="file-text"></span>
+                                Social engagement
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="file-text"></span>
+                                Year-end sale
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            @RenderBody()
+        </main>
     </div>
     @if (HostingEnvironment.IsDevelopment())
     {

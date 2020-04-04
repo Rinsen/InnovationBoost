@@ -31,48 +31,55 @@
         background-color: #f9caca !important;
     }
 </style>
-<div class="container-fluid ng-cloak" data-ng-controller="IdentityServerClientController as vm">
+<div data-ng-controller="IdentityServerClientController as vm">
     <div data-ng-hide="vm.selectedClient !== null || vm.create.active === true">
-        <div class="row">
-            <div class="col-sm-12">
-                <button class="btn btn-default" type="button" data-ng-click="vm.create.active = true">Create Client</button>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ng-cloak" >
+            <h1 class="h2">Clients</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-ng-click="vm.create.active = true">Create Client</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Type</th>
-                            <th>Active</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr data-ng-repeat="client in vm.clients" style="cursor:pointer">
-                            <td><span class="text-nowrap" data-ng-click="vm.selectClient(client)">{{client.clientName}}</span></td>
-                            <td><span class="text-nowrap" data-ng-click="vm.selectClient(client)">{{client.description}}</span></td>
-                            <td data-ng-click="vm.selectClient(client)">{{client.clientTypeName}}</td>
-                            <td data-ng-click="vm.selectClient(client)">{{client.enabled}}</td>
-                            <td><span data-ng-click="vm.deleteClient(client)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div>
+            <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Active</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-repeat="client in vm.clients" style="cursor:pointer">
+                                <td><span class="text-nowrap" data-ng-click="vm.selectClient(client)">{{client.clientName}}</span></td>
+                                <td><span class="text-nowrap" data-ng-click="vm.selectClient(client)">{{client.description}}</span></td>
+                                <td data-ng-click="vm.selectClient(client)">{{client.clientTypeName}}</td>
+                                <td data-ng-click="vm.selectClient(client)">{{client.enabled}}</td>
+                                <td><span data-ng-click="vm.deleteClient(client)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
             </div>
         </div>
     </div>
     <div data-ng-if="vm.create.active === true">
-        <div class="row margin-bottom">
-            <div class="col-sm-12">
-                <button data-ng-click="vm.create.active = false" class="btn btn-default" data-ng-disabled="vm.saving">Cancel</button>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ng-cloak">
+            <h1 class="h2">Create client</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <button data-ng-click="vm.create.active = false" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving">Cancel</button>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <form>
-                    
+
                     <div class="form-group">
                         <label for="clientName">Client Name</label>
                         <input type="text" class="form-control" id="clientName" data-ng-model="vm.create.clientName">
@@ -101,7 +108,7 @@
                         <h3 class="panel-title">Website Client</h3>
                     </div>
                     <div class="panel-body">
-                        
+
                         <button class="btn btn-default" type="button" data-ng-click="vm.createNewWebsiteClient()">Create</button>
                     </div>
                 </div>
@@ -125,32 +132,30 @@
         </div>
     </div>
     <div data-ng-if="vm.selectedClient !== null">
-        <div class="row margin-bottom">
-            <div class="col-sm-12">
-                <button data-ng-click="vm.saveClient()" class="btn btn-primary" data-ng-disabled="vm.saving">Save</button>
-                <button data-ng-click="vm.undoChanges()" class="btn btn-warning" data-ng-disabled="vm.saving">Undo</button>
-                <button data-ng-click="vm.closeEdit()" class="btn btn-default" data-ng-disabled="vm.saving">Close</button>
-                <button data-ng-click="vm.selectPreviousClient()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-backward"></span>Previous</button>
-                <button data-ng-click="vm.selectNextClient()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-forward"></span>Next</button>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 inlineBlock">
-                <h1>{{vm.selectedClient.clientName}}</h1>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ng-cloak">
+            <h1 class="h2">{{vm.selectedClient.clientName}}</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <button data-ng-click="vm.saveClient()" class="btn btn-sm btn-outline-primary" data-ng-disabled="vm.saving">Save</button>
+                    <button data-ng-click="vm.undoChanges()" class="btn btn-sm btn-outline-warning" data-ng-disabled="vm.saving">Undo</button>
+                    <button data-ng-click="vm.closeEdit()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving">Close</button>
+                    <button data-ng-click="vm.selectPreviousClient()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-backward"></span>Previous</button>
+                    <button data-ng-click="vm.selectNextClient()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-forward"></span>Next</button>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <ul class="nav nav-tabs">
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'General'}"><a data-ng-click="vm.selectedTab = 'General'">General</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedCorsOrigins'}"><a data-ng-click="vm.selectedTab = 'AllowedCorsOrigins'">Allowed Cors Origins</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedScopes'}"><a data-ng-click="vm.selectedTab = 'AllowedScopes'">Allowed Scopes</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'AllowedGrants'}"><a data-ng-click="vm.selectedTab = 'AllowedGrants'">Allowed Grants</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Claims'}"><a data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'ClientSecrets'}"><a data-ng-click="vm.selectedTab = 'ClientSecrets'">Client Secrets</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'IdentityProviderRestrictions'}"><a data-ng-click="vm.selectedTab = 'IdentityProviderRestrictions'">Identity Provider Restrictions</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'PostLogoutRedirectUris'}"><a data-ng-click="vm.selectedTab = 'PostLogoutRedirectUris'">Post Logout Redirect Uris</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'RedirectUris'}"><a data-ng-click="vm.selectedTab = 'RedirectUris'">Redirect Uris</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'General'}" data-ng-click="vm.selectedTab = 'General'">General</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'AllowedCorsOrigins'}" data-ng-click="vm.selectedTab = 'AllowedCorsOrigins'">Allowed Cors Origins</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'AllowedScopes'}" data-ng-click="vm.selectedTab = 'AllowedScopes'">Allowed Scopes</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'AllowedGrants'}" data-ng-click="vm.selectedTab = 'AllowedGrants'">Allowed Grants</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'Claims'}" data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'ClientSecrets'}" data-ng-click="vm.selectedTab = 'ClientSecrets'">Client Secrets</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'IdentityProviderRestrictions'}" data-ng-click="vm.selectedTab = 'IdentityProviderRestrictions'">Identity Provider Restrictions</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'PostLogoutRedirectUris'}" data-ng-click="vm.selectedTab = 'PostLogoutRedirectUris'">Post Logout Redirect Uris</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'RedirectUris'}" data-ng-click="vm.selectedTab = 'RedirectUris'">Redirect Uris</a></li>
                 </ul>
                 <div data-ng-show="vm.selectedTab === 'General'">
                     <form>
@@ -618,4 +623,5 @@
         </div>
     </div>
 </div>
+    
 

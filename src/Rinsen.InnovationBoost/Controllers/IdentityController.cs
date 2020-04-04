@@ -37,6 +37,11 @@ namespace Rinsen.InnovationBoost.Controllers
             _configuration = configuration;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         [HttpGet] 
         [AllowAnonymous]
         public IActionResult Login(string returnUrl)

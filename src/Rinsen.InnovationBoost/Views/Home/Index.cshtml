@@ -1,12 +1,16 @@
 @{
     ViewData["Title"] = "Index";
+    Layout = "_LayoutIdentity";
 }
 <div class="container">
     <div class="row">
         <div class="col-md-12">
             <h1>Hello @User.Identity.Name!</h1>
 
-
-        </div>
+            @if (User.HasClaim(c => c.Type == Rinsen.IdentityProvider.RinsenClaimTypes.Administrator && c.Value == "True"))
+            {
+                @Html.ActionLink("Dashboard", "Index", "Dashboard")
+            }
+            </div>
     </div>
 </div>

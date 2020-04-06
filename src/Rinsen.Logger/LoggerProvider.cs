@@ -58,10 +58,9 @@ namespace Rinsen.Logger
 
         internal async Task ProcessLogQueue(object state)
         {
-            var logItems = new List<LogItem>();
+            var logItems = new List<LogItem>(200);
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
-                
                 try
                 {
                     _logQueue.GetReportedLogs(logItems);
@@ -69,6 +68,10 @@ namespace Rinsen.Logger
                     if (logItems.Any())
                     {
                         await _logServiceClient.ReportAsync(logItems);
+                    }
+                    else
+                    {
+                        await Task.Delay(_options.TimeToSleepBetweenBatches, _cancellationTokenSource.Token);
                     }
                 }
                 catch (Exception e)
@@ -79,7 +82,6 @@ namespace Rinsen.Logger
                     }
                 }
 
-                await Task.Delay(_options.TimeToSleepBetweenBatches, _cancellationTokenSource.Token);
             }
         }
     }

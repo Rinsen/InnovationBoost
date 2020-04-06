@@ -33,7 +33,7 @@ namespace Rinsen.Logger
             }
         }
 
-        public void GetReportedLogs(IList<LogItem> logItems)
+        public void GetReportedLogs(List<LogItem> logItems)
         {
             logItems.Clear();
 
@@ -43,7 +43,7 @@ namespace Rinsen.Logger
             }
 
             int logCount = _logs.Count;
-            var resultSize = logCount < logItems.Count ? logCount : logItems.Count;
+            var resultSize = logCount < logItems.Capacity ? logCount : logItems.Capacity;
 
             for (int i = 0; i < resultSize; i++)
             {

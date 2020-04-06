@@ -9,7 +9,7 @@ namespace Rinsen.Logger
         {
             QueueMazSize = 2000;
             MaxBatchSize = 200;
-            TimeToSleepBetweenBatches = new TimeSpan(0, 0, 10);
+            TimeToSleepBetweenBatches = new TimeSpan(0, 0, 5);
             MinLevel = LogLevel.Information;
         }
 

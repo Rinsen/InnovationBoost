@@ -33,7 +33,7 @@
 </style>
 <div data-ng-controller="IdentityServerClientController as vm">
     <div data-ng-hide="vm.selectedClient !== null || vm.create.active === true">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ng-cloak" >
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" >
             <h1 class="h2">Clients</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group mr-2">
@@ -47,11 +47,11 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Type</th>
-                                <th>Active</th>
-                                <th></th>
+                                <th class="border-top-0">Name</th>
+                                <th class="border-top-0">Description</th>
+                                <th class="border-top-0">Type</th>
+                                <th class="border-top-0">Active</th>
+                                <th class="border-top-0"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -139,8 +139,8 @@
                     <button data-ng-click="vm.saveClient()" class="btn btn-sm btn-outline-primary" data-ng-disabled="vm.saving">Save</button>
                     <button data-ng-click="vm.undoChanges()" class="btn btn-sm btn-outline-warning" data-ng-disabled="vm.saving">Undo</button>
                     <button data-ng-click="vm.closeEdit()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving">Close</button>
-                    <button data-ng-click="vm.selectPreviousClient()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-backward"></span>Previous</button>
-                    <button data-ng-click="vm.selectNextClient()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-forward"></span>Next</button>
+                    <button data-ng-click="vm.selectPreviousClient()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving"><img alt="previous" height="32" src="~/icons/chevron-left.svg" title="previous" width="32" />Previous</button>
+                    <button data-ng-click="vm.selectNextClient()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving">Next<img alt="next" height="32" src="~/icons/chevron-right.svg" title="next" width="32" /></button>
                 </div>
             </div>
         </div>
@@ -351,14 +351,14 @@
                 </div>
 
                 <div class="row" data-ng-show="vm.selectedTab === 'AllowedCorsOrigins'">
-                    <div class="col-sm-12">
+                    <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Origin</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
+                                    <th class="border-top-0">Origin</th>
+                                    <th class="border-top-0">Created</th>
+                                    <th class="border-top-0">Updated</th>
+                                    <th class="border-top-0"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -366,13 +366,13 @@
                                     <td><input class="form-control" type="text" data-ng-model="allowedCorsOrigin.origin" data-ng-change="vm.setModified(allowedCorsOrigin)" /></td>
                                     <td>{{allowedCorsOrigin.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{allowedCorsOrigin.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(allowedCorsOrigin)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(allowedCorsOrigin)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.allowedCorsOrigin" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewAllowedCorsOrigin()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewAllowedCorsOrigin()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -432,10 +432,10 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Grant Type</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
+                                    <th class="border-top-0">Grant Type</th>
+                                    <th class="border-top-0">Created</th>
+                                    <th class="border-top-0">Updated</th>
+                                    <th class="border-top-0"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -443,13 +443,13 @@
                                     <td><input class="form-control" type="text" data-ng-model="allowedGrantType.grantType" data-ng-change="vm.setModified(allowedGrantType)" /></td>
                                     <td>{{allowedGrantType.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{allowedGrantType.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(allowedGrantType)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(allowedGrantType)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></span></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.allowedGrantType" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewAllowedGrantType()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewAllowedGrantType()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -471,11 +471,11 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Type</th>
-                                    <th>Value</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
+                                    <th class="border-top-0">Type</th>
+                                    <th class="border-top-0">Value</th>
+                                    <th class="border-top-0">Created</th>
+                                    <th class="border-top-0">Updated</th>
+                                    <th class="border-top-0"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -485,14 +485,14 @@
                                     <td><input class="form-control" type="text" data-ng-model="claim.value" data-ng-change="vm.setModified(claim)" /></td>
                                     <td>{{claim.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{claim.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(claim)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(claim)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.claimType" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.claimValue" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewClaim()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewClaim()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -503,13 +503,13 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Type</th>
-                                    <th>Secret</th>
-                                    <th>Description</th>
-                                    <th>Expiration</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
+                                    <th class="border-top-0">Type</th>
+                                    <th class="border-top-0">Secret</th>
+                                    <th class="border-top-0">Description</th>
+                                    <th class="border-top-0">Expiration</th>
+                                    <th class="border-top-0">Created</th>
+                                    <th class="border-top-0">Updated</th>
+                                    <th class="border-top-0"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -520,7 +520,7 @@
                                     <td><input class="form-control" type="datetime-local" data-ng-model="clientSecret.expiration" data-ng-change="vm.setModified(clientSecret)" /></td>
                                     <td>{{clientSecret.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{clientSecret.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(clientSecret)" class="glyphicon glyphicon-trash" aria-hidden="true">delete</span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(clientSecret)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.clientSecretType" /></td>
@@ -529,7 +529,7 @@
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.clientSecretExpiration" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewClientSecret()" class="glyphicon glyphicon-save" aria-hidden="true">save</span></td>
+                                    <td><img data-ng-click="vm.createNewClientSecret()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -540,10 +540,10 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Provider</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
+                                    <th class="border-top-0">Provider</th>
+                                    <th class="border-top-0">Created</th>
+                                    <th class="border-top-0">Updated</th>
+                                    <th class="border-top-0"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -551,13 +551,13 @@
                                     <td><input class="form-control" type="text" data-ng-model="identityProviderRestriction.provider" data-ng-change="vm.setModified(identityProviderRestriction)" /></td>
                                     <td>{{identityProviderRestriction.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{identityProviderRestriction.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(identityProviderRestriction)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(identityProviderRestriction)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.identityProviderRestriction" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewIdentityProviderRestriction()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewIdentityProviderRestriction()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -568,10 +568,10 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Post Logout Redirect Uri</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
+                                    <th class="border-top-0">Post Logout Redirect Uri</th>
+                                    <th class="border-top-0">Created</th>
+                                    <th class="border-top-0">Updated</th>
+                                    <th class="border-top-0"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -579,13 +579,13 @@
                                     <td><input class="form-control" type="text" data-ng-model="postLogoutRedirectUri.postLogoutRedirectUri" data-ng-change="vm.setModified(postLogoutRedirectUri)" /></td>
                                     <td>{{postLogoutRedirectUri.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{postLogoutRedirectUri.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(postLogoutRedirectUri)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(postLogoutRedirectUri)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.postLogoutRedirectUri" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewPostLogoutRedirectUri()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewPostLogoutRedirectUri()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -596,10 +596,10 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Origin</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
+                                    <th class="border-top-0">Origin</th>
+                                    <th class="border-top-0">Created</th>
+                                    <th class="border-top-0">Updated</th>
+                                    <th class="border-top-0"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -607,13 +607,13 @@
                                     <td><input class="form-control" type="text" data-ng-model="redirectUri.redirectUri" data-ng-change="vm.setModified(redirectUri)" /></td>
                                     <td>{{redirectUri.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{redirectUri.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(redirectUri)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(redirectUri)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.redirectUri" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewRedirectUri()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewRedirectUri()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -60,7 +60,7 @@
                                 <td><span class="text-nowrap" data-ng-click="vm.selectClient(client)">{{client.description}}</span></td>
                                 <td data-ng-click="vm.selectClient(client)">{{client.clientTypeName}}</td>
                                 <td data-ng-click="vm.selectClient(client)">{{client.enabled}}</td>
-                                <td><span data-ng-click="vm.deleteClient(client)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                <td><img data-ng-click="vm.deleteClient(client)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -160,7 +160,7 @@
                 <div data-ng-show="vm.selectedTab === 'General'">
                     <form>
                         <div class="row">
-                            <div class="col-sm-12">
+                            <div class="col-sm">
                                 <div class="form-group">
                                     <label for="clientName">Client Name</label>
                                     <input type="text" class="form-control" id="clientName" data-ng-model="vm.selectedClient.clientName" data-ng-change="vm.setModified(vm.selectedClient)">

@@ -31,9 +31,18 @@
         background-color: #f9caca !important;
     }
 </style>
-<div class="container-fluid ng-cloak" data-ng-controller="IdentityServerApiResourceController as vm">
-    <div class="row" data-ng-hide="vm.selectedApiResource !== null">
-        <div class="col-sm-12">
+<div data-ng-controller="IdentityServerApiResourceController as vm">
+    <div data-ng-hide="vm.selectedApiResource !== null">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ng-cloak">
+            <h1 class="h2">Api Resources</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-ng-click="vm.create.active = true">Create Client</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -48,78 +57,88 @@
                         <td data-ng-click="vm.selectApiResource(apiResource)"><span class="text-nowrap">{{apiResource.displayName}}</span></td>
                         <td data-ng-click="vm.selectApiResource(apiResource)"><span class="text-nowrap">{{apiResource.description}}</span></td>
                         <td data-ng-click="vm.selectApiResource(apiResource)">{{apiResource.enabled}}</td>
-                        <td><span data-ng-click="vm.deleteApiResource(apiResource)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                        <td><img data-ng-click="vm.deleteApiResource(apiResource)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                     </tr>
                     <tr>
                         <td><input class="form-control" type="text" data-ng-model="vm.create.apiResourceName" /></td>
                         <td><input class="form-control" type="text" data-ng-model="vm.create.apiResourceDisplayName" /></td>
                         <td><input class="form-control" type="text" data-ng-model="vm.create.apiResourceDescription" /></td>
-                        <td><span data-ng-click="vm.createNewApiResource()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                        <td><img data-ng-click="vm.createNewApiResource()" alt="trash" height="32" src="~/icons/plus.svg" title="trash" width="32" /></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
     <div data-ng-if="vm.selectedApiResource !== null">
-        <div class="row">
-            <div class="col-sm-12 inlineBlock">
-                <h1>{{vm.selectedApiResource.displayName}}</h1>
-            </div>
-        </div>
-        <div class="row margin-bottom">
-            <div class="col-sm-12">
-                <button data-ng-click="vm.saveApiResource()" class="btn btn-primary" data-ng-disabled="vm.saving">Save</button>
-                <button data-ng-click="vm.undoChanges()" class="btn btn-warning" data-ng-disabled="vm.saving">Undo</button>
-                <button data-ng-click="vm.closeEdit()" class="btn btn-default" data-ng-disabled="vm.saving">Close</button>
-                <button data-ng-click="vm.selectPreviousApiResource()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-backward"></span>Previous</button>
-                <button data-ng-click="vm.selectNextApiResource()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-forward"></span>Next</button>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ng-cloak">
+            <h1 class="h2">{{vm.selectedApiResource.displayName}}</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <button data-ng-click="vm.saveApiResource()" class="btn btn-sm btn-outline-primary" data-ng-disabled="vm.saving">Save</button>
+                    <button data-ng-click="vm.undoChanges()" class="btn btn-sm btn-outline-warning" data-ng-disabled="vm.saving">Undo</button>
+                    <button data-ng-click="vm.closeEdit()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving">Close</button>
+                    <button data-ng-click="vm.selectPreviousApiResource()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving"><img alt="previous" height="32" src="~/icons/chevron-left.svg" title="previous" width="32" />Previous</button>
+                    <button data-ng-click="vm.selectNextApiResource()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving">Next<img alt="next" height="32" src="~/icons/chevron-right.svg" title="next" width="32" /></button>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <ul class="nav nav-tabs">
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'General'}"><a data-ng-click="vm.selectedTab = 'General'">General</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'ApiSecrets'}"><a data-ng-click="vm.selectedTab = 'ApiSecrets'">Api Secrets</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Claims'}"><a data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Scopes'}"><a data-ng-click="vm.selectedTab = 'Scopes'">Scopes</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'ScopeClaims'}"><a data-ng-click="vm.selectedTab = 'ScopeClaims'">Scope Claims</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Properties'}"><a data-ng-click="vm.selectedTab = 'Properties'">Properties</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'General'}" data-ng-click="vm.selectedTab = 'General'">General</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'Scopes'}" data-ng-click="vm.selectedTab = 'Scopes'">Scopes</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'ApiSecrets'}" data-ng-click="vm.selectedTab = 'ApiSecrets'">Api Secrets</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'Claims'}" data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'ScopeClaims'}" data-ng-click="vm.selectedTab = 'ScopeClaims'">Scope Claims</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'Properties'}" data-ng-click="vm.selectedTab = 'Properties'">Properties</a></li>
                 </ul>
-                <div class="row" data-ng-show="vm.selectedTab === 'General'">
+                <div data-ng-show="vm.selectedTab === 'General'">
                     <form>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label for="name">Name</label>
-                                <input type="text" class="form-control" id="name" data-ng-model="vm.selectedApiResource.name" data-ng-change="vm.setModified(vm.selectedApiResource)">
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control" id="name" data-ng-model="vm.selectedApiResource.name" data-ng-change="vm.setModified(vm.selectedApiResource)">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="displayName">Display Name</label>
-                                <input type="text" class="form-control" id="displayName" data-ng-model="vm.selectedApiResource.displayName" data-ng-change="vm.setModified(vm.selectedApiResource)">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label for="displayName">Display Name</label>
+                                    <input type="text" class="form-control" id="displayName" data-ng-model="vm.selectedApiResource.displayName" data-ng-change="vm.setModified(vm.selectedApiResource)">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="created">Created</label>
-                                <input type="text" class="form-control" id="created" value="{{vm.selectedApiResource.created | date:'yyyy-MM-dd HH:mm'}}" disabled>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <input type="text" class="form-control" id="description" data-ng-model="vm.selectedApiResource.description" data-ng-change="vm.setModified(vm.selectedApiResource)">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedApiResource.enabled" data-ng-change="vm.setModified(vm.selectedApiResource)">Enabled
-                                </label>
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group form-check">
+                                    <label>
+                                        <input class="form-check-input" id="apiResourceEnabled" type="checkbox" data-ng-model="vm.selectedApiResource.enabled" data-ng-change="vm.setModified(vm.selectedApiResource)">Enabled
+                                    </label>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <input type="text" class="form-control" id="description" data-ng-model="vm.selectedApiResource.description" data-ng-change="vm.setModified(vm.selectedApiResource)">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label for="created">Created</label>
+                                    <input type="text" class="form-control" id="created" value="{{vm.selectedApiResource.created | date:'yyyy-MM-dd HH:mm'}}" disabled>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="updated">Updated</label>
-                                <input type="text" class="form-control" id="updated" value="{{vm.selectedApiResource.updated | date:'yyyy-MM-dd HH:mm'}}" disabled>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label for="updated">Updated</label>
+                                    <input type="text" class="form-control" id="updated" value="{{vm.selectedApiResource.updated | date:'yyyy-MM-dd HH:mm'}}" disabled>
+                                </div>
                             </div>
                         </div>
                     </form>
                 </div>
-                <div class="row" data-ng-show="vm.selectedTab === 'ApiSecrets'">
-                    <div class="col-sm-12">
+                <div data-ng-show="vm.selectedTab === 'ApiSecrets'">
+                    <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -140,7 +159,7 @@
                                     <td><input class="form-control" type="text" data-ng-model="apiSecret.expiration" data-ng-change="vm.setModified(apiSecret)" /></td>
                                     <td>{{apiSecret.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{apiSecret.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(apiSecret)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(apiSecret)"  alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretDescription" /></td>
@@ -149,7 +168,7 @@
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.apiSecretExpiration" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewApiSecret()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewApiSecret()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -172,13 +191,13 @@
                                     <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="vm.setModified(claim)" /></td>
                                     <td>{{claim.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{claim.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(claim)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(claim)" alt="add" height="32" src="/icons/trash.svg" title="add" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.claimType" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewClaim()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewClaim()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -205,24 +224,24 @@
                                     <td><input class="form-control" type="text" data-ng-model="scope.name" data-ng-change="vm.setModified(scope)" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="scope.displayName" data-ng-change="vm.setModified(scope)" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="scope.description" data-ng-change="vm.setModified(scope)" /></td>
-                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="scope.required" data-ng-change="vm.setModified(scope)">Required</label></div></td>
-                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="scope.emphasize" data-ng-change="vm.setModified(scope)">Emphasize</label></div></td>
-                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="scope.showInDiscoveryDocument" data-ng-change="vm.setModified(scope)">Show In Discovery Document</label></div></td>
+                                    <td><div class="form-group form-check"><label><input type="checkbox" class="form-check-input" data-ng-model="scope.required" data-ng-change="vm.setModified(scope)">Required</label></div></td>
+                                    <td><div class="form-group form-check"><label><input type="checkbox" class="form-check-input" data-ng-model="scope.emphasize" data-ng-change="vm.setModified(scope)">Emphasize</label></div></td>
+                                    <td><div class="form-group form-check"><label><input type="checkbox" class="form-check-input" data-ng-model="scope.showInDiscoveryDocument" data-ng-change="vm.setModified(scope)">Show In Discovery Document</label></div></td>
                                     <td>{{scope.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{scope.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(scope)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(scope)" alt="add" height="32" src="/icons/trash.svg" title="add" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.scopeName" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.scopeDisplayName" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.scopeDescription" /></td>
-                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="vm.create.scopeRequired">Required</label></div></td>
-                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="vm.create.scopeEmphasize">Emphasize</label></div></td>
-                                    <td><div class="checkbox"><label><input type="checkbox" data-ng-model="vm.create.scopeShowInDiscoveryDocument">Show In Discovery Document</label></div></td>
-                                    
+                                    <td><div class="form-group form-check"><label><input type="checkbox" class="form-check-input" data-ng-model="vm.create.scopeRequired">Required</label></div></td>
+                                    <td><div class="form-group form-check"><label><input type="checkbox" class="form-check-input" data-ng-model="vm.create.scopeEmphasize">Emphasize</label></div></td>
+                                    <td><div class="form-group form-check"><label><input type="checkbox" class="form-check-input" data-ng-model="vm.create.scopeShowInDiscoveryDocument">Show In Discovery Document</label></div></td>
+
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewScope()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewScope()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -274,14 +293,14 @@
                                     <td><input class="form-control" type="text" data-ng-model="property.value" data-ng-change="vm.setModified(property)" /></td>
                                     <td>{{property.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{property.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(property)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(property)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.propertyKey" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.propertyValue" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewProperty()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewProperty()" alt="add" height="32" src="/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>

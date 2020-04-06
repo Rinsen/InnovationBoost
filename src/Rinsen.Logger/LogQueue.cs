@@ -33,27 +33,25 @@ namespace Rinsen.Logger
             }
         }
 
-        public IEnumerable<LogItem> GetReportedLogs()
+        public void GetReportedLogs(IList<LogItem> logItems)
         {
+            logItems.Clear();
+
             if (_logs.IsEmpty)
             {
-                return Enumerable.Empty<LogItem>();
+                return;
             }
 
             int logCount = _logs.Count;
-            var resultSize = logCount < _logOptions.MaxBatchSize ? logCount : _logOptions.MaxBatchSize;
-
-            var result = new List<LogItem>(resultSize);
+            var resultSize = logCount < logItems.Count ? logCount : logItems.Count;
 
             for (int i = 0; i < resultSize; i++)
             {
                 if (!_logs.TryDequeue(out LogItem logItem))
                     break;
 
-                result.Add(logItem);
+                logItems.Add(logItem);
             }
-
-            return result;
         }
     }
 }

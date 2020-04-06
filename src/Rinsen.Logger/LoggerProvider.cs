@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -57,15 +58,17 @@ namespace Rinsen.Logger
 
         internal async Task ProcessLogQueue(object state)
         {
+            var logItems = new List<LogItem>();
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 
                 try
                 {
-                    var logs = _logQueue.GetReportedLogs();
-                    if (logs.Any())
+                    _logQueue.GetReportedLogs(logItems);
+
+                    if (logItems.Any())
                     {
-                        await _logServiceClient.ReportAsync(logs);
+                        await _logServiceClient.ReportAsync(logItems);
                     }
                 }
                 catch (Exception e)

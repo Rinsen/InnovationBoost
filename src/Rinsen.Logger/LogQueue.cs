@@ -19,7 +19,7 @@ namespace Rinsen.Logger
 
         public void AddLog(string sourceName, string requestId, LogLevel logLevel, string messageFormat, IEnumerable<LogProperty> logProperties)
         {
-            if (_logs.Count > _logOptions.QueueMazSize)
+            if (_logs.Count > _logOptions.MaxQueueSize)
                 return;
 
             _logs.Enqueue(new LogItem { SourceName = sourceName, EnvironmentName = _logOptions.EnvironmentName, RequestId = requestId, LogLevel = logLevel, MessageFormat = messageFormat, LogProperties = logProperties, Timestamp = DateTimeOffset.Now });

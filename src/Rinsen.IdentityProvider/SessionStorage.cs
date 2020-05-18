@@ -101,6 +101,11 @@ namespace Rinsen.IdentityProvider
             _connectionString = connectionString;
         }
 
+        public SessionStorage(IdentityOptions identityOptions)
+        {
+            _connectionString = identityOptions.ConnectionString;
+        }
+
         public async Task CreateAsync(Session session)
         {
             var existingSession = await GetAsync(session.SessionId, true);

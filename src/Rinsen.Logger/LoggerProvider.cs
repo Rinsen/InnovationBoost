@@ -74,14 +74,24 @@ namespace Rinsen.Logger
                         await Task.Delay(_options.TimeToSleepBetweenBatches, _cancellationTokenSource.Token);
                     }
                 }
+                catch (AccessTokenException e)
+                {
+                    if (Debugger.IsAttached)
+                    {
+                        Debug.WriteLine($"{e.Message}, {e.StackTrace}");
+                    }
+
+                    await Task.Delay(60000);
+                }
                 catch (Exception e)
                 {
                     if (Debugger.IsAttached)
                     {
                         Debug.WriteLine($"{e.Message}, {e.StackTrace}");
                     }
-                }
 
+                    await Task.Delay(60000);
+                }
             }
         }
     }

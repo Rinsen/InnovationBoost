@@ -132,7 +132,12 @@ namespace Rinsen.IdentityProvider
         {
             var identity = await _identityService.GetIdentityAsync(localAccount.IdentityId);
 
-            var expiration = DateTimeOffset.UtcNow.AddMonths(1);
+            var expiration = DateTimeOffset.UtcNow.AddDays(1);
+            if (rememberMe)
+            {
+                expiration = DateTimeOffset.UtcNow.AddMonths(1);
+            }
+
             var timeToExpiration = expiration.Subtract(DateTimeOffset.Now);
             var claims = await GetClaimsForIdentityAsync(identity, host, rememberMe, timeToExpiration);
 
@@ -167,7 +172,8 @@ namespace Rinsen.IdentityProvider
                 new Claim(ClaimTypes.SerialNumber, Guid.NewGuid().ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
                 new Claim(JwtClaimTypes.Issuer, host, ClaimValueTypes.String,  RinsenIdentityConstants.RinsenIdentityProvider),
                 new Claim(JwtClaimTypes.Subject, identity.IdentityId.ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
-                new Claim(JwtClaimTypes.SessionId, sessionId, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider)
+                new Claim(JwtClaimTypes.SessionId, sessionId, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
+                new Claim(JwtClaimTypes.Expiration, DateTimeOffset.UtcNow.AddSeconds(timeToExpiration.TotalSeconds).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             };
 
             var identityAttributes = await _identityAttributeStorage.GetIdentityAttributesAsync(Guid.Parse(claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value));

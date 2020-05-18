@@ -29,6 +29,7 @@ namespace Rinsen.IdentityProvider
             services.AddScoped<IIdentityStorage, IdentityStorage>();
             services.AddScoped<IIdentityAccessor, IdentityAccessService>();
             services.AddScoped<IIdentityAttributeStorage, IdentityAttributeStorage>();
+            services.AddScoped<ISessionStorage, SessionStorage>();
             services.AddTransient<IdentityServerClientBusiness, IdentityServerClientBusiness>();
             services.AddTransient<IdentityServerApiResourceBusiness, IdentityServerApiResourceBusiness>();
             services.AddTransient<IdentityServerIdentityResourceBusiness, IdentityServerIdentityResourceBusiness>();

@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
     <PackageReference Include="Rinsen.DatabaseInstaller" Version="0.4.13" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.1" />
+    <PackageReference Include="UAParser" Version="3.1.44" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
@@ -32,7 +33,6 @@
     <ProjectReference Include="..\Rinsen.Messaging\Rinsen.Messaging.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Home\" />
     <Folder Include="Views\Logger\" />
   </ItemGroup>
   <ItemGroup>

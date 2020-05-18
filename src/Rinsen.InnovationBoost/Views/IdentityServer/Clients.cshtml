@@ -169,10 +169,12 @@
                                     <label for="description">Description</label>
                                     <input type="text" class="form-control" id="description" data-ng-model="vm.selectedClient.description" data-ng-change="vm.setModified(vm.selectedClient)">
                                 </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" data-ng-model="vm.selectedClient.enabled" data-ng-change="vm.setModified(vm.selectedClient)">Enabled
-                                    </label>
+                                <div class="col-sm">
+                                    <div class="form-group form-check">
+                                        <label>
+                                            <input class="form-check-input" id="clientEnabled" type="checkbox" data-ng-model="vm.selectedClient.enabled" data-ng-change="vm.setModified(vm.selectedClient)">Enabled
+                                        </label>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="clientId">Client Id</label>
@@ -183,7 +185,7 @@
                                     <input type="text" class="form-control" id="created" value="{{vm.selectedClient.created | date:'yyyy-MM-dd HH:mm'}}" disabled>
                                 </div>
                                 <div class="form-group">
-                                    <label for="updated">updated</label>
+                                    <label for="updated">Updated</label>
                                     <input type="text" class="form-control" id="updated" value="{{vm.selectedClient.updated | date:'yyyy-MM-dd HH:mm'}}" disabled>
                                 </div>
                             </div>

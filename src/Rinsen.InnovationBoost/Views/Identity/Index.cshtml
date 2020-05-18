@@ -1,5 +1,44 @@
+@model Rinsen.InnovationBoost.Models.IdentityOverview
 @{
     ViewData["Title"] = "Index";
     Layout = "_LayoutIdentity";
 }
-    <h1>Hello @User.Identity.Name!</h1>
+<h1>Hello @User.Identity.Name!</h1>
+@if (User.HasClaim(c => c.Type == Rinsen.IdentityProvider.RinsenClaimTypes.Administrator && c.Value == "True"))
+{
+    @Html.ActionLink("Dashboard", "Index", "Dashboard")
+
+<form action="/connect/token" method="post">
+    <input hidden id="client_id" value="81486e9d-e94f-4110-83ab-5be507441966" />
+    <input hidden id="grant_type" value="authorization_code" />
+    <input hidden id="code_verifier" value="authorization_code" />
+</form>
+
+}
+
+<h2>Sessions</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Client</th>
+            <th scope="col">Ip Address</th>
+            <th scope="col">Expires</th>
+            <th scope="col">Created</th>
+            <th scope="col">Current</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var session in Model.Sessions)
+        {
+            <tr>
+                <th scope="row">@session.Id</th>
+                <td>@session.ClientDescrition</td>
+                <td>@session.IpAddress</td>
+                <td>@session.Expires</td>
+                <td>@session.Created</td>
+                <td>@session.CurrentSession</td>
+            </tr>
+        }
+    </tbody>
+</table>

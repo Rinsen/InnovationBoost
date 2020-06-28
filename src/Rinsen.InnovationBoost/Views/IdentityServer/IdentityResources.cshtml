@@ -36,15 +36,23 @@
     }
 </style>
 <div class="container-fluid ng-cloak" data-ng-controller="IdentityServerIdentityResourceController as vm">
-    <div class="row" data-ng-hide="vm.selectedIdentityResource !== null">
-        <div class="col-sm-12">
+    <div data-ng-hide="vm.selectedIdentityResource !== null">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ng-cloak">
+            <h1 class="h2">Identity Resources</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                </div>
+            </div>
+        </div>
+        <div  class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Display Name</th>
-                        <th>Description</th>
-                        <th>Active</th>
-                        <th></th>
+                        <th class="border-top-0">Display Name</th>
+                        <th class="border-top-0">Description</th>
+                        <th class="border-top-0">Active</th>
+                        <th class="border-top-0"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,76 +60,84 @@
                         <td data-ng-click="vm.selectIdentityResource(identityResource)"><span class="text-nowrap">{{identityResource.displayName}}</span></td>
                         <td data-ng-click="vm.selectIdentityResource(identityResource)"><span class="text-nowrap">{{identityResource.description}}</span></td>
                         <td data-ng-click="vm.selectIdentityResource(identityResource)">{{identityResource.enabled}}</td>
-                        <td><span data-ng-click="vm.deleteIdentityResource(identityResource)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                        <td><img data-ng-click="vm.deleteIdentityResource(identityResource)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                     </tr>
                     <tr>
                         <td><input class="form-control" type="text" data-ng-model="vm.create.identityResourceName" /></td>
                         <td><input class="form-control" type="text" data-ng-model="vm.create.identityResourceDisplayName" /></td>
                         <td><input class="form-control" type="text" data-ng-model="vm.create.identityResourceDescription" /></td>
-                        <td><span data-ng-click="vm.createNewIdentityResource()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                        <td><img data-ng-click="vm.createNewIdentityResource()" alt="trash" height="32" src="~/icons/plus.svg" title="add" width="32" /></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
     <div data-ng-if="vm.selectedIdentityResource !== null">
-        <div class="row">
-            <div class="col-sm-12 inlineBlock">
-                <h1>{{vm.selectedIdentityResource.displayName}}</h1>
-            </div>
-        </div>
-        <div class="row margin-bottom">
-            <div class="col-sm-12">
-                <button data-ng-click="vm.saveIdentityResource()" class="btn btn-primary" data-ng-disabled="vm.saving">Save</button>
-                <button data-ng-click="vm.undoChanges()" class="btn btn-warning" data-ng-disabled="vm.saving">Undo</button>
-                <button data-ng-click="vm.selectedIdentityResource = null" class="btn btn-default" data-ng-disabled="vm.saving">Close</button>
-                <button data-ng-click="vm.selectPreviousIdentityResource()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-backward"></span>Previous</button>
-                <button data-ng-click="vm.selectNextIdentityResource()" class="btn btn-default" data-ng-disabled="vm.saving"><span class="glyphicon glyphicon-step-forward"></span>Next</button>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ng-cloak">
+            <h1 class="h2">{{vm.selectedIdentityResource.displayName}}</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <button data-ng-click="vm.saveIdentityResource()" class="btn btn-sm btn-outline-primary" data-ng-disabled="vm.saving">Save</button>
+                    <button data-ng-click="vm.undoChanges()" class="btn btn-sm btn-outline-warning" data-ng-disabled="vm.saving">Undo</button>
+                    <button data-ng-click="vm.selectedIdentityResource = null" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving">Close</button>
+                    <button data-ng-click="vm.selectPreviousIdentityResource()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving"><img alt="previous" height="32" src="~/icons/chevron-left.svg" title="previous" width="32" />Previous</button>
+                    <button data-ng-click="vm.selectNextIdentityResource()" class="btn btn-sm btn-outline-secondary" data-ng-disabled="vm.saving">Next<img alt="next" height="32" src="~/icons/chevron-right.svg" title="next" width="32" /></button>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
                 <ul class="nav nav-tabs">
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'General'}"><a data-ng-click="vm.selectedTab = 'General'">General</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Claims'}"><a data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
-                    <li role="presentation" data-ng-class="{'active': vm.selectedTab === 'Properties'}"><a data-ng-click="vm.selectedTab = 'Properties'">Properties</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'General'}" data-ng-click="vm.selectedTab = 'General'">General</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'Claims'}" data-ng-click="vm.selectedTab = 'Claims'">Claims</a></li>
+                    <li class="nav-item"><a class="nav-link" data-ng-class="{'active': vm.selectedTab === 'Properties'}" data-ng-click="vm.selectedTab = 'Properties'">Properties</a></li>
                 </ul>
-                <div class="row" data-ng-show="vm.selectedTab === 'General'">
+                <div data-ng-show="vm.selectedTab === 'General'">
                     <form>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label for="name">Name</label>
-                                <input type="text" class="form-control" id="name" data-ng-model="vm.selectedIdentityResource.name" data-ng-change="vm.setModified(vm.selectedIdentityResource)">
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control" id="name" data-ng-model="vm.selectedIdentityResource.name" data-ng-change="vm.setModified(vm.selectedIdentityResource)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="displayName">Display Name</label>
+                                    <input type="text" class="form-control" id="displayName" data-ng-model="vm.selectedIdentityResource.displayName" data-ng-change="vm.setModified(vm.selectedIdentityResource)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <input type="text" class="form-control" id="description" data-ng-model="vm.selectedIdentityResource.description" data-ng-change="vm.setModified(vm.selectedIdentityResource)">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="displayName">Display Name</label>
-                                <input type="text" class="form-control" id="displayName" data-ng-model="vm.selectedIdentityResource.displayName" data-ng-change="vm.setModified(vm.selectedIdentityResource)">
-                            </div>
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <input type="text" class="form-control" id="description" data-ng-model="vm.selectedIdentityResource.description" data-ng-change="vm.setModified(vm.selectedIdentityResource)">
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedIdentityResource.enabled" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Enabled
-                                </label>
-                            </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedIdentityResource.required" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Required
-                                </label>
-                            </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedIdentityResource.emphasize" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Emphasize
-                                </label>
-                            </div>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" data-ng-model="vm.selectedIdentityResource.showInDiscoveryDocument" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Show In Discovery Document
-                                </label>
+                            <div class="col-sm-6">
+                                <div class="col-sm">
+                                    <div class="form-group form-check">
+                                        <label>
+                                            <input class="form-check-input" id="identityResourceEnabled" type="checkbox" data-ng-model="vm.selectedIdentityResource.enabled" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Enabled
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="form-group form-check">
+                                        <label>
+                                            <input class="form-check-input" id="identityResourceRequired" type="checkbox" data-ng-model="vm.selectedIdentityResource.required" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Required
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="form-group form-check">
+                                        <label>
+                                            <input class="form-check-input" id="identityResourceEmphasize" type="checkbox" data-ng-model="vm.selectedIdentityResource.emphasize" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Emphasize
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="form-group form-check">
+                                        <label>
+                                            <input class="form-check-input" id="identityResourceShowInDiscoveryDocument" type="checkbox" data-ng-model="vm.selectedIdentityResource.showInDiscoveryDocument" data-ng-change="vm.setModified(vm.selectedIdentityResource)">Show In Discovery Document
+                                        </label>
+                                    </div>
+                                </div>                            
                             </div>
                         </div>
                     </form>
@@ -131,10 +147,10 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Type</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
+                                    <th class="border-top-0">Type</th>
+                                    <th class="border-top-0">Created</th>
+                                    <th class="border-top-0">Updated</th>
+                                    <th class="border-top-0"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -143,13 +159,13 @@
                                     <td><input class="form-control" type="text" data-ng-model="claim.type" data-ng-change="vm.setModified(claim)" /></td>
                                     <td>{{claim.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{claim.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(claim)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(claim)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.claimType" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewClaim()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewClaim()" alt="trash" height="32" src="~/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -160,11 +176,11 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Key</th>
-                                    <th>Value</th>
-                                    <th>Created</th>
-                                    <th>Updated</th>
-                                    <th></th>
+                                    <th class="border-top-0">Key</th>
+                                    <th class="border-top-0">Value</th>
+                                    <th class="border-top-0">Created</th>
+                                    <th class="border-top-0">Updated</th>
+                                    <th class="border-top-0"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -173,14 +189,14 @@
                                     <td><input class="form-control" type="text" data-ng-model="property.value" data-ng-change="vm.setModified(property)" /></td>
                                     <td>{{property.created | date:'yyyy-MM-dd HH:mm'}}</td>
                                     <td>{{property.updated | date:'yyyy-MM-dd HH:mm'}}</td>
-                                    <td><span data-ng-click="vm.toggleDelete(property)" class="glyphicon glyphicon-trash" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.toggleDelete(property)" alt="trash" height="32" src="/icons/trash.svg" title="trash" width="32" /></td>
                                 </tr>
                                 <tr>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.propertyKey" /></td>
                                     <td><input class="form-control" type="text" data-ng-model="vm.create.propertyValue" /></td>
                                     <td></td>
                                     <td></td>
-                                    <td><span data-ng-click="vm.createNewProperty()" class="glyphicon glyphicon-save" aria-hidden="true"></span></td>
+                                    <td><img data-ng-click="vm.createNewProperty()" alt="trash" height="32" src="~/icons/plus.svg" title="add" width="32" /></td>
                                 </tr>
                             </tbody>
                         </table>

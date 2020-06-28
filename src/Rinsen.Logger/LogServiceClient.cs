@@ -24,7 +24,15 @@ namespace Rinsen.Logger
 
         public async Task ReportAsync(IEnumerable<LogItem> logItems)
         {
-            var accessToken = await GetAccessToken();
+            string accessToken;
+            try
+            {
+                accessToken = await GetAccessToken();
+            }
+            catch (Exception e)
+            {
+                throw new AccessTokenException("Failed to get access token", e);
+            }
 
             using (var httpClient = new HttpClient())
             {
@@ -81,6 +89,15 @@ namespace Rinsen.Logger
             public DateTime Expires  { get; set; }
 
             public string AccessToken { get; set; }
+
+        }
+    }
+
+    public class AccessTokenException : Exception
+    {
+        public AccessTokenException(string message, Exception innerException)
+            :base(message, innerException)
+        {
 
         }
     }

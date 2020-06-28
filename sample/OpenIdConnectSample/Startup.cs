@@ -42,11 +42,11 @@ namespace OpenIdConnectSample
             .AddOpenIdConnect("oidc", options =>
             {
                 options.SignInScheme = "Cookies";
-                options.ClientId = "mvc";
-                options.ClientSecret = "secret";
+                options.ClientId = "7d11fd3d-ac86-478c-a496-84f509f667a0";
+                options.ClientSecret = "hoMoFdsJc1lCdX0-PD1wVAqPdxpM-MGuBq1cjYbyJyA";
                 //options.Authority = "https://innovationboost.azurewebsites.net/";
                 options.Authority = "https://localhost:44355/";
-
+                options.ResponseType = "code";
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);

@@ -8,8 +8,10 @@ using Rinsen.IdentityProvider;
 using Rinsen.IdentityProvider.AuditLogging;
 using Rinsen.IdentityProvider.LocalAccounts;
 using Rinsen.InnovationBoost.Models;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using UAParser;
 
 namespace Rinsen.InnovationBoost.Controllers
 {
@@ -21,13 +23,17 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly AuditLog _auditLog;
         private readonly IIdentityServerInteractionService _identityServerInteractionService;
         private readonly IConfiguration _configuration;
+        private readonly IIdentityAccessor _identityAccessor;
+        private readonly ISessionStorage _sessionStorage;
 
         public IdentityController(ILoginService loginService,
             IIdentityService identityService,
             ILocalAccountService localAccountService,
             AuditLog auditLog,
             IIdentityServerInteractionService identityServerInteractionService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IIdentityAccessor identityAccessor,
+            ISessionStorage sessionStorage)
         {
             _loginService = loginService;
             _identityService = identityService;
@@ -35,11 +41,34 @@ namespace Rinsen.InnovationBoost.Controllers
             _auditLog = auditLog;
             _identityServerInteractionService = identityServerInteractionService;
             _configuration = configuration;
+            _identityAccessor = identityAccessor;
+            _sessionStorage = sessionStorage;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var parser = Parser.GetDefault();
+            var sessions = await _sessionStorage.GetAsync(_identityAccessor.IdentityId);
+            var sessionId = _identityAccessor.ClaimsPrincipal.GetClaimStringValue("sid");
+
+            return View(new IdentityOverview
+            {
+                Sessions = sessions.Select(m =>
+                {
+                    var client = parser.Parse(m.UserAgent);
+                    
+                    return new SessionModel
+                    {
+                        Id = m.Id,
+                        ClientDescrition = client.ToString(),
+                        IpAddress = m.IpAddress,
+                        Expires = m.Expires,
+                        Created = m.Created,
+                        CurrentSession = m.SessionId == sessionId
+                    };
+                }).ToList()
+            });
         }
 
         [HttpGet] 

@@ -187,7 +187,9 @@ namespace Rinsen.InnovationBoost
             
             app.UseEndpoints(routes =>
             {
-                routes.MapDefaultControllerRoute();
+                routes.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Identity}/{action=Index}");
             });
 
             logger.LogInformation("Starting");

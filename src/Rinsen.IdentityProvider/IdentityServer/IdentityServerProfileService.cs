@@ -26,8 +26,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             var identity = await _identityStorage.GetAsync(context.Subject.GetClaimGuidValue(ClaimTypes.NameIdentifier));
-
-            
+            var authTime = context.Subject.GetClaimIntValue(JwtClaimTypes.AuthenticationTime);
 
             // https://github.com/IdentityServer/IdentityServer4/blob/master/src/IdentityServer4/src/Extensions/ProfileDataRequestContextExtensions.cs
             // https://github.com/IdentityServer/IdentityServer4/blob/master/src/IdentityServer4/src/Services/Default/DefaultProfileService.cs
@@ -58,6 +57,9 @@ namespace Rinsen.IdentityProvider.IdentityServer
                         break;
                     case JwtClaimTypes.PhoneNumberVerified:
                         context.IssuedClaims.Add(new Claim(JwtClaimTypes.PhoneNumberVerified, identity.PhoneNumberConfirmed.ToString(), ClaimValueTypes.Boolean, RinsenIdentityConstants.RinsenIdentityProvider));
+                        break;
+                    case JwtClaimTypes.Expiration:
+                        context.IssuedClaims.Add(new Claim(JwtClaimTypes.Expiration, DateTimeOffset.FromUnixTimeSeconds(authTime).AddSeconds(context.Client.IdentityTokenLifetime).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64));
                         break;
                     default:
                         break;

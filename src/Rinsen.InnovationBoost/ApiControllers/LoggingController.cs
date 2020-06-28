@@ -10,7 +10,7 @@ using Rinsen.Logger.Service;
 namespace Rinsen.InnovationBoost.ApiControllers
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "Logging")]
     [Route("api/[controller]")]
     public class LoggingController : Controller
     {

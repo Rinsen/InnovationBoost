@@ -81,6 +81,8 @@ namespace Rinsen.InnovationBoost
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminsOnly", policy => policy.RequireClaim("http://rinsen.se/Administrator"));
+                options.AddPolicy("Logging", policy => policy.RequireScope("innovationboost.createlogs"));
+                options.AddPolicy("CreateNode", policy => policy.RequireScope("innovationboost.createnode"));
             });
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

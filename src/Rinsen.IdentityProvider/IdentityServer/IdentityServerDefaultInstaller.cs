@@ -129,6 +129,7 @@ namespace Rinsen.IdentityProvider.IdentityServer
                 new IdentityServerApiResourceScope { Name = "innovationboost.createlogs", DisplayName = "Log service", Description = "Api for creating logs", State = ObjectState.Added },
                 new IdentityServerApiResourceScope { Name = "innovationboost.sessions", DisplayName = "Session service", Description = "Api for managing sessions", State = ObjectState.Added },
                 new IdentityServerApiResourceScope { Name = "innovationboost.sendmessage", DisplayName = "Send message service", Description = "Api for sending messages", State = ObjectState.Added },
+                new IdentityServerApiResourceScope { Name = "innovationboost.createnode", DisplayName = "Create Node client", Description = "Api for creating node clients", State = ObjectState.Added },
             });
 
             await _identityServerApiResourceBusiness.UpdateApiResource(innovationBoostApiResource);

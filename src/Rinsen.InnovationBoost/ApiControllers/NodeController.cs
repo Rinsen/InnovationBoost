@@ -30,9 +30,9 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        public async Task<ActionResult<CreatedNodeModel>> CreateNode([Required]string clientName, [Required]string clientDescription)
+        public async Task<ActionResult<CreatedNodeResult>> CreateNode([FromBody]CreateNodeModel createNode)
         {
-            var clientId = await _identityServerClientBusiness.CreateNewTypedClient(clientName, clientDescription, "Node");
+            var clientId = await _identityServerClientBusiness.CreateNewTypedClient(createNode.ClientName, createNode.ClientDescription, "Node");
 
             var client = await _identityServerClientBusiness.GetIdentityServerClient(clientId);
 
@@ -53,7 +53,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
 
             await _identityServerClientBusiness.UpdateClient(client);
 
-            return new CreatedNodeModel
+            return new CreatedNodeResult
             {
                 NodeId = clientId,
                 GeneratedSecret = generatedSecret

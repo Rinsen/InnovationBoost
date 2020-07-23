@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Rinsen.InnovationBoost.ApiModels
 {
-    public class CreatedNodeModel
+    public class CreatedNodeResult
     {
         public string NodeId { get; set; }
 

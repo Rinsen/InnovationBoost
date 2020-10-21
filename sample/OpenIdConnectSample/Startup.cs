@@ -45,8 +45,10 @@ namespace OpenIdConnectSample
                 options.ClientId = "7d11fd3d-ac86-478c-a496-84f509f667a0";
                 options.ClientSecret = "hoMoFdsJc1lCdX0-PD1wVAqPdxpM-MGuBq1cjYbyJyA";
                 //options.Authority = "https://innovationboost.azurewebsites.net/";
-                options.Authority = "https://localhost:44355/";
+                //options.Authority = "https://localhost:44355/";
+                options.Authority = "https://localhost:44391/";
                 options.ResponseType = "code";
+                options.UsePkce = true;
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);

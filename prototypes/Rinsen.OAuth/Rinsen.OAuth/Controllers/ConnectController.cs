@@ -1,8 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Security.Policy;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -12,6 +20,12 @@ namespace Rinsen.OAuth.Controllers
     [Route("connect")]
     public class ConnectController : Controller
     {
+        private readonly EllipticCurveJsonWebKeyService _ellipticCurveJsonWebKeyService;
+
+        public ConnectController(EllipticCurveJsonWebKeyService ellipticCurveJsonWebKeyService)
+        {
+            _ellipticCurveJsonWebKeyService = ellipticCurveJsonWebKeyService;
+        }
 
         [HttpGet]
         [Route("authorize")]
@@ -56,10 +70,38 @@ namespace Rinsen.OAuth.Controllers
                 // Validate client secret if needed
 
                 // Validate return url if provided
-
-
+                //var rsa = RSA.Create(2048);
 
                 
+                var myIssuer = "http://mysite.com";
+                var myAudience = "http://myaudience.com";
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim(ClaimTypes.NameIdentifier, "userId1234"),
+                        }),
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    Issuer = myIssuer,
+                    IssuedAt = DateTime.Now,
+                    Audience = myAudience,
+                    SigningCredentials = new SigningCredentials(_ellipticCurveJsonWebKeyService.GetJsonWebKeyForSigning(), SecurityAlgorithms.EcdsaSha256)
+                };
+
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var tokenString = tokenHandler.WriteToken(token);
+
+                Response.Headers.Add("Cache-Control", "no-store");
+                Response.Headers.Add("Pragma", "no-cache");
+
+                return Json(new TokenResponse
+                {
+                    AccessToken = tokenString,
+                    ExpiresIn = 3600,
+                    TokenType = "Bearer"
+                });
             }
 
             return BadRequest(ModelState);
@@ -83,6 +125,56 @@ namespace Rinsen.OAuth.Controllers
 
 
 
+
+    }
+
+    public class EllipticCurveJsonWebKeyService
+    {
+        private readonly JsonWebKey _jwk;
+        private readonly EllipticCurveJsonWebKeyModel _ellipticCurveJsonWebKeyModel;
+
+        public EllipticCurveJsonWebKeyService()
+        {
+            var secret = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+            var key = new ECDsaSecurityKey(secret);
+
+            _jwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(key);
+            _ellipticCurveJsonWebKeyModel = new EllipticCurveJsonWebKeyModel
+            {
+                KeyId = _jwk.KeyId,
+                X = Base64UrlEncoder.Encode(_jwk.X),
+                Y = Base64UrlEncoder.Encode(_jwk.Y),
+            };
+        } 
+
+        public JsonWebKey GetJsonWebKeyForSigning()
+        {
+            return _jwk;
+        }
+
+        public EllipticCurveJsonWebKeyModel GetEllipticCurveJsonWebKeyModel()
+        {
+            return _ellipticCurveJsonWebKeyModel;
+        }
+
+    }
+
+    public class EllipticCurveJsonWebKeyModel
+    {
+        [JsonPropertyName("kty")]
+        public string KeyType { get { return "EC"; } }
+
+        [JsonPropertyName("use")]
+        public string PublicKeyUse { get { return "sig"; } }
+
+        [JsonPropertyName("kid")]
+        public string KeyId { get; set; }
+
+        [JsonPropertyName("x")]
+        public string X { get; set; }
+
+        [JsonPropertyName("y")]
+        public string Y { get; set; }
 
     }
 
@@ -128,6 +220,24 @@ namespace Rinsen.OAuth.Controllers
 
             return validationResult;
         }
+    }
+
+    public class RefreshTokenResponse : TokenResponse
+    {
+        [JsonPropertyName("refresh_token")]
+        public string RefreshToken { get; set; }
+    }
+
+    public class TokenResponse
+    {
+        [JsonPropertyName("access_token")]
+        public string AccessToken { get; set; }
+
+        [JsonPropertyName("token_type")]
+        public string TokenType { get; set; }
+
+        [JsonPropertyName("expires_in")]
+        public int ExpiresIn { get; set; }
     }
 
     public class AuthorizeModel : IValidatableObject
@@ -180,16 +290,12 @@ namespace Rinsen.OAuth.Controllers
 
     public class AuthorizeResponse
     {
-        [HiddenInput]
         public string Code { get; set; }
 
-        [HiddenInput]
         public string Scope { get; set; }
 
-        [HiddenInput]
         public string State { get; set; }
 
-        [HiddenInput]
         public string SessionState { get; set; }
 
         public string FormPostUri { get; set; }

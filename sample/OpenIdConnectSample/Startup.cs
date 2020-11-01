@@ -42,13 +42,12 @@ namespace OpenIdConnectSample
             .AddOpenIdConnect("oidc", options =>
             {
                 options.SignInScheme = "Cookies";
-                options.ClientId = "7d11fd3d-ac86-478c-a496-84f509f667a0";
-                options.ClientSecret = "hoMoFdsJc1lCdX0-PD1wVAqPdxpM-MGuBq1cjYbyJyA";
+                options.ClientId = "6e074b24-1f7a-4f9e-96e3-45c9d517499c";
+                options.ClientSecret = "zL_O3hTErk1oz4kvn9DWBEUuQPdG9moaGYROIZmpEAI";
                 //options.Authority = "https://innovationboost.azurewebsites.net/";
-                //options.Authority = "https://localhost:44355/";
                 options.Authority = "https://localhost:44391/";
+                //options.Authority = "https://localhost:44350/";
                 options.ResponseType = "code";
-                options.UsePkce = true;
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
@@ -74,6 +73,8 @@ namespace OpenIdConnectSample
             app.UseStaticFiles();
             //app.UseCookiePolicy();
 
+            app.UseMiddleware<TestMiddleware>();
+
             app.UseAuthentication();
 
             app.UseAuthorization();
@@ -84,4 +85,34 @@ namespace OpenIdConnectSample
             });
         }
     }
+
+    public class TestMiddleware
+    {
+        private readonly RequestDelegate _requestDelegate;
+
+        public TestMiddleware(RequestDelegate requestDelegate)
+        {
+            _requestDelegate = requestDelegate;
+        }
+         
+        public async Task InvokeAsync(HttpContext context)
+        {
+
+            if (context.Request.Path == "/signin-oidc")
+            {
+                //  Enable seeking
+                context.Request.EnableBuffering();
+                //  Read the stream as text
+                var bodyAsText = await new System.IO.StreamReader(context.Request.Body).ReadToEndAsync();
+                //  Set the position of the stream to 0 to enable rereading
+                context.Request.Body.Position = 0;
+            }
+            // Call the next delegate/middleware in the pipeline
+            await _requestDelegate(context);
+
+            
+        }
+
+    }
 }
+

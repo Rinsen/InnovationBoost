@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +43,8 @@ namespace Rinsen.OAuth
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseMiddleware<TestMiddleware>();
+
             app.UseRouting();
 
             app.UseAuthorization();
@@ -53,5 +56,34 @@ namespace Rinsen.OAuth
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+    }
+
+    public class TestMiddleware
+    {
+        private readonly RequestDelegate _requestDelegate;
+
+        public TestMiddleware(RequestDelegate requestDelegate)
+        {
+            _requestDelegate = requestDelegate;
+        }
+
+        public async Task InvokeAsync(HttpContext context)
+        {
+
+            if (context.Request.Path == "/connect/token")
+            {
+                //  Enable seeking
+                context.Request.EnableBuffering();
+                //  Read the stream as text
+                var bodyAsText = await new System.IO.StreamReader(context.Request.Body).ReadToEndAsync();
+                //  Set the position of the stream to 0 to enable rereading
+                context.Request.Body.Position = 0;
+            }
+            // Call the next delegate/middleware in the pipeline
+            await _requestDelegate(context);
+
+
+        }
+
     }
 }

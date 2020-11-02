@@ -11,12 +11,11 @@ namespace Rinsen.OAuth.Controllers
     [Route(".well-known")]
     public class WellKnownController : ControllerBase    
     {
+        private readonly EllipticCurveJsonWebKeyService _ellipticCurveJsonWebKeyService;
 
-        public WellKnownController()
+        public WellKnownController(EllipticCurveJsonWebKeyService ellipticCurveJsonWebKeyService)
         {
-
-
-
+            _ellipticCurveJsonWebKeyService = ellipticCurveJsonWebKeyService;
         }
 
         [Route("openid-configuration")]
@@ -26,7 +25,7 @@ namespace Rinsen.OAuth.Controllers
 
             return new OpenIdConfiguration
             {
-                Issuer =host,
+                Issuer = host,
                 JwksUri = $"{host}/.well-known/openid-configuration/jwks",
                 AuthorizationEndpoint = $"{host}/connect/authorize",
                 TokenEndpoint = $"{host}/connect/token",
@@ -43,23 +42,16 @@ namespace Rinsen.OAuth.Controllers
         [Route("openid-configuration/jwks")]
         public Root OpenIdConfigurationJwks()
         {
+            var keyModel =  _ellipticCurveJsonWebKeyService.GetEllipticCurveJsonWebKeyModel();
+
             return new Root
             {
-                Keys = new List<Key>
+                Keys = new List<EllipticCurveJsonWebKeyModel>
                 {
-                    new Key
-                    {
-                        Kty =  "RSA",
-                        Use = "sig",
-                        Kid = "5NFTZBIr-TBe6w4MiA158Q",
-                        E = "AQAB",
-                        N = "aaa",
-                        Alg = "RS256"
-                    }
+                    keyModel
                 }
             };
         }
-
     }
 
     public class OpenIdConfiguration
@@ -146,6 +138,6 @@ namespace Rinsen.OAuth.Controllers
     public class Root
     {
         [JsonPropertyName("keys")]
-        public List<Key> Keys { get; set; }
+        public List<EllipticCurveJsonWebKeyModel> Keys { get; set; }
     }
 }

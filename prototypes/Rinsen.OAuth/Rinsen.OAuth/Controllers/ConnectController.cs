@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,10 +23,13 @@ namespace Rinsen.OAuth.Controllers
     public class ConnectController : Controller
     {
         private readonly EllipticCurveJsonWebKeyService _ellipticCurveJsonWebKeyService;
+        private readonly GrantService _grantService;
 
-        public ConnectController(EllipticCurveJsonWebKeyService ellipticCurveJsonWebKeyService)
+        public ConnectController(EllipticCurveJsonWebKeyService ellipticCurveJsonWebKeyService,
+            GrantService grantService)
         {
             _ellipticCurveJsonWebKeyService = ellipticCurveJsonWebKeyService;
+            _grantService = grantService;
         }
 
         [HttpGet]
@@ -44,14 +49,16 @@ namespace Rinsen.OAuth.Controllers
 
                 // Generate and store grant
 
+                var code = _grantService.CreateAndStoreGrant(client.ClientId, "user123", model.CodeChallenge, model.CodeChallengeMethod, model.Nonce, model.RedirectUri, model.Scope, model.State, model.ResponseType);
+
                 // Return code 
 
                 return View(new AuthorizeResponse
                 {
-                    Code = "hejhopp",
+                    Code = code,
                     FormPostUri = model.RedirectUri,
                     Scope = model.Scope,
-                    SessionState = "hejhoppihgen",
+                    SessionState = null,
                     State = model.State
                 });
             }
@@ -69,10 +76,13 @@ namespace Rinsen.OAuth.Controllers
 
                 // Validate client secret if needed
 
-                // Validate return url if provided
-                //var rsa = RSA.Create(2048);
+                var persistedGrant = _grantService.GetGrant(model.Code);
 
-                
+                // Validate code
+
+                // Validate return url if provided
+
+
                 var myIssuer = "http://mysite.com";
                 var myAudience = "http://myaudience.com";
 
@@ -81,7 +91,7 @@ namespace Rinsen.OAuth.Controllers
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                         {
-                            new Claim(ClaimTypes.NameIdentifier, "userId1234"),
+                            new Claim(ClaimTypes.NameIdentifier, persistedGrant.SubjectId),
                         }),
                     Expires = DateTime.UtcNow.AddDays(7),
                     Issuer = myIssuer,
@@ -99,6 +109,7 @@ namespace Rinsen.OAuth.Controllers
                 return Json(new TokenResponse
                 {
                     AccessToken = tokenString,
+                    IdentityToken = tokenString,
                     ExpiresIn = 3600,
                     TokenType = "Bearer"
                 });
@@ -118,11 +129,67 @@ namespace Rinsen.OAuth.Controllers
 
         // deviceauthorization
 
+    }
 
+    public class GrantService
+    {
+        private readonly ConcurrentDictionary<string, PersistedGrant> _persistedGrants = new ConcurrentDictionary<string, PersistedGrant>();
+        private readonly RandomStringGenerator _randomStringGenerator;
 
+        public GrantService(RandomStringGenerator randomStringGenerator)
+        {
+            _randomStringGenerator = randomStringGenerator;
+        }
 
+        public PersistedGrant GetGrant(string code)
+        {
+            _persistedGrants.TryGetValue(code, out var persisted);
 
+            return persisted;
+        }
 
+        internal string CreateAndStoreGrant(string clientId, string subjectId, string codeChallenge, string codeChallengeMethod, string nonce, string redirectUri, string scope, string state, string responseType)
+        {
+            var code = _randomStringGenerator.GetRandomString(15);
+            _persistedGrants.TryAdd(code, new PersistedGrant
+            {
+                ClientId = clientId,
+                Code = code,
+                CodeChallange = codeChallenge,
+                CodeChallangeMethod = codeChallengeMethod,
+                Nonce = nonce,
+                RedirectUri = redirectUri,
+                ResponseType = responseType,
+                Scope = scope,
+                State = state,
+                SubjectId = subjectId
+            });
+
+            return code;
+        }
+    }
+
+    public class PersistedGrant
+    {
+        public string Code { get; set; }
+
+        public string ClientId { get; set; }
+
+        public string SubjectId { get; set; }
+
+        public string CodeChallange { get; set; }
+
+        public string CodeChallangeMethod { get; set; }
+
+        public string Nonce { get; set; }
+
+        public string RedirectUri { get; set; }
+
+        public string Scope { get; set; }
+
+        public string State { get; set; }
+
+        public string ResponseType { get; set; }
 
 
 
@@ -133,10 +200,15 @@ namespace Rinsen.OAuth.Controllers
         private readonly JsonWebKey _jwk;
         private readonly EllipticCurveJsonWebKeyModel _ellipticCurveJsonWebKeyModel;
 
-        public EllipticCurveJsonWebKeyService()
+        public EllipticCurveJsonWebKeyService(RandomStringGenerator randomStringGenerator)
         {
             var secret = ECDsa.Create(ECCurve.NamedCurves.nistP256);
-            var key = new ECDsaSecurityKey(secret);
+
+            var key = new ECDsaSecurityKey(secret)
+            {
+                KeyId = randomStringGenerator.GetRandomString(20)
+            };
+
 
             _jwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(key);
             _ellipticCurveJsonWebKeyModel = new EllipticCurveJsonWebKeyModel
@@ -157,6 +229,20 @@ namespace Rinsen.OAuth.Controllers
             return _ellipticCurveJsonWebKeyModel;
         }
 
+    }
+
+    public class RandomStringGenerator
+    {
+        private readonly RandomNumberGenerator CryptoRandom = RandomNumberGenerator.Create();
+
+        public string GetRandomString(int length)
+        {
+            var bytes = new byte[length];
+
+            CryptoRandom.GetBytes(bytes);
+
+            return Base64UrlTextEncoder.Encode(bytes);
+        }
     }
 
     public class EllipticCurveJsonWebKeyModel
@@ -232,6 +318,9 @@ namespace Rinsen.OAuth.Controllers
     {
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
+
+        [JsonPropertyName("identity_token")]
+        public string IdentityToken { get; set; }
 
         [JsonPropertyName("token_type")]
         public string TokenType { get; set; }

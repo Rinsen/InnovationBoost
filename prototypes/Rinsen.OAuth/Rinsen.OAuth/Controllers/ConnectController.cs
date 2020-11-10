@@ -1,20 +1,16 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http.Headers;
+using System.Security;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Rinsen.OAuth.Controllers
 {
@@ -40,7 +36,7 @@ namespace Rinsen.OAuth.Controllers
             {
                 // Get client
                 var client = new Client { 
-                    ClientId = ""
+                    ClientId = "6e074b24-1f7a-4f9e-96e3-45c9d517499c"
                 };
 
                 // Validare scopes and return url
@@ -79,29 +75,56 @@ namespace Rinsen.OAuth.Controllers
                 var persistedGrant = _grantService.GetGrant(model.Code);
 
                 // Validate code
+                using var sha256 = SHA256.Create();
+                var challengeBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(model.CodeVerifier));
+                var codeChallenge = WebEncoders.Base64UrlEncode(challengeBytes);
+
+                if (codeChallenge != persistedGrant.CodeChallange)
+                {
+                    throw new SecurityException("Code cerifier is not matching code challenge");
+                }
 
                 // Validate return url if provided
 
-
-                var myIssuer = "http://mysite.com";
-                var myAudience = "http://myaudience.com";
-
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var tokenDescriptor = new SecurityTokenDescriptor
+                var identityTokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                         {
-                            new Claim(ClaimTypes.NameIdentifier, persistedGrant.SubjectId),
+                            new Claim("sub", persistedGrant.SubjectId),
                         }),
+                    TokenType = null,
                     Expires = DateTime.UtcNow.AddDays(7),
-                    Issuer = myIssuer,
-                    IssuedAt = DateTime.Now,
-                    Audience = myAudience,
-                    SigningCredentials = new SigningCredentials(_ellipticCurveJsonWebKeyService.GetJsonWebKeyForSigning(), SecurityAlgorithms.EcdsaSha256)
+                    Issuer = HttpContext.Request.Host.ToString(),
+                    IssuedAt = DateTime.UtcNow,
+                    Audience = persistedGrant.ClientId,
+                    SigningCredentials = new SigningCredentials(_ellipticCurveJsonWebKeyService.GetECDsaSecurityKey(), SecurityAlgorithms.EcdsaSha256),
                 };
 
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                var tokenString = tokenHandler.WriteToken(token);
+                identityTokenDescriptor.Claims = new Dictionary<string, object> { { "nonce", persistedGrant.Nonce } };
+                
+                var identityToken = tokenHandler.CreateToken(identityTokenDescriptor);
+                var identityTokenString = tokenHandler.WriteToken(identityToken);
+
+                var accessTokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim("sub", persistedGrant.SubjectId),
+                        }),
+                    TokenType = "at+jwt",
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    Issuer = HttpContext.Request.Host.ToString(),
+                    IssuedAt = DateTime.UtcNow,
+                    Audience = persistedGrant.ClientId,
+                    SigningCredentials = new SigningCredentials(_ellipticCurveJsonWebKeyService.GetECDsaSecurityKey(), SecurityAlgorithms.EcdsaSha256),
+                };
+
+                accessTokenDescriptor.Claims = new Dictionary<string, object> { { "client_id", persistedGrant.ClientId } };
+                accessTokenDescriptor.Claims.Add("scope", persistedGrant.Scope);
+
+                var accessToken = tokenHandler.CreateToken(accessTokenDescriptor);
+                var tokenString = tokenHandler.WriteToken(accessToken);
 
                 Response.Headers.Add("Cache-Control", "no-store");
                 Response.Headers.Add("Pragma", "no-cache");
@@ -109,8 +132,8 @@ namespace Rinsen.OAuth.Controllers
                 return Json(new TokenResponse
                 {
                     AccessToken = tokenString,
-                    IdentityToken = tokenString,
-                    ExpiresIn = 3600,
+                    IdentityToken = identityTokenString,
+                    ExpiresIn = 3600, 
                     TokenType = "Bearer"
                 });
             }
@@ -191,37 +214,37 @@ namespace Rinsen.OAuth.Controllers
 
         public string ResponseType { get; set; }
 
-
-
     }
 
     public class EllipticCurveJsonWebKeyService
     {
-        private readonly JsonWebKey _jwk;
         private readonly EllipticCurveJsonWebKeyModel _ellipticCurveJsonWebKeyModel;
+        private readonly ECDsaSecurityKey _key;
 
         public EllipticCurveJsonWebKeyService(RandomStringGenerator randomStringGenerator)
         {
             var secret = ECDsa.Create(ECCurve.NamedCurves.nistP256);
 
-            var key = new ECDsaSecurityKey(secret)
+            _key = new ECDsaSecurityKey(secret)
             {
                 KeyId = randomStringGenerator.GetRandomString(20)
             };
 
+            var publicKey = _key.ECDsa.ExportParameters(false);
 
-            _jwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(key);
             _ellipticCurveJsonWebKeyModel = new EllipticCurveJsonWebKeyModel
             {
-                KeyId = _jwk.KeyId,
-                X = Base64UrlEncoder.Encode(_jwk.X),
-                Y = Base64UrlEncoder.Encode(_jwk.Y),
+                Curve = JsonWebKeyECTypes.P256,
+                KeyId = _key.KeyId,
+                X = Base64UrlEncoder.Encode(publicKey.Q.X),
+                Y = Base64UrlEncoder.Encode(publicKey.Q.Y),
+                SigningAlgorithm = SecurityAlgorithms.EcdsaSha256
             };
         } 
 
-        public JsonWebKey GetJsonWebKeyForSigning()
+        public ECDsaSecurityKey GetECDsaSecurityKey()
         {
-            return _jwk;
+            return _key;
         }
 
         public EllipticCurveJsonWebKeyModel GetEllipticCurveJsonWebKeyModel()
@@ -261,6 +284,12 @@ namespace Rinsen.OAuth.Controllers
 
         [JsonPropertyName("y")]
         public string Y { get; set; }
+
+        [JsonPropertyName("crv")]
+        public string Curve { get; set; }
+
+        [JsonPropertyName("alg")]
+        public string SigningAlgorithm { get; set; }
 
     }
 
@@ -319,7 +348,7 @@ namespace Rinsen.OAuth.Controllers
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
 
-        [JsonPropertyName("identity_token")]
+        [JsonPropertyName("id_token")]
         public string IdentityToken { get; set; }
 
         [JsonPropertyName("token_type")]

@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Rinsen.OAuth.Controllers
 {
@@ -21,14 +18,14 @@ namespace Rinsen.OAuth.Controllers
         [Route("openid-configuration")]
         public OpenIdConfiguration OpenIdConfiguration()
         {
-            var host = $"https://{HttpContext.Request.Host}";
+            var host = HttpContext.Request.Host.ToString();
 
             return new OpenIdConfiguration
             {
                 Issuer = host,
-                JwksUri = $"{host}/.well-known/openid-configuration/jwks",
-                AuthorizationEndpoint = $"{host}/connect/authorize",
-                TokenEndpoint = $"{host}/connect/token",
+                JwksUri = $"https://{host}/.well-known/openid-configuration/jwks",
+                AuthorizationEndpoint = $"https://{host}/connect/authorize",
+                TokenEndpoint = $"https://{host}/connect/token",
                 TokenEndpointAuthMethodsSupported = new List<string> { "client_secret_basic" },
                 GrantTypesSupported = new List<string> { "authorization_code", "client_credentials", "refresh_token" },
                 CodeChallengeMethodsSupported = new List<string> { "plain", "S256" },
@@ -98,11 +95,9 @@ namespace Rinsen.OAuth.Controllers
 
         [JsonPropertyName("response_types_supported")]
         public List<string> ResponseTypesSupported { get; set; }
-        //public List<string> response_modes_supported { get; set; }
 
         [JsonPropertyName("token_endpoint_auth_methods_supported")]
         public List<string> TokenEndpointAuthMethodsSupported { get; set; }
-        //public List<string> id_token_signing_alg_values_supported { get; set; }
 
         [JsonPropertyName("subject_types_supported")]
         public List<string> SubjectTypesSupported { get; set; }

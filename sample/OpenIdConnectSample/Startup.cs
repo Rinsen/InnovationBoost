@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -32,6 +33,7 @@ namespace OpenIdConnectSample
             //    options.CheckConsentNeeded = context => true;
             //    options.MinimumSameSitePolicy = SameSiteMode.None;
             //});
+            Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
 
             services.AddAuthentication(options =>
             {
@@ -41,7 +43,18 @@ namespace OpenIdConnectSample
             .AddCookie("Cookies")
             .AddOpenIdConnect("oidc", options =>
             {
-                options.Events.OnTokenResponseReceived = (context) => { return Task.CompletedTask; };
+                options.Events.OnTokenResponseReceived = async (context) => {
+                    //var bodyAsText = await new System.IO.StreamReader(context.Response.Body).ReadToEndAsync();
+                    var source = new CancellationTokenSource();
+                    var configuration = await context.Options.ConfigurationManager.GetConfigurationAsync(source.Token);
+                };
+
+                options.Events.OnTokenValidated = (context) => {
+                    //var bodyAsText = await new System.IO.StreamReader(context.Response.Body).ReadToEndAsync();
+
+                    return Task.CompletedTask;
+                };
+
                 options.SignInScheme = "Cookies";
                 options.ClientId = "6e074b24-1f7a-4f9e-96e3-45c9d517499c";
                 options.ClientSecret = "zL_O3hTErk1oz4kvn9DWBEUuQPdG9moaGYROIZmpEAI";

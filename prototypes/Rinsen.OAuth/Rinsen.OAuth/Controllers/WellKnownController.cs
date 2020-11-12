@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rinsen.Outback;
+using Rinsen.Outback.Cryptography;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 

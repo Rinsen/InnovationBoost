@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using Rinsen.Outback;
+using Rinsen.Outback.Clients;
 using Rinsen.Outback.Cryptography;
 using Rinsen.Outback.Grant;
 using Rinsen.Outback.Models;
+using Rinsen.Outback.WellKnown;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,44 +14,60 @@ using System.Security;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Rinsen.OAuth.Controllers
 {
-    [ApiController]
     [Route("connect")]
     public class ConnectController : Controller
     {
         private readonly EllipticCurveJsonWebKeyService _ellipticCurveJsonWebKeyService;
         private readonly GrantService _grantService;
+        private readonly ClientService _clientService;
+        private readonly ClientValidator _clientValidator;
 
         public ConnectController(EllipticCurveJsonWebKeyService ellipticCurveJsonWebKeyService,
-            GrantService grantService)
+            GrantService grantService,
+            ClientService clientService,
+            ClientValidator clientValidator)
         {
             _ellipticCurveJsonWebKeyService = ellipticCurveJsonWebKeyService;
             _grantService = grantService;
+            _clientService = clientService;
+            _clientValidator = clientValidator;
         }
 
         [HttpGet]
         [Route("authorize")]
-        public IActionResult Authorize([FromQuery]AuthorizeModel model)
+        public async Task<IActionResult> Authorize([FromQuery]AuthorizeModel model)
         {
             if (ModelState.IsValid)
             {
                 // Get client
-                var client = new Client { 
-                    ClientId = "6e074b24-1f7a-4f9e-96e3-45c9d517499c"
-                };
+                var client = await _clientService.GetClient(model.ClientId);
 
                 // Validare scopes and return url
+                if(!_clientValidator.IsScopeValid(client, model.Scope))
+                {
+                    throw new SecurityException();
+                }
+
+                // Validare scopes and return url
+                if (!_clientValidator.IsRedirectUriValid(client, model.RedirectUri))
+                {
+                    throw new SecurityException();
+                }
 
                 // Collect consent if needed
+                if (client.ConsentRequired)
+                {
+                    return View("Consent");
+                }
 
                 // Generate and store grant
-
                 var code = _grantService.CreateAndStoreGrant(client.ClientId, "user123", model.CodeChallenge, model.CodeChallengeMethod, model.Nonce, model.RedirectUri, model.Scope, model.State, model.ResponseType);
 
                 // Return code 
-
                 return View(new AuthorizeResponse
                 {
                     Code = code,
@@ -155,9 +173,5 @@ namespace Rinsen.OAuth.Controllers
 
     }
 
-    public class Client
-    {
-        public string ClientId { get; set; }
-
-    }
+    
 }

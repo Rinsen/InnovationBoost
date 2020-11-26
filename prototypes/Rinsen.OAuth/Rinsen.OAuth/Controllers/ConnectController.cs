@@ -21,20 +21,21 @@ namespace Rinsen.OAuth.Controllers
     [Route("connect")]
     public class ConnectController : Controller
     {
-        private readonly EllipticCurveJsonWebKeyService _ellipticCurveJsonWebKeyService;
         private readonly GrantService _grantService;
         private readonly ClientService _clientService;
         private readonly ClientValidator _clientValidator;
+        private readonly TokenFactory _tokenFactory;
 
-        public ConnectController(EllipticCurveJsonWebKeyService ellipticCurveJsonWebKeyService,
+        public ConnectController(
             GrantService grantService,
             ClientService clientService,
-            ClientValidator clientValidator)
+            ClientValidator clientValidator,
+            TokenFactory tokenFactory)
         {
-            _ellipticCurveJsonWebKeyService = ellipticCurveJsonWebKeyService;
             _grantService = grantService;
             _clientService = clientService;
             _clientValidator = clientValidator;
+            _tokenFactory = tokenFactory;
         }
 
         [HttpGet]
@@ -65,7 +66,7 @@ namespace Rinsen.OAuth.Controllers
                 }
 
                 // Generate and store grant
-                var code = _grantService.CreateAndStoreGrant(client.ClientId, "user123", model.CodeChallenge, model.CodeChallengeMethod, model.Nonce, model.RedirectUri, model.Scope, model.State, model.ResponseType);
+                var code = _grantService.CreateAndStoreGrant(client, "user123", model.CodeChallenge, model.CodeChallengeMethod, model.Nonce, model.RedirectUri, model.Scope, model.State, model.ResponseType);
 
                 // Return code 
                 return View(new AuthorizeResponse
@@ -83,82 +84,38 @@ namespace Rinsen.OAuth.Controllers
 
         [HttpPost]
         [Route("token")]
-        public IActionResult Token([FromForm] TokenModel model)
+        public async Task<IActionResult> Token([FromForm] TokenModel model)
         {
             if (ModelState.IsValid)
             {
                 // Get client
-
+                var client = await _clientService.GetClient(model.ClientId, model.ClientSecret);
                 // Validate client secret if needed
 
-                var persistedGrant = _grantService.GetGrant(model.Code);
-
-                // Validate code
-                using var sha256 = SHA256.Create();
-                var challengeBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(model.CodeVerifier));
-                var codeChallenge = WebEncoders.Base64UrlEncode(challengeBytes);
-
-                if (codeChallenge != persistedGrant.CodeChallange)
-                {
-                    throw new SecurityException("Code cerifier is not matching code challenge");
-                }
+                var persistedGrant = await _grantService.GetGrant(model.Code, client.ClientId, model.CodeVerifier);
 
                 // Validate return url if provided
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var identityTokenDescriptor = new SecurityTokenDescriptor
+                if (!_clientValidator.IsRedirectUriValid(client, model.RedirectUri))
                 {
-                    Subject = new ClaimsIdentity(new Claim[]
-                        {
+                    throw new SecurityException();
+                }
+
+                var claimsIdentity = new ClaimsIdentity(new Claim[]
+                    {
                             new Claim("sub", persistedGrant.SubjectId),
-                        }),
-                    TokenType = null,
-                    Expires = DateTime.UtcNow.AddDays(7),
-                    Issuer = HttpContext.Request.Host.ToString(),
-                    IssuedAt = DateTime.UtcNow,
-                    Audience = persistedGrant.ClientId,
-                    SigningCredentials = new SigningCredentials(_ellipticCurveJsonWebKeyService.GetECDsaSecurityKey(), SecurityAlgorithms.EcdsaSha256),
-                };
+                    });
 
-                identityTokenDescriptor.Claims = new Dictionary<string, object> { { "nonce", persistedGrant.Nonce } };
-                
-                var identityToken = tokenHandler.CreateToken(identityTokenDescriptor);
-                var identityTokenString = tokenHandler.WriteToken(identityToken);
-
-                var accessTokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new Claim[]
-                        {
-                            new Claim("sub", persistedGrant.SubjectId),
-                        }),
-                    TokenType = "at+jwt",
-                    Expires = DateTime.UtcNow.AddDays(7),
-                    Issuer = HttpContext.Request.Host.ToString(),
-                    IssuedAt = DateTime.UtcNow,
-                    Audience = persistedGrant.ClientId,
-                    SigningCredentials = new SigningCredentials(_ellipticCurveJsonWebKeyService.GetECDsaSecurityKey(), SecurityAlgorithms.EcdsaSha256),
-                };
-
-                accessTokenDescriptor.Claims = new Dictionary<string, object> { { "client_id", persistedGrant.ClientId } };
-                accessTokenDescriptor.Claims.Add("scope", persistedGrant.Scope);
-
-                var accessToken = tokenHandler.CreateToken(accessTokenDescriptor);
-                var tokenString = tokenHandler.WriteToken(accessToken);
+                var tokenResponse = _tokenFactory.CreateTokenResponse(claimsIdentity, client, persistedGrant, HttpContext.Request.Host.ToString());
 
                 Response.Headers.Add("Cache-Control", "no-store");
                 Response.Headers.Add("Pragma", "no-cache");
 
-                return Json(new TokenResponse
-                {
-                    AccessToken = tokenString,
-                    IdentityToken = identityTokenString,
-                    ExpiresIn = 3600, 
-                    TokenType = "Bearer"
-                });
+                return Json(tokenResponse);
             }
 
             return BadRequest(ModelState);
         }
+
         // EndSession
 
         // userinfo

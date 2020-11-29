@@ -66,7 +66,7 @@ namespace Rinsen.OAuth.Controllers
                 }
 
                 // Generate and store grant
-                var code = _grantService.CreateAndStoreGrant(client, "user123", model.CodeChallenge, model.CodeChallengeMethod, model.Nonce, model.RedirectUri, model.Scope, model.State, model.ResponseType);
+                var code = await _grantService.CreateAndStoreGrant(client, "user123", model.CodeChallenge, model.CodeChallengeMethod, model.Nonce, model.RedirectUri, model.Scope, model.State, model.ResponseType);
 
                 // Return code 
                 return View(new AuthorizeResponse
@@ -88,32 +88,49 @@ namespace Rinsen.OAuth.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Basic auth or post paramaters for client auth and not both
+
                 // Get client
                 var client = await _clientService.GetClient(model.ClientId, model.ClientSecret);
-                // Validate client secret if needed
 
-                var persistedGrant = await _grantService.GetGrant(model.Code, client.ClientId, model.CodeVerifier);
-
-                // Validate return url if provided
-                if (!_clientValidator.IsRedirectUriValid(client, model.RedirectUri))
+                if (!_clientValidator.IsGrantTypeSupported(client, model.GrantType))
                 {
                     throw new SecurityException();
                 }
 
-                var claimsIdentity = new ClaimsIdentity(new Claim[]
-                    {
-                            new Claim("sub", persistedGrant.SubjectId),
-                    });
-
-                var tokenResponse = _tokenFactory.CreateTokenResponse(claimsIdentity, client, persistedGrant, HttpContext.Request.Host.ToString());
-
-                Response.Headers.Add("Cache-Control", "no-store");
-                Response.Headers.Add("Pragma", "no-cache");
-
-                return Json(tokenResponse);
+                return model.GrantType switch
+                {
+                    "client_credentials" => throw new NotImplementedException(),
+                    "authorization_code" => await GetTokenForAuthorizationCode(model, client),
+                    "refresh_token" => throw new NotImplementedException(),
+                    _ => throw new SecurityException($"Grant {model.GrantType} is not supported"),
+                };
             }
 
             return BadRequest(ModelState);
+        }
+
+        private async Task<IActionResult> GetTokenForAuthorizationCode(TokenModel model, Client client)
+        {
+            var persistedGrant = await _grantService.GetGrant(model.Code, client.ClientId, model.CodeVerifier);
+
+            // Validate return url if provided
+            if (!_clientValidator.IsRedirectUriValid(client, model.RedirectUri))
+            {
+                throw new SecurityException();
+            }
+
+            var claimsIdentity = new ClaimsIdentity(new Claim[]
+                {
+                            new Claim("sub", persistedGrant.SubjectId),
+                });
+
+            var tokenResponse = _tokenFactory.CreateTokenResponse(claimsIdentity, client, persistedGrant, HttpContext.Request.Host.ToString());
+
+            Response.Headers.Add("Cache-Control", "no-store");
+            Response.Headers.Add("Pragma", "no-cache");
+
+            return Json(tokenResponse);
         }
 
         // EndSession

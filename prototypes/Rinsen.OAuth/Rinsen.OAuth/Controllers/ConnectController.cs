@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Rinsen.Outback;
 using Rinsen.Outback.Clients;
@@ -88,13 +89,11 @@ namespace Rinsen.OAuth.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Basic auth or post paramaters for client auth and not both
-
-                // Get client
-                var client = await _clientService.GetClient(model.ClientId, model.ClientSecret);
+                var client = await GetClient(model);
 
                 if (!_clientValidator.IsGrantTypeSupported(client, model.GrantType))
                 {
+                    // Client does not support grant type
                     throw new SecurityException();
                 }
 
@@ -108,6 +107,48 @@ namespace Rinsen.OAuth.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        private async Task<Client> GetClient(TokenModel model)
+        {
+            // Basic auth or post paramaters for client auth and not both
+            if (Request.Headers.ContainsKey("Authorization") && (!string.IsNullOrEmpty(model.ClientId) || !string.IsNullOrEmpty(model.ClientSecret)))
+            {
+                // Only one type of credentials is supported at the same time
+                throw new SecurityException();
+            }
+
+            if (Request.Headers.ContainsKey("Authorization"))
+            {
+                var value = Request.Headers["Authorization"];
+
+                if (value == StringValues.Empty)
+                {
+                    // Empty Authorization header is not supported
+                    throw new SecurityException();
+                }
+
+                var authHeaderValue = Base64UrlEncoder.Decode(value);
+                var parts = authHeaderValue.Split(':', 2, StringSplitOptions.TrimEntries);
+
+                if (!parts[1].StartsWith("Basic "))
+                {
+                    throw new SecurityException();
+                }
+                else
+                {
+                    return await _clientService.GetClient(parts[0], parts[1][6..]);
+                }
+            }
+            else if (!string.IsNullOrEmpty(model.ClientId) && !string.IsNullOrEmpty(model.ClientSecret))
+            {
+                // Get client
+                return await _clientService.GetClient(model.ClientId, model.ClientSecret);
+            }
+            else
+            {
+                throw new SecurityException(); // No credentials
+            }
         }
 
         private async Task<IActionResult> GetTokenForAuthorizationCode(TokenModel model, Client client)

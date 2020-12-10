@@ -1,20 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Rinsen.Outback;
 using Rinsen.Outback.Clients;
-using Rinsen.Outback.Cryptography;
 using Rinsen.Outback.Grant;
 using Rinsen.Outback.Models;
-using Rinsen.Outback.WellKnown;
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Rinsen.OAuth.Controllers
@@ -37,6 +30,10 @@ namespace Rinsen.OAuth.Controllers
             _clientService = clientService;
             _clientValidator = clientValidator;
             _tokenFactory = tokenFactory;
+            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+                {
+                            new Claim("sub", "Kalle123")
+                }));
         }
 
         [HttpGet]
@@ -45,29 +42,25 @@ namespace Rinsen.OAuth.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Get client
                 var client = await _clientService.GetClient(model.ClientId);
 
-                // Validare scopes and return url
                 if(!_clientValidator.IsScopeValid(client, model.Scope))
                 {
                     throw new SecurityException();
                 }
 
-                // Validare scopes and return url
                 if (!_clientValidator.IsRedirectUriValid(client, model.RedirectUri))
                 {
                     throw new SecurityException();
                 }
 
-                // Collect consent if needed
                 if (client.ConsentRequired)
                 {
                     return View("Consent");
                 }
 
                 // Generate and store grant
-                var code = await _grantService.CreateAndStoreGrant(client, "user123", model.CodeChallenge, model.CodeChallengeMethod, model.Nonce, model.RedirectUri, model.Scope, model.State, model.ResponseType);
+                var code = await _grantService.CreateAndStoreGrant(client, User, model);
 
                 // Return code 
                 return View(new AuthorizeResponse
@@ -161,17 +154,17 @@ namespace Rinsen.OAuth.Controllers
                 throw new SecurityException();
             }
 
-            var claimsIdentity = new ClaimsIdentity(new Claim[]
-                {
-                            new Claim("sub", persistedGrant.SubjectId),
-                });
-
-            var tokenResponse = _tokenFactory.CreateTokenResponse(claimsIdentity, client, persistedGrant, HttpContext.Request.Host.ToString());
-
-            Response.Headers.Add("Cache-Control", "no-store");
-            Response.Headers.Add("Pragma", "no-cache");
+            var tokenResponse = _tokenFactory.CreateTokenResponse(User, client, persistedGrant, HttpContext.Request.Host.ToString());
+            
+            AddCacheControlHeader();
 
             return Json(tokenResponse);
+        }
+
+        private void AddCacheControlHeader()
+        {
+            Response.Headers.Add("Cache-Control", "no-store");
+            Response.Headers.Add("Pragma", "no-cache");
         }
 
         // EndSession

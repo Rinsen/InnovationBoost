@@ -17,18 +17,15 @@ namespace Rinsen.OAuth.Controllers
     {
         private readonly GrantService _grantService;
         private readonly ClientService _clientService;
-        private readonly ClientValidator _clientValidator;
         private readonly TokenFactory _tokenFactory;
 
         public ConnectController(
             GrantService grantService,
             ClientService clientService,
-            ClientValidator clientValidator,
             TokenFactory tokenFactory)
         {
             _grantService = grantService;
             _clientService = clientService;
-            _clientValidator = clientValidator;
             _tokenFactory = tokenFactory;
             HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
                 {
@@ -44,12 +41,12 @@ namespace Rinsen.OAuth.Controllers
             {
                 var client = await _clientService.GetClient(model.ClientId);
 
-                if(!_clientValidator.IsScopeValid(client, model.Scope))
+                if(!ClientValidator.IsScopeValid(client, model.Scope))
                 {
                     throw new SecurityException();
                 }
 
-                if (!_clientValidator.IsRedirectUriValid(client, model.RedirectUri))
+                if (!ClientValidator.IsRedirectUriValid(client, model.RedirectUri))
                 {
                     throw new SecurityException();
                 }
@@ -84,7 +81,7 @@ namespace Rinsen.OAuth.Controllers
             {
                 var client = await GetClient(model);
 
-                if (!_clientValidator.IsGrantTypeSupported(client, model.GrantType))
+                if (!ClientValidator.IsGrantTypeSupported(client, model.GrantType))
                 {
                     // Client does not support grant type
                     throw new SecurityException();
@@ -92,9 +89,9 @@ namespace Rinsen.OAuth.Controllers
 
                 return model.GrantType switch
                 {
-                    "client_credentials" => throw new NotImplementedException(),
+                    "client_credentials" => await GetTokenForClientCredentials(model, client),
                     "authorization_code" => await GetTokenForAuthorizationCode(model, client),
-                    "refresh_token" => throw new NotImplementedException(),
+                    "refresh_token" => await GetTokenForRefreshToken(model, client),
                     _ => throw new SecurityException($"Grant {model.GrantType} is not supported"),
                 };
             }
@@ -144,18 +141,40 @@ namespace Rinsen.OAuth.Controllers
             }
         }
 
+        private Task<IActionResult> GetTokenForClientCredentials(TokenModel model, Client client)
+        {
+            throw new NotImplementedException();
+        }
+
         private async Task<IActionResult> GetTokenForAuthorizationCode(TokenModel model, Client client)
         {
             var persistedGrant = await _grantService.GetGrant(model.Code, client.ClientId, model.CodeVerifier);
 
             // Validate return url if provided
-            if (!_clientValidator.IsRedirectUriValid(client, model.RedirectUri))
+            if (!string.Equals(persistedGrant.RedirectUri, model.RedirectUri))
             {
                 throw new SecurityException();
             }
 
             var tokenResponse = _tokenFactory.CreateTokenResponse(User, client, persistedGrant, HttpContext.Request.Host.ToString());
             
+            AddCacheControlHeader();
+
+            return Json(tokenResponse);
+        }
+
+        private async Task<IActionResult> GetTokenForRefreshToken(TokenModel model, Client client)
+        {
+            var persistedGrant = await _grantService.GetGrant(model.RefreshToken, client.ClientId);
+
+            // Validate return url if provided
+            if (!ClientValidator.IsRedirectUriValid(client, model.RedirectUri))
+            {
+                throw new SecurityException();
+            }
+
+            var tokenResponse = _tokenFactory.CreateTokenResponse(User, client, persistedGrant, HttpContext.Request.Host.ToString());
+
             AddCacheControlHeader();
 
             return Json(tokenResponse);

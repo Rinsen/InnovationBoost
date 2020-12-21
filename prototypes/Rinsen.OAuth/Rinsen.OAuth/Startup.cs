@@ -10,6 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rinsen.OAuth.Controllers;
+using Rinsen.Outback;
+using Rinsen.Outback.Clients;
+using Rinsen.Outback.Cryptography;
+using Rinsen.Outback.Grants;
 
 namespace Rinsen.OAuth
 {
@@ -28,6 +32,8 @@ namespace Rinsen.OAuth
             services.AddSingleton<EllipticCurveJsonWebKeyService>();
             services.AddSingleton<RandomStringGenerator>();
             services.AddSingleton<GrantService>();
+            services.AddScoped<ClientService>();
+            services.AddScoped<TokenFactory>();
 
             services.AddControllersWithViews();
         }

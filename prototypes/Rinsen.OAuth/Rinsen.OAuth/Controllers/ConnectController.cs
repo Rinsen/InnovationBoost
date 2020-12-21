@@ -3,7 +3,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Rinsen.Outback;
 using Rinsen.Outback.Clients;
-using Rinsen.Outback.Grant;
+using Rinsen.Outback.Grants;
 using Rinsen.Outback.Models;
 using System;
 using System.Security;
@@ -27,37 +27,36 @@ namespace Rinsen.OAuth.Controllers
             _grantService = grantService;
             _clientService = clientService;
             _tokenFactory = tokenFactory;
-            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-                {
-                            new Claim("sub", "Kalle123")
-                }));
         }
 
         [HttpGet]
         [Route("authorize")]
         public async Task<IActionResult> Authorize([FromQuery]AuthorizeModel model)
         {
+            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+                {
+                            new Claim("sub", "Kalle123")
+                }));
+
             if (ModelState.IsValid)
             {
-                var client = await _clientService.GetClient(model.ClientId);
+                var client = await _clientService.GetClient(model);
 
-                if(!ClientValidator.IsScopeValid(client, model.Scope))
-                {
-                    throw new SecurityException();
-                }
-
-                if (!ClientValidator.IsRedirectUriValid(client, model.RedirectUri))
-                {
-                    throw new SecurityException();
-                }
-
+                string code;
                 if (client.ConsentRequired)
                 {
-                    return View("Consent");
-                }
+                    code = await _grantService.GetCodeForExistingConsent(client, User, model);
 
-                // Generate and store grant
-                var code = await _grantService.CreateAndStoreGrant(client, User, model);
+                    if (string.IsNullOrEmpty(code))
+                    {
+                        return View("Consent");
+                    }
+                }
+                else
+                {
+                    // Generate and store grant
+                    code = await _grantService.CreateAndStoreGrant(client, User, model);
+                }
 
                 // Return code 
                 return View(new AuthorizeResponse
@@ -77,6 +76,11 @@ namespace Rinsen.OAuth.Controllers
         [Route("token")]
         public async Task<IActionResult> Token([FromForm] TokenModel model)
         {
+            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+                {
+                            new Claim("sub", "Kalle123")
+                }));
+
             if (ModelState.IsValid)
             {
                 var client = await GetClient(model);
@@ -121,13 +125,13 @@ namespace Rinsen.OAuth.Controllers
                 var authHeaderValue = Base64UrlEncoder.Decode(value);
                 var parts = authHeaderValue.Split(':', 2, StringSplitOptions.TrimEntries);
 
-                if (!parts[1].StartsWith("Basic "))
+                if (!parts[0].StartsWith("Basic "))
                 {
                     throw new SecurityException();
                 }
                 else
                 {
-                    return await _clientService.GetClient(parts[0], parts[1][6..]);
+                    return await _clientService.GetClient(parts[1][6..], parts[1]);
                 }
             }
             else if (!string.IsNullOrEmpty(model.ClientId) && !string.IsNullOrEmpty(model.ClientSecret))
@@ -143,6 +147,8 @@ namespace Rinsen.OAuth.Controllers
 
         private Task<IActionResult> GetTokenForClientCredentials(TokenModel model, Client client)
         {
+            //_tokenFactory.CreateTokenResponse(client)
+
             throw new NotImplementedException();
         }
 

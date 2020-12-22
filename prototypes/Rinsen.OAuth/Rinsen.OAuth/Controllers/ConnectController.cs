@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Tokens;
 using Rinsen.Outback;
 using Rinsen.Outback.Clients;
 using Rinsen.Outback.Grants;
@@ -83,7 +81,9 @@ namespace Rinsen.OAuth.Controllers
 
             if (ModelState.IsValid)
             {
-                var client = await GetClient(model);
+                var clientIdentity = ClientIdentityHelper.GetClientIdentity(model, Request.Headers);
+
+                var client = await _clientService.GetClient(clientIdentity);
 
                 if (!ClientValidator.IsGrantTypeSupported(client, model.GrantType))
                 {
@@ -103,47 +103,7 @@ namespace Rinsen.OAuth.Controllers
             return BadRequest(ModelState);
         }
 
-        private async Task<Client> GetClient(TokenModel model)
-        {
-            // Basic auth or post paramaters for client auth and not both
-            if (Request.Headers.ContainsKey("Authorization") && (!string.IsNullOrEmpty(model.ClientId) || !string.IsNullOrEmpty(model.ClientSecret)))
-            {
-                // Only one type of credentials is supported at the same time
-                throw new SecurityException();
-            }
-
-            if (Request.Headers.ContainsKey("Authorization"))
-            {
-                var value = Request.Headers["Authorization"];
-
-                if (value == StringValues.Empty)
-                {
-                    // Empty Authorization header is not supported
-                    throw new SecurityException();
-                }
-
-                var authHeaderValue = Base64UrlEncoder.Decode(value);
-                var parts = authHeaderValue.Split(':', 2, StringSplitOptions.TrimEntries);
-
-                if (!parts[0].StartsWith("Basic "))
-                {
-                    throw new SecurityException();
-                }
-                else
-                {
-                    return await _clientService.GetClient(parts[1][6..], parts[1]);
-                }
-            }
-            else if (!string.IsNullOrEmpty(model.ClientId) && !string.IsNullOrEmpty(model.ClientSecret))
-            {
-                // Get client
-                return await _clientService.GetClient(model.ClientId, model.ClientSecret);
-            }
-            else
-            {
-                throw new SecurityException(); // No credentials
-            }
-        }
+        
 
         private Task<IActionResult> GetTokenForClientCredentials(TokenModel model, Client client)
         {
@@ -159,7 +119,7 @@ namespace Rinsen.OAuth.Controllers
             // Validate return url if provided
             if (!string.Equals(persistedGrant.RedirectUri, model.RedirectUri))
             {
-                throw new SecurityException();
+                throw new SecurityException($"Redirect uri '{model.RedirectUri}' did not match granted '{persistedGrant.RedirectUri}' redirect uri");
             }
 
             var tokenResponse = _tokenFactory.CreateTokenResponse(User, client, persistedGrant, HttpContext.Request.Host.ToString());

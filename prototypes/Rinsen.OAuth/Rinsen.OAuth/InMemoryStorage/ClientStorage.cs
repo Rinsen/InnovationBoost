@@ -1,0 +1,53 @@
+﻿using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
+using Rinsen.Outback.Abstractons;
+using Rinsen.Outback.Clients;
+
+namespace Rinsen.OAuth.InMemoryStorage
+{
+    public class ClientStorage : IClientStorage
+    {
+        public Task<Client> GetClient(string clientId)
+        {
+            return Task.FromResult(GetClientPrivate(clientId));
+        }
+
+        private static Client GetClientPrivate(string clientId)
+        {
+            var secret = "fgdsnmkldfgdGDFGFghngj435";
+            using var sha256 = SHA256.Create();
+            var secretHash = WebEncoders.Base64UrlEncode(sha256.ComputeHash(Encoding.UTF8.GetBytes(secret)));
+            return new Client
+            {
+                AccessTokenLifetime = 3600,
+                ClientId = clientId,
+                ClientType = ClientType.Confidential,
+                ClientClaims = new List<ClientClaim>(),
+                ConsentRequired = false,
+                IdentityTokenLifetime = 300,
+                IssueRefreshToken = false,
+                PostLogoutRedirectUri = new List<string>(),
+                Secrets = new List<string>
+                {
+                    secretHash
+                },
+                Scopes = new List<string>
+                {
+                    "openid",
+                    "profile"
+                },
+                RedirectUris = new List<string>
+                {
+                    "https://localhost:44372/signin-oidc"
+                },
+                GrantTypes = new List<string>
+                {
+                    "authorization_code"
+                }
+            };
+        }
+    }
+}

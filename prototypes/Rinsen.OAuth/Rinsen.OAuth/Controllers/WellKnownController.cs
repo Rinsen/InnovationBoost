@@ -30,7 +30,7 @@ namespace Rinsen.OAuth.Controllers
                 TokenEndpoint = $"https://{host}/connect/token",
                 TokenEndpointAuthMethodsSupported = new List<string> { "client_secret_basic" },
                 GrantTypesSupported = new List<string> { "authorization_code", "client_credentials", "refresh_token" },
-                CodeChallengeMethodsSupported = new List<string> { "plain", "S256" },
+                CodeChallengeMethodsSupported = new List<string> { "S256" },
                 FrontchannelLogoutSessionSupported = false,
                 FrontchannelLogoutSupported = false,
                 BackchannelLogoutSessionSupported = false,

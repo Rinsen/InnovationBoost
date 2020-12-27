@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Rinsen.Outback.Cryptography;
+using Rinsen.Outback.Abstractons;
 using Rinsen.Outback.Models;
 using Rinsen.Outback.WellKnown;
 using System.Collections.Generic;

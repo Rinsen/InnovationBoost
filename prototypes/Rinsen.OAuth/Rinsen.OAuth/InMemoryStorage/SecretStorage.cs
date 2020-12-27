@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Rinsen.Outback;
-using Rinsen.Outback.Cryptography;
+using Rinsen.Outback.Abstractons;
 using Rinsen.Outback.Models;
 
 namespace Rinsen.OAuth.InMemoryStorage

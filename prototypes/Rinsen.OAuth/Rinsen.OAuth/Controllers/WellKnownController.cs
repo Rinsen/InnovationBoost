@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Rinsen.Outback;
 using Rinsen.Outback.Cryptography;
+using Rinsen.Outback.Models;
 using Rinsen.Outback.WellKnown;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Rinsen.OAuth.Controllers
 {
@@ -10,11 +11,11 @@ namespace Rinsen.OAuth.Controllers
     [Route(".well-known")]
     public class WellKnownController : ControllerBase    
     {
-        private readonly EllipticCurveJsonWebKeyService _ellipticCurveJsonWebKeyService;
+        private readonly IWellKnownSigningStorage _wellKnownSigningStorage;
 
-        public WellKnownController(EllipticCurveJsonWebKeyService ellipticCurveJsonWebKeyService)
+        public WellKnownController(IWellKnownSigningStorage wellKnownSigningStorage)
         {
-            _ellipticCurveJsonWebKeyService = ellipticCurveJsonWebKeyService;
+            _wellKnownSigningStorage = wellKnownSigningStorage;
         }
 
         [Route("openid-configuration")]
@@ -39,17 +40,11 @@ namespace Rinsen.OAuth.Controllers
         }
 
         [Route("openid-configuration/jwks")]
-        public EllipticCurveJsonWebKeyModelKeys OpenIdConfigurationJwks()
+        public async Task<EllipticCurveJsonWebKeyModelKeys> OpenIdConfigurationJwks()
         {
-            var keyModel =  _ellipticCurveJsonWebKeyService.GetEllipticCurveJsonWebKeyModel();
+            var keyModel = await _wellKnownSigningStorage.GetEllipticCurveJsonWebKeyModelKeys();
 
-            return new EllipticCurveJsonWebKeyModelKeys
-            {
-                Keys = new List<EllipticCurveJsonWebKeyModel>
-                {
-                    keyModel
-                }
-            };
+            return keyModel;
         }
     }
 

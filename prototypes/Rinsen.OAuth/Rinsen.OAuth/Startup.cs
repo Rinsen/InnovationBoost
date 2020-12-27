@@ -31,12 +31,14 @@ namespace Rinsen.OAuth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<EllipticCurveJsonWebKeyService>();
             services.AddSingleton<RandomStringGenerator>();
             services.AddScoped<GrantService>();
             services.AddScoped<ClientService>();
             services.AddScoped<TokenFactory>();
 
+            var secretStorage = new SecretStorage(new RandomStringGenerator());
+            services.AddSingleton<ITokenSigningStorage>(secretStorage);
+            services.AddSingleton<IWellKnownSigningStorage>(secretStorage);
             services.AddSingleton<IGrantStorage, GrantStorage>();
             services.AddSingleton<IClientStorage, ClientStorage>();
 

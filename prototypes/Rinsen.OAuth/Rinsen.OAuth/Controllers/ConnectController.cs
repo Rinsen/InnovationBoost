@@ -122,7 +122,7 @@ namespace Rinsen.OAuth.Controllers
                 throw new SecurityException($"Redirect uri '{model.RedirectUri}' did not match granted '{persistedGrant.RedirectUri}' redirect uri");
             }
 
-            var tokenResponse = _tokenFactory.CreateTokenResponse(User, client, persistedGrant, HttpContext.Request.Host.ToString());
+            var tokenResponse = await _tokenFactory.CreateTokenResponse(User, client, persistedGrant, HttpContext.Request.Host.ToString());
             
             AddCacheControlHeader();
 
@@ -139,7 +139,7 @@ namespace Rinsen.OAuth.Controllers
                 throw new SecurityException();
             }
 
-            var tokenResponse = _tokenFactory.CreateTokenResponse(User, client, persistedGrant, HttpContext.Request.Host.ToString());
+            var tokenResponse = await _tokenFactory.CreateTokenResponse(User, client, persistedGrant, HttpContext.Request.Host.ToString());
 
             AddCacheControlHeader();
 

@@ -43,6 +43,18 @@ namespace OpenIdConnectSample
             .AddCookie("Cookies")
             .AddOpenIdConnect("oidc", options =>
             {
+                options.Events.OnTokenResponseReceived = async (context) => {
+                    //var bodyAsText = await new System.IO.StreamReader(context.Response.Body).ReadToEndAsync();
+                    var source = new CancellationTokenSource();
+                    var configuration = await context.Options.ConfigurationManager.GetConfigurationAsync(source.Token);
+                };
+
+                options.Events.OnTokenValidated = (context) => {
+                    //var bodyAsText = await new System.IO.StreamReader(context.Response.Body).ReadToEndAsync();
+
+                    return Task.CompletedTask;
+                };
+
                 options.SignInScheme = "Cookies";
                 options.ClientId = "6e074b24-1f7a-4f9e-96e3-45c9d517499c";
                 options.ClientSecret = "fgdsnmkldfgdGDFGFghngj435";

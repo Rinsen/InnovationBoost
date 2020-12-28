@@ -5,7 +5,7 @@ using Rinsen.Outback.WellKnown;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Rinsen.OAuth.Controllers
+namespace Rinsen.Outback.Controllers
 {
     [ApiController]
     [Route(".well-known")]

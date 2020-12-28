@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,18 +26,16 @@ namespace Rinsen.OAuth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<RandomStringGenerator>();
-            services.AddScoped<GrantService>();
-            services.AddScoped<ClientService>();
-            services.AddScoped<TokenFactory>();
-
             var secretStorage = new SecretStorage(new RandomStringGenerator());
             services.AddSingleton<ITokenSigningStorage>(secretStorage);
             services.AddSingleton<IWellKnownSigningStorage>(secretStorage);
             services.AddSingleton<IGrantStorage, GrantStorage>();
             services.AddSingleton<IClientStorage, ClientStorage>();
 
-            services.AddControllersWithViews();
+            services.AddRinsenOutback();
+
+            services.AddMvc()
+                .AddApplicationPart(typeof(Client).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +54,7 @@ namespace Rinsen.OAuth
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseMiddleware<TestMiddleware>();
+            app.UseMiddleware<FakeUserMiddleware>();
 
             app.UseRouting();
 
@@ -70,27 +69,22 @@ namespace Rinsen.OAuth
         }
     }
 
-    public class TestMiddleware
+    public class FakeUserMiddleware
     {
         private readonly RequestDelegate _requestDelegate;
 
-        public TestMiddleware(RequestDelegate requestDelegate)
+        public FakeUserMiddleware(RequestDelegate requestDelegate)
         {
             _requestDelegate = requestDelegate;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
+            context.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+                {
+                            new Claim("sub", "Kalle123")
+                }));
 
-            if (context.Request.Path == "/connect/token")
-            {
-                //  Enable seeking
-                context.Request.EnableBuffering();
-                //  Read the stream as text
-                var bodyAsText = await new System.IO.StreamReader(context.Request.Body).ReadToEndAsync();
-                //  Set the position of the stream to 0 to enable rereading
-                context.Request.Body.Position = 0;
-            }
             // Call the next delegate/middleware in the pipeline
             await _requestDelegate(context);
 

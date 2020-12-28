@@ -5,10 +5,9 @@ using Rinsen.Outback.Grants;
 using Rinsen.Outback.Models;
 using System;
 using System.Security;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Rinsen.OAuth.Controllers
+namespace Rinsen.Outback.Controllers
 {
     [Route("connect")]
     public class ConnectController : Controller
@@ -31,11 +30,6 @@ namespace Rinsen.OAuth.Controllers
         [Route("authorize")]
         public async Task<IActionResult> Authorize([FromQuery]AuthorizeModel model)
         {
-            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-                {
-                            new Claim("sub", "Kalle123")
-                }));
-
             if (ModelState.IsValid)
             {
                 var client = await _clientService.GetClient(model);
@@ -53,7 +47,7 @@ namespace Rinsen.OAuth.Controllers
                 else
                 {
                     // Generate and store grant
-                    code = await _grantService.CreateAndStoreGrant(client, User, model);
+                    code = await _grantService.CreateCodeAndStoreCodeGrant(client, User, model);
                 }
 
                 // Return code 
@@ -74,11 +68,6 @@ namespace Rinsen.OAuth.Controllers
         [Route("token")]
         public async Task<IActionResult> Token([FromForm] TokenModel model)
         {
-            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-                {
-                            new Claim("sub", "Kalle123")
-                }));
-
             if (ModelState.IsValid)
             {
                 var clientIdentity = ClientIdentityHelper.GetClientIdentity(model, Request.Headers);
@@ -114,7 +103,7 @@ namespace Rinsen.OAuth.Controllers
 
         private async Task<IActionResult> GetTokenForAuthorizationCode(TokenModel model, Client client)
         {
-            var persistedGrant = await _grantService.GetGrant(model.Code, client.ClientId, model.CodeVerifier);
+            var persistedGrant = await _grantService.GetCodeGrant(model.Code, client.ClientId, model.CodeVerifier);
 
             // Validate return url if provided
             if (!string.Equals(persistedGrant.RedirectUri, model.RedirectUri))

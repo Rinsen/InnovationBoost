@@ -13,11 +13,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Rinsen.IdentityProvider;
-using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.Messaging;
 using Microsoft.Extensions.Hosting;
-using IdentityServer4.Configuration;
-using IdentityServer4;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -76,13 +73,13 @@ namespace Rinsen.InnovationBoost
             }
             services.AddRinsenIdentity(options => options.ConnectionString = connectionString);
 
-            ConfigureIdentityServer(services);
+            //ConfigureIdentityServer(services);
 
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminsOnly", policy => policy.RequireClaim("http://rinsen.se/Administrator"));
-                options.AddPolicy("Logging", policy => policy.RequireScope("innovationboost.createlogs"));
-                options.AddPolicy("CreateNode", policy => policy.RequireScope("innovationboost.createnode"));
+                //options.AddPolicy("Logging", policy => policy.RequireScope("innovationboost.createlogs"));
+                //options.AddPolicy("CreateNode", policy => policy.RequireScope("innovationboost.createnode"));
             });
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -127,8 +124,8 @@ namespace Rinsen.InnovationBoost
             services.AddDbContext<MessageDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            services.AddDbContext<IdentityServerDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            //services.AddDbContext<IdentityServerDbContext>(options =>
+            //options.UseSqlServer(connectionString));
 
             var builder = services.AddMvc(o =>
             {
@@ -183,7 +180,7 @@ namespace Rinsen.InnovationBoost
 
             app.UseStaticFiles();
 
-            app.UseIdentityServer();
+            //app.UseIdentityServer();
             
             app.UseEndpoints(routes =>
             {
@@ -195,61 +192,61 @@ namespace Rinsen.InnovationBoost
             logger.LogInformation("Starting");
         }
 
-        private void ConfigureIdentityServer(IServiceCollection services)
-        {
-            var identityServerBuilder = services.AddIdentityServer();
+        //private void ConfigureIdentityServer(IServiceCollection services)
+        //{
+        //    //var identityServerBuilder = services.AddIdentityServer();
 
-            if (_env.IsDevelopment())
-            {
-                identityServerBuilder.AddDeveloperSigningCredential();
-            }
-            else
-            {
-                AddSigningCredentials(identityServerBuilder);
-            }
+        //    if (_env.IsDevelopment())
+        //    {
+        //        identityServerBuilder.AddDeveloperSigningCredential();
+        //    }
+        //    else
+        //    {
+        //        AddSigningCredentials(identityServerBuilder);
+        //    }
 
-            identityServerBuilder
-                .AddClientStore<IdentityServiceClientStore>()
-                .AddResourceStore<IdentityServerResourceStore>()
-                .AddPersistedGrantStore<IdentityServerPersistedGrantStore>()
-                .AddDeviceFlowStore<IdentityServerDeviceFlowStore>()
-                .AddProfileService<IdentityServerProfileService>();
-        }
+        //    identityServerBuilder
+        //        .AddClientStore<IdentityServiceClientStore>()
+        //        .AddResourceStore<IdentityServerResourceStore>()
+        //        .AddPersistedGrantStore<IdentityServerPersistedGrantStore>()
+        //        .AddDeviceFlowStore<IdentityServerDeviceFlowStore>()
+        //        .AddProfileService<IdentityServerProfileService>();
+        //}
 
-        private void AddSigningCredentials(IIdentityServerBuilder identityServerBuilder)
-        {
-            try
-            {
-                var base64EncodedBytes = Convert.FromBase64String(Configuration["Rinsen:RsaKeyFile"]);
-                var rsaKeyFile = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+        //private void AddSigningCredentials(IIdentityServerBuilder identityServerBuilder)
+        //{
+        //    try
+        //    {
+        //        var base64EncodedBytes = Convert.FromBase64String(Configuration["Rinsen:RsaKeyFile"]);
+        //        var rsaKeyFile = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
 
-                var rsaKey = JsonConvert.DeserializeObject<RsaKey>(rsaKeyFile, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() });
+        //        var rsaKey = JsonConvert.DeserializeObject<RsaKey>(rsaKeyFile, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() });
 
-                identityServerBuilder.AddSigningCredential(CryptoHelper.CreateRsaSecurityKey(rsaKey.Parameters, rsaKey.KeyId), IdentityServerConstants.RsaSigningAlgorithm.RS256);
-            }
-            catch (Exception)
-            {
+        //        identityServerBuilder.AddSigningCredential(CryptoHelper.CreateRsaSecurityKey(rsaKey.Parameters, rsaKey.KeyId), IdentityServerConstants.RsaSigningAlgorithm.RS256);
+        //    }
+        //    catch (Exception)
+        //    {
                 
-            }
-        }
+        //    }
+        //}
 
-        private class RsaKey
-        {
-            public string KeyId { get; set; }
-            public RSAParameters Parameters { get; set; }
-        }
+        //private class RsaKey
+        //{
+        //    public string KeyId { get; set; }
+        //    public RSAParameters Parameters { get; set; }
+        //}
 
-        private class RsaKeyContractResolver : DefaultContractResolver
-        {
-            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-            {
-                var property = base.CreateProperty(member, memberSerialization);
+        //private class RsaKeyContractResolver : DefaultContractResolver
+        //{
+        //    protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        //    {
+        //        var property = base.CreateProperty(member, memberSerialization);
 
-                property.Ignored = false;
+        //        property.Ignored = false;
 
-                return property;
-            }
-        }
+        //        return property;
+        //    }
+        //}
     }
 }
 

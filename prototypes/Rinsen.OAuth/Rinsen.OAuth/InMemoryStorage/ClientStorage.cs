@@ -39,11 +39,11 @@ namespace Rinsen.OAuth.InMemoryStorage
                     "openid",
                     "profile"
                 },
-                RedirectUris = new List<string>
+                LoginRedirectUris = new List<string>
                 {
                     "https://localhost:44372/signin-oidc"
                 },
-                GrantTypes = new List<string>
+                SupportedGrantTypes = new List<string>
                 {
                     "authorization_code"
                 }

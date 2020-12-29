@@ -1,10 +1,9 @@
-﻿using IdentityModel.Client;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Rinsen.Logger
@@ -41,7 +40,7 @@ namespace Rinsen.Logger
 #endif
                 httpClient.SetBearerToken(accessToken);
 
-                var serializedLogs = JsonConvert.SerializeObject(logItems);
+                var serializedLogs = JsonSerializer.Serialize(logItems);
                 var stringContent = new StringContent(serializedLogs, Encoding.UTF8, "application/json");
                 using (var result = await httpClient.PostAsync($"{_options.LogServiceUri}api/Logging", stringContent))
                 {

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using IdentityModel;
 using Microsoft.AspNetCore.Http;
 
 namespace Rinsen.IdentityProvider
@@ -57,7 +56,7 @@ namespace Rinsen.IdentityProvider
         {
             var session = new Session
             {
-                SessionId = ticket.Principal.GetClaimStringValue(JwtClaimTypes.SessionId),
+                SessionId = ticket.Principal.GetClaimStringValue(""/*JwtClaimTypes.SessionId*/),
                 IdentityId = ticket.Principal.GetClaimGuidValue(ClaimTypes.NameIdentifier),
                 CorrelationId = ticket.Principal.GetClaimGuidValue(ClaimTypes.SerialNumber),
                 UserAgent = string.Empty,

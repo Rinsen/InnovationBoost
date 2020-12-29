@@ -1,5 +1,4 @@
-﻿using IdentityServer4.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +20,7 @@ namespace Rinsen.InnovationBoost.Controllers
         private readonly IIdentityService _identityService;
         private readonly ILocalAccountService _localAccountService;
         private readonly AuditLog _auditLog;
-        private readonly IIdentityServerInteractionService _identityServerInteractionService;
+        //private readonly IIdentityServerInteractionService _identityServerInteractionService;
         private readonly IConfiguration _configuration;
         private readonly IIdentityAccessor _identityAccessor;
         private readonly ISessionStorage _sessionStorage;
@@ -30,7 +29,7 @@ namespace Rinsen.InnovationBoost.Controllers
             IIdentityService identityService,
             ILocalAccountService localAccountService,
             AuditLog auditLog,
-            IIdentityServerInteractionService identityServerInteractionService,
+            //IIdentityServerInteractionService identityServerInteractionService,
             IConfiguration configuration,
             IIdentityAccessor identityAccessor,
             ISessionStorage sessionStorage)
@@ -39,7 +38,7 @@ namespace Rinsen.InnovationBoost.Controllers
             _identityService = identityService;
             _localAccountService = localAccountService;
             _auditLog = auditLog;
-            _identityServerInteractionService = identityServerInteractionService;
+            //_identityServerInteractionService = identityServerInteractionService;
             _configuration = configuration;
             _identityAccessor = identityAccessor;
             _sessionStorage = sessionStorage;
@@ -131,7 +130,7 @@ namespace Rinsen.InnovationBoost.Controllers
             // Set loged in user to the one just created as this only will be provided at next request by the framework
             HttpContext.User = principal;
 
-            if (_identityServerInteractionService.IsValidReturnUrl(returnUrl) || Url.IsLocalUrl(returnUrl))
+            if (/*_identityServerInteractionService.IsValidReturnUrl(returnUrl) || */Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }

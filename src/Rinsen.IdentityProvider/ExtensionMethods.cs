@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rinsen.IdentityProvider.LocalAccounts;
 using System;
-using Rinsen.IdentityProvider.IdentityServer;
 using Rinsen.IdentityProvider.AuditLogging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -30,15 +29,11 @@ namespace Rinsen.IdentityProvider
             services.AddScoped<IIdentityAccessor, IdentityAccessService>();
             services.AddScoped<IIdentityAttributeStorage, IdentityAttributeStorage>();
             services.AddScoped<ISessionStorage, SessionStorage>();
-            services.AddTransient<IdentityServerClientBusiness, IdentityServerClientBusiness>();
-            services.AddTransient<IdentityServerApiResourceBusiness, IdentityServerApiResourceBusiness>();
-            services.AddTransient<IdentityServerIdentityResourceBusiness, IdentityServerIdentityResourceBusiness>();
             services.AddScoped<AuditLog, AuditLog>();
             services.AddScoped<AuditLogStorage, AuditLogStorage>();
             services.AddScoped<ITwoFactorAuthenticationSessionStorage, TwoFactorAuthenticationSessionStorage>();
             services.AddScoped<IIdentityAccessor, IdentityAccessService>();
             services.AddScoped<IUsedTotpLogStorage, UsedTotpLogStorage>();
-            services.AddScoped<IdentityServerDefaultInstaller>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddSingleton<RandomStringGenerator, RandomStringGenerator>();
         }

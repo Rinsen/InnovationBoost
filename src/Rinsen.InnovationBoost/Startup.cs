@@ -17,6 +17,8 @@ using Rinsen.Messaging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
+using Rinsen.Outback;
+using Rinsen.Outback.Clients;
 
 namespace Rinsen.InnovationBoost
 {
@@ -121,6 +123,8 @@ namespace Rinsen.InnovationBoost
             
             services.AddRinsenMessaging();
 
+            services.AddRinsenOutback();
+
             services.AddDbContext<MessageDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
@@ -136,7 +140,8 @@ namespace Rinsen.InnovationBoost
                 o.Filters.Add(new AuthorizeFilter(policy));
 
             })
-                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
+                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest)
+                .AddApplicationPart(typeof(Client).Assembly);
 
 #if DEBUG
             if (_env.IsDevelopment())

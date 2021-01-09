@@ -25,5 +25,8 @@
   <ItemGroup>
     <Folder Include="Outback\Entities\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rinsen.Outback\Rinsen.Outback.csproj" />
+  </ItemGroup>
 
 </Project>

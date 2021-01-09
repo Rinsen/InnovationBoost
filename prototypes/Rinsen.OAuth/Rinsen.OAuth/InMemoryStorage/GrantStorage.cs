@@ -6,7 +6,7 @@ using Rinsen.Outback.Grants;
 
 namespace Rinsen.OAuth.InMemoryStorage
 {
-    public class GrantStorage : IGrantStorage
+    public class GrantStorage : IGrantAccessor
     {
         private readonly ConcurrentDictionary<string, CodeGrant> _persistedGrants = new ConcurrentDictionary<string, CodeGrant>();
 
@@ -15,7 +15,7 @@ namespace Rinsen.OAuth.InMemoryStorage
             return Task.FromResult(_persistedGrants.GetValueOrDefault(code));
         }
 
-        public Task<PersistedGrant> GetPersistedGrant(string code)
+        public Task<PersistedGrant> GetPersistedGrant(string clientId, string subjectId)
         {
             throw new System.NotImplementedException();
         }

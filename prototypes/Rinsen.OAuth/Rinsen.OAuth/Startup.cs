@@ -27,10 +27,10 @@ namespace Rinsen.OAuth
         public void ConfigureServices(IServiceCollection services)
         {
             var secretStorage = new SecretStorage(new RandomStringGenerator());
-            services.AddSingleton<ITokenSigningStorage>(secretStorage);
-            services.AddSingleton<IWellKnownSigningStorage>(secretStorage);
-            services.AddSingleton<IGrantStorage, GrantStorage>();
-            services.AddSingleton<IClientStorage, ClientStorage>();
+            services.AddSingleton<ITokenSigningAccessor>(secretStorage);
+            services.AddSingleton<IWellKnownSigningAccessor>(secretStorage);
+            services.AddSingleton<IGrantAccessor, GrantStorage>();
+            services.AddSingleton<IClientAccessor, ClientStorage>();
 
             services.AddRinsenOutback();
 

@@ -8,7 +8,7 @@ using Rinsen.Outback.Models;
 
 namespace Rinsen.OAuth.InMemoryStorage
 {
-    public class SecretStorage : ITokenSigningStorage, IWellKnownSigningStorage
+    public class SecretStorage : ITokenSigningAccessor, IWellKnownSigningAccessor   
     {
         private readonly EllipticCurveJsonWebKeyModel _ellipticCurveJsonWebKeyModel;
         private readonly JsonWebKey _key;

@@ -14,6 +14,8 @@ namespace Rinsen.IdentityProvider.Outback.Entities
 
         public string Origin { get; set; }
 
+        public string Description { get; set; }
+
         public DateTimeOffset Created { get; set; }
 
         public DateTimeOffset Updated { get; set; }

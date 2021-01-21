@@ -8,6 +8,13 @@ namespace Rinsen.IdentityProvider.Outback.Entities
 {
     public class OutbackClientLoginRedirectUri : ICreatedAndUpdatedTimestamp, ISoftDelete
     {
+        public int Id { get; set; }
+
+        public int ClientId { get; set; }
+
+        public string LoginRedirectUri { get; set; }
+
+        public string Description { get; set; }
 
         public DateTimeOffset Created { get; set; }
 

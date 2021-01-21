@@ -1,18 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Rinsen.IdentityProvider.Outback.Entities
 {
-    public class OutbackRefreshTokenGrant : ICreatedAndUpdatedTimestamp, ISoftDelete
+    public class OutbackRefreshTokenGrant
     {
 
-        public DateTimeOffset Created { get; set; }
+        public string ClientId { get; set; }
 
-        public DateTimeOffset Updated { get; set; }
+        public string SubjectId { get; set; }
 
-        public DateTimeOffset? Deleted { get; set; }
+        public string RefreshToken { get; set; }
+
+        public string Scope { get; set; }
+
+        public DateTime Created { get; set; }
+
+        public DateTime? Resolved { get; set; }
+
+        public DateTime Expires { get; set; }
     }
 }

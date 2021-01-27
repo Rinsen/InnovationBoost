@@ -4,7 +4,9 @@ namespace Rinsen.IdentityProvider.Outback.Entities
 {
     public class OutbackPersistedGrant
     {
-        public string ClientId { get; set; }
+        public int Id { get; set; }
+
+        public int ClientId { get; set; }
 
         public string SubjectId { get; set; }
 
@@ -13,5 +15,9 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DateTime Created { get; set; }
 
         public DateTime Expires { get; set; }
+
+        public virtual OutbackClient Client { get; set; }
+
+
     }
 }

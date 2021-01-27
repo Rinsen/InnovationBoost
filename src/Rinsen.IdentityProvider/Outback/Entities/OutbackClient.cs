@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Rinsen.Outback.Clients;
 
 namespace Rinsen.IdentityProvider.Outback.Entities
@@ -29,16 +26,22 @@ namespace Rinsen.IdentityProvider.Outback.Entities
 
         public List<ClientClaim> ClientClaims { get; set; }
 
-        public List<string> Secrets { get; set; }
+        public List<OutbackClientSecret> Secrets { get; set; }
 
-        public List<string> Scopes { get; set; }
+        public List<OutbackClientScope> Scopes { get; set; }
 
-        public List<string> SupportedGrantTypes { get; set; }
+        public List<OutbackClientSupportedGrantType> SupportedGrantTypes { get; set; }
 
-        public List<string> LoginRedirectUris { get; set; }
+        public List<OutbackClientLoginRedirectUri> LoginRedirectUris { get; set; }
 
-        public List<string> PostLogoutRedirectUris { get; set; }
+        public List<OutbackClientPostLogoutRedirectUri> PostLogoutRedirectUris { get; set; }
 
-        public List<string> AllowedCorsOrigins { get; set; }
+        public List<OutbackAllowedCorsOrigin> AllowedCorsOrigins { get; set; }
+
+        public List<OutbackCodeGrant> CodeGrants { get; set; }
+
+        public List<OutbackPersistedGrant> PersistedGrants { get; set; }
+
+        public List<OutbackRefreshTokenGrant> RefreshTokenGrants { get; set; }
     }
 }

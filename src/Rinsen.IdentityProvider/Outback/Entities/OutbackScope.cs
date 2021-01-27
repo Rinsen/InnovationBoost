@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Rinsen.IdentityProvider.Outback.Entities
 {
@@ -19,5 +20,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DateTimeOffset Updated { get; set; }
 
         public DateTimeOffset? Deleted { get; set; }
+
+        public List<OutbackClientScope> ClientScopes { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
 
         public DateTimeOffset? Deleted { get; set; }
 
-        public List<ClientClaim> ClientClaims { get; set; }
+        public List<OutbackClientClaim> ClientClaims { get; set; }
 
         public List<OutbackClientSecret> Secrets { get; set; }
 

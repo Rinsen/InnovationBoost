@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Rinsen.IdentityProvider.Outback.Entities
 {
@@ -15,8 +11,6 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public string Secret { get; set; }
 
         public string Description { get; set; }
-
-        public bool Required { get; set; }
 
         public DateTimeOffset Created { get; set; }
 

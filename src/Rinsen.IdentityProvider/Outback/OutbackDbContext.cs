@@ -27,28 +27,13 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DbSet<OutbackPersistedGrant> PersistedGrants { get; set; }
         public DbSet<OutbackRefreshTokenGrant> RefreshTokenGrants { get; set; }
         public DbSet<OutbackScope> OutbackScopes { get; set; }
+        public DbSet<OutbackScopeClaim> OutbackScopeClaims { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<OutbackAllowedCorsOrigin>()
                 .HasKey(m => m.Id);
-
-
-            modelBuilder.Entity<OutbackClient>(client =>
-            {
-                client.HasKey(m => m.Id);
-                client.HasMany(m => m.AllowedCorsOrigins).WithOne();
-                client.HasMany(m => m.ClientClaims).WithOne();
-                client.HasMany(m => m.CodeGrants).WithOne();
-                client.HasMany(m => m.LoginRedirectUris).WithOne();
-                client.HasMany(m => m.PersistedGrants).WithOne();
-                client.HasMany(m => m.PostLogoutRedirectUris).WithOne();
-                client.HasMany(m => m.RefreshTokenGrants).WithOne();
-                client.HasMany(m => m.Scopes).WithOne();
-                client.HasMany(m => m.Secrets).WithOne();
-                client.HasMany(m => m.SupportedGrantTypes).WithOne();
-            });
 
             modelBuilder.Entity<OutbackClientClaim>()
                 .HasKey(m => m.Id);
@@ -77,12 +62,30 @@ namespace Rinsen.IdentityProvider.Outback.Entities
             modelBuilder.Entity<OutbackRefreshTokenGrant>()
                 .HasKey(m => m.Id);
 
+            modelBuilder.Entity<OutbackClient>(client =>
+            {
+                client.HasKey(m => m.Id);
+                client.HasMany(m => m.AllowedCorsOrigins).WithOne();
+                client.HasMany(m => m.ClientClaims).WithOne();
+                client.HasMany(m => m.CodeGrants).WithOne();
+                client.HasMany(m => m.LoginRedirectUris).WithOne();
+                client.HasMany(m => m.PersistedGrants).WithOne();
+                client.HasMany(m => m.PostLogoutRedirectUris).WithOne();
+                client.HasMany(m => m.RefreshTokenGrants).WithOne();
+                client.HasMany(m => m.Scopes).WithOne();
+                client.HasMany(m => m.Secrets).WithOne();
+                client.HasMany(m => m.SupportedGrantTypes).WithOne();
+            });
+
+            modelBuilder.Entity<OutbackScopeClaim>()
+                .HasKey(m => m.Id);
+
             modelBuilder.Entity<OutbackScope>(scope =>
             {
                 scope.HasKey(m => m.Id);
                 scope.HasMany(m => m.ClientScopes).WithOne();
+                scope.HasMany(m => m.ScopeClaims).WithOne();
             });
-                
         }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)

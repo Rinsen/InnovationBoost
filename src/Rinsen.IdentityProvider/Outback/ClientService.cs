@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rinsen.Outback.Abstractons
+namespace Rinsen.IdentityProvider.Outback
 {
-    public interface IWellKnownScopeAccessor
+    public class ClientService
     {
-        Task<List<string>> GetScopes();
-
     }
 }

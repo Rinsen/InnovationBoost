@@ -38,6 +38,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.Outback", "src\Rinsen.Outback\Rinsen.Outback.csproj", "{17AEEB6D-3E92-4CF4-8D05-FEEAFA3AEB35}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{4FBD1049-CEB2-4A00-B1FB-9DE4967DA4FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rinsen.Outback.Tests", "test\Rinsen.Outback.Tests\Rinsen.Outback.Tests.csproj", "{A1FF3B67-5958-4052-AA48-A4FB8B6B7363}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +88,10 @@ Global
 		{17AEEB6D-3E92-4CF4-8D05-FEEAFA3AEB35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17AEEB6D-3E92-4CF4-8D05-FEEAFA3AEB35}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17AEEB6D-3E92-4CF4-8D05-FEEAFA3AEB35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1FF3B67-5958-4052-AA48-A4FB8B6B7363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1FF3B67-5958-4052-AA48-A4FB8B6B7363}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1FF3B67-5958-4052-AA48-A4FB8B6B7363}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1FF3B67-5958-4052-AA48-A4FB8B6B7363}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,6 +107,7 @@ Global
 		{043BCD4B-2C52-42F5-9FD3-AF516F059FCF} = {F783FC19-6629-4B4C-B319-6F52963522BB}
 		{0703837F-14E2-491A-8EF0-8CFD2703D71F} = {2A179564-1E28-4918-BE16-494C31BFD9F2}
 		{17AEEB6D-3E92-4CF4-8D05-FEEAFA3AEB35} = {7DEA85E7-1A8C-4CD8-851C-93DA06876478}
+		{A1FF3B67-5958-4052-AA48-A4FB8B6B7363} = {2A179564-1E28-4918-BE16-494C31BFD9F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E647C73B-6B19-4B4F-97EC-8D3ECE787B91}

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Linq;
 using System.Data.SqlClient;
+using Rinsen.Outback.Abstractons;
+using Rinsen.IdentityProvider.Outback;
 
 namespace Rinsen.IdentityProvider
 {
@@ -36,6 +38,15 @@ namespace Rinsen.IdentityProvider
             services.AddScoped<IUsedTotpLogStorage, UsedTotpLogStorage>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddSingleton<RandomStringGenerator, RandomStringGenerator>();
+
+            services.AddScoped<IAllowedCorsOriginsAccessor, AllowedCorsOriginsAccessor>();
+            services.AddScoped<IClientAccessor, ClientAccessor>();
+            services.AddScoped<IGrantAccessor, GrantAccessor>();
+            services.AddScoped<IScopeAccessor, ScopeAccessor>();
+            services.AddScoped<ITokenSigningAccessor, TokenSigningAccessor>();
+            services.AddScoped<IWellKnownSigningAccessor, TokenSigningAccessor>();
+            services.AddScoped<ClientService>();
+            services.AddScoped<ScopeService>();
         }
 
         public static string GetClaimStringValue(this ClaimsPrincipal claimsPrincipal, string claimType)
@@ -148,7 +159,7 @@ namespace Rinsen.IdentityProvider
 
             return parameter;
         }
-public static SqlParameter AddWithNullableValue(this SqlParameterCollection collection, string parameterName, string value)
+        public static SqlParameter AddWithNullableValue(this SqlParameterCollection collection, string parameterName, string value)
         {
             if (string.IsNullOrEmpty(value))
                 return collection.AddWithValue(parameterName, DBNull.Value);

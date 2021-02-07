@@ -9,6 +9,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public int Id { get; set; }
         public string ClientId { get; set; }
         public ClientType ClientType { get; set; }
+        public int ClientFamilyId { get; set; }
         public bool ConsentRequired { get; set; }
         public bool SaveConsent { get; set; }
         public bool SavedConsentLifetime { get; set; }
@@ -23,6 +24,8 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DateTimeOffset Updated { get; set; }
 
         public DateTimeOffset? Deleted { get; set; }
+
+        public virtual OutbackClientFamily ClientFamily { get; set; }
 
         public List<OutbackClientClaim> ClientClaims { get; set; }
 

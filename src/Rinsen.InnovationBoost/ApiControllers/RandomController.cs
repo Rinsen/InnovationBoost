@@ -5,7 +5,7 @@ using Rinsen.IdentityProvider;
 namespace Rinsen.InnovationBoost.ApiControllers
 {
     [ApiController]
-    [Route("IdentityServer/api/[controller]")]
+    [Route("Outback/api/[controller]")]
     [Authorize("AdminsOnly")]
     public class RandomController : Controller
     {

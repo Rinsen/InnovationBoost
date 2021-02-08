@@ -19,6 +19,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
 using Rinsen.Outback;
 using Rinsen.Outback.Clients;
+using Rinsen.IdentityProvider.Outback.Entities;
 
 namespace Rinsen.InnovationBoost
 {
@@ -128,8 +129,8 @@ namespace Rinsen.InnovationBoost
             services.AddDbContext<MessageDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            //services.AddDbContext<IdentityServerDbContext>(options =>
-            //options.UseSqlServer(connectionString));
+            services.AddDbContext<OutbackDbContext>(options =>
+            options.UseSqlServer(connectionString));
 
             var builder = services.AddMvc(o =>
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Rinsen.Logger.Service
@@ -29,12 +30,12 @@ namespace Rinsen.Logger.Service
                 await _settingsStorage.Update(setting);
             }
 
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(setting.ValueField);
+            return JsonSerializer.Deserialize<T>(setting.ValueField);
         }
 
         public async Task Set<T>(string key, Guid identityId, T value)
         {
-            var settingString = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+            var settingString = JsonSerializer.Serialize(value);
 
             var setting = await _settingsStorage.Get(key, identityId);
 

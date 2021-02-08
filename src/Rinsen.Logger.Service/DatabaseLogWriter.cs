@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Rinsen.Logger.Service
@@ -150,7 +150,7 @@ namespace Rinsen.Logger.Service
                         command.Parameters.Add(new SqlParameter("@RequestId", item.RequestId));
                         command.Parameters.Add(new SqlParameter("@LogLevel", item.LogLevel));
                         command.Parameters.Add(new SqlParameter("@MessageFormat", item.MessageFormat));
-                        var properties = JsonConvert.SerializeObject(item.LogProperties);
+                        var properties = JsonSerializer.Serialize(item.LogProperties);
                         command.Parameters.Add(new SqlParameter("@LogProperties", properties));
                         command.Parameters.Add(new SqlParameter("@Timestamp", item.Timestamp));
 

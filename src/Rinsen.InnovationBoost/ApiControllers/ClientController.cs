@@ -33,7 +33,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
             return clients;
         }
 
-        [HttpGet("{id}", Name = "GetClient")]
+        [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]

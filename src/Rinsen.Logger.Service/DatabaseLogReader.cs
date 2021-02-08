@@ -4,8 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Text;
-using Newtonsoft.Json;
-using System.Linq;
+using System.Text.Json;
 
 namespace Rinsen.Logger.Service
 {
@@ -150,7 +149,7 @@ namespace Rinsen.Logger.Service
                                 ApplicationName = (string)reader["DisplayName"],
                                 EnvironmentName = (string)reader["EnvironmentName"],
                                 LogLevel = (LogLevel)Enum.Parse(typeof(LogLevel), reader["LogLevel"].ToString()),
-                                LogProperties = JsonConvert.DeserializeObject<IEnumerable<LogProperty>>((string)reader["LogProperties"]),
+                                LogProperties = JsonSerializer.Deserialize<IEnumerable<LogProperty>>((string)reader["LogProperties"]),
                                 MessageFormat = (string)reader["MessageFormat"],
                                 RequestId = (string)reader["RequestId"],
                                 SourceName = (string)reader["SourceName"],

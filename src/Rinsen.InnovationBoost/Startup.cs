@@ -1,7 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Rinsen.IdentityProvider;
 using Rinsen.Messaging;
 using Microsoft.Extensions.Hosting;
@@ -197,62 +192,6 @@ namespace Rinsen.InnovationBoost
 
             logger.LogInformation("Starting");
         }
-
-        //private void ConfigureIdentityServer(IServiceCollection services)
-        //{
-        //    //var identityServerBuilder = services.AddIdentityServer();
-
-        //    if (_env.IsDevelopment())
-        //    {
-        //        identityServerBuilder.AddDeveloperSigningCredential();
-        //    }
-        //    else
-        //    {
-        //        AddSigningCredentials(identityServerBuilder);
-        //    }
-
-        //    identityServerBuilder
-        //        .AddClientStore<IdentityServiceClientStore>()
-        //        .AddResourceStore<IdentityServerResourceStore>()
-        //        .AddPersistedGrantStore<IdentityServerPersistedGrantStore>()
-        //        .AddDeviceFlowStore<IdentityServerDeviceFlowStore>()
-        //        .AddProfileService<IdentityServerProfileService>();
-        //}
-
-        //private void AddSigningCredentials(IIdentityServerBuilder identityServerBuilder)
-        //{
-        //    try
-        //    {
-        //        var base64EncodedBytes = Convert.FromBase64String(Configuration["Rinsen:RsaKeyFile"]);
-        //        var rsaKeyFile = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-
-        //        var rsaKey = JsonConvert.DeserializeObject<RsaKey>(rsaKeyFile, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() });
-
-        //        identityServerBuilder.AddSigningCredential(CryptoHelper.CreateRsaSecurityKey(rsaKey.Parameters, rsaKey.KeyId), IdentityServerConstants.RsaSigningAlgorithm.RS256);
-        //    }
-        //    catch (Exception)
-        //    {
-                
-        //    }
-        //}
-
-        //private class RsaKey
-        //{
-        //    public string KeyId { get; set; }
-        //    public RSAParameters Parameters { get; set; }
-        //}
-
-        //private class RsaKeyContractResolver : DefaultContractResolver
-        //{
-        //    protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-        //    {
-        //        var property = base.CreateProperty(member, memberSerialization);
-
-        //        property.Ignored = false;
-
-        //        return property;
-        //    }
-        //}
     }
 }
 

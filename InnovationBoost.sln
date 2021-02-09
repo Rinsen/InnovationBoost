@@ -38,9 +38,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.IdentityProvider.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.Outback", "src\Rinsen.Outback\Rinsen.Outback.csproj", "{17AEEB6D-3E92-4CF4-8D05-FEEAFA3AEB35}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{4FBD1049-CEB2-4A00-B1FB-9DE4967DA4FA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rinsen.Outback.Tests", "test\Rinsen.Outback.Tests\Rinsen.Outback.Tests.csproj", "{A1FF3B67-5958-4052-AA48-A4FB8B6B7363}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rinsen.Outback.Tests", "test\Rinsen.Outback.Tests\Rinsen.Outback.Tests.csproj", "{A1FF3B67-5958-4052-AA48-A4FB8B6B7363}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

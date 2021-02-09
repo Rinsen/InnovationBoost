@@ -1,45 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Rinsen.IdentityProvider.Outback.Entities;
+using Rinsen.Outback.Clients;
 
 namespace Rinsen.IdentityProvider.Outback
 {
     public class ClientService
     {
+        private readonly OutbackDbContext _outbackDbContext;
+
+        public ClientService(OutbackDbContext outbackDbContext)
+        {
+            _outbackDbContext = outbackDbContext;
+        }
+        
+        
         public Task<List<OutbackClient>> GetAll()
         {
-            throw new NotImplementedException();
+            return _outbackDbContext.Clients.Include(m => m.AllowedCorsOrigins)
+                .Include(m => m.ClientClaims)
+                .Include(m => m.ClientFamily)
+                .Include(m => m.LoginRedirectUris)
+                .Include(m => m.PostLogoutRedirectUris)
+                .Include(m => m.Scopes)
+                .Include(m => m.Secrets)
+                .Include(m => m.SupportedGrantTypes).ToListAsync();
         }
 
-        public Task<OutbackClient> GetClient(string id)
+        public Task<OutbackClient> GetClient(string clientId)
         {
-            throw new NotImplementedException();
+            return _outbackDbContext.Clients.Where(m => m.ClientId == clientId).Include(m => m.AllowedCorsOrigins)
+                .Include(m => m.ClientClaims)
+                .Include(m => m.ClientFamily)
+                .Include(m => m.LoginRedirectUris)
+                .Include(m => m.PostLogoutRedirectUris)
+                .Include(m => m.Scopes)
+                .Include(m => m.Secrets)
+                .Include(m => m.SupportedGrantTypes).SingleOrDefaultAsync();
         }
 
-        public Task DeleteIdentityServerClient(string id)
+        public async Task DeleteIdentityServerClient(string clientId)
         {
-            throw new NotImplementedException();
+            var client = await _outbackDbContext.Clients.SingleOrDefaultAsync(m => m.ClientId == clientId);
+
+            if (client == default)
+            {
+                throw new Exception($"Client with id {clientId} not found");
+            }
+
+            _outbackDbContext.Clients.Remove(client);
+
+            await _outbackDbContext.SaveChangesAsync();
+
         }
 
         public Task<List<OutbackClientFamily>> GetAllClientFamilies()
         {
-            throw new NotImplementedException();
+            return _outbackDbContext.ClientFamilies.ToListAsync();
         }
 
-        public Task<OutbackClient> CreateNewClient(string clientId, string clientName, string description)
+        public async Task CreateNewClient(string clientId, string clientName, string description, int familyId, ClientType clientType)
         {
-            throw new NotImplementedException();
+            var outbackClient = new OutbackClient
+            {
+                ClientId = clientId,
+                ClientType = clientType,
+                Description = description,
+                Name = clientName,
+                ClientFamilyId = familyId
+            };
+
+            await _outbackDbContext.AddAsync(outbackClient);
+
+            await _outbackDbContext.SaveChangesAsync();
         }
 
-        public Task<string> CreateNewTypedClient(string clientName, string description, string family)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateClient(OutbackClient client)
+        public Task UpdateClient(int id, OutbackClient client)
         {
             throw new NotImplementedException();
         }

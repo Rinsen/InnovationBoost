@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rinsen.IdentityProvider.Outback.Entities;
 using Rinsen.InnovationBoost.ApiModels;
@@ -11,6 +12,7 @@ using Rinsen.InnovationBoost.ApiModels;
 namespace Rinsen.InnovationBoost.ApiControllers
 {
     [Route("api/[controller]")]
+    [Authorize("AdminsOnly")]
     [ApiController]
     public class ScopeController : ControllerBase
     {
@@ -30,13 +32,13 @@ namespace Rinsen.InnovationBoost.ApiControllers
 
         // POST api/<ScopeController>
         [HttpPost]
-        public void Post([FromBody]CreateScopeModel value)
+        public void Post([FromBody]CreateScopeModel scope)
         {
         }
 
         // PUT api/<ScopeController>/5
-        [HttpPut]
-        public void Put([FromBody] OutbackScope value)
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody] OutbackScope scope)
         {
         }
 

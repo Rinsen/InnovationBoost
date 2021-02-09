@@ -18,6 +18,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DbSet<OutbackAllowedCorsOrigin> AllowedCorsOrigins { get; set; }
         public DbSet<OutbackClient> Clients { get; set; }
         public DbSet<OutbackClientClaim> ClientClaims { get; set; }
+        public DbSet<OutbackClientFamily> ClientFamilies { get; set; }
         public DbSet<OutbackClientLoginRedirectUri> ClientLoginRedirectUris { get; set; }
         public DbSet<OutbackClientPostLogoutRedirectUri> ClientPostLogoutRedirectUris { get; set; }
         public DbSet<OutbackClientScope> ClientScopes { get; set; }
@@ -28,7 +29,6 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DbSet<OutbackRefreshTokenGrant> RefreshTokenGrants { get; set; }
         public DbSet<OutbackScope> OutbackScopes { get; set; }
         public DbSet<OutbackScopeClaim> OutbackScopeClaims { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

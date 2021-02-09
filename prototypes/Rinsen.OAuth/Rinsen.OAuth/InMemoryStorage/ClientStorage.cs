@@ -26,7 +26,7 @@ namespace Rinsen.OAuth.InMemoryStorage
                 ConsentRequired = false,
                 IdentityTokenLifetime = 300,
                 IssueRefreshToken = false,
-                PostLogoutRedirectUri = new List<string>(),
+                PostLogoutRedirectUris = new List<string>(),
                 Secrets = new List<string>(),
                 Scopes = new List<string>
                 {

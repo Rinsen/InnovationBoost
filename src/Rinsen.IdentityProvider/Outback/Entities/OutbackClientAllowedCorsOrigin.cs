@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rinsen.IdentityProvider.Outback.Entities
 {
-    public class OutbackAllowedCorsOrigin : ICreatedAndUpdatedTimestamp, ISoftDelete
+    public class OutbackClientAllowedCorsOrigin : ICreatedAndUpdatedTimestamp, ISoftDelete
     {
         public int Id { get; set; }
 

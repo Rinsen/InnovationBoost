@@ -63,7 +63,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
 
         public List<OutbackClientPostLogoutRedirectUri> PostLogoutRedirectUris { get; set; }
 
-        public List<OutbackAllowedCorsOrigin> AllowedCorsOrigins { get; set; }
+        public List<OutbackClientAllowedCorsOrigin> AllowedCorsOrigins { get; set; }
 
         [JsonIgnore]
         public List<OutbackCodeGrant> CodeGrants { get; set; }

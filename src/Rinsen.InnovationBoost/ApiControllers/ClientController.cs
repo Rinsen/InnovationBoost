@@ -99,5 +99,18 @@ namespace Rinsen.InnovationBoost.ApiControllers
 
             return clientFamilies;
         }
+
+        [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [Route("~/Outback/api/[controller]/Family")]
+        public async Task<ActionResult<OutbackClientFamily>> CreateFamily([Required] CreateFamily createFamily)
+        {
+            var family = await _clientService.CreateNewFamily(createFamily.Name, createFamily.Description);
+
+            return CreatedAtAction(nameof(GetById),
+               new { id = family.Id }, family);
+        }
     }
 }

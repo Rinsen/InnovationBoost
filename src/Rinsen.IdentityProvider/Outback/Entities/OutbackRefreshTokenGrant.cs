@@ -8,7 +8,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
 
         public int ClientId { get; set; }
 
-        public string SubjectId { get; set; }
+        public Guid SubjectId { get; set; }
 
         public string RefreshToken { get; set; }
 

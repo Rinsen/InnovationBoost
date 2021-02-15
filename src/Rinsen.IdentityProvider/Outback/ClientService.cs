@@ -82,5 +82,20 @@ namespace Rinsen.IdentityProvider.Outback
         {
             throw new NotImplementedException();
         }
+
+        public async Task<OutbackClientFamily> CreateNewFamily(string name, string description)
+        {
+            var outbackClientFamily = new OutbackClientFamily
+            {
+                Description = description,
+                Name = name,
+            };
+
+            await _outbackDbContext.AddAsync(outbackClientFamily);
+
+            await _outbackDbContext.SaveChangesAsync();
+
+            return outbackClientFamily;
+        }
     }
 }

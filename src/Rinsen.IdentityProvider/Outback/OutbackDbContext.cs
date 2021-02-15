@@ -15,7 +15,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         {
         }
 
-        public DbSet<OutbackAllowedCorsOrigin> AllowedCorsOrigins { get; set; }
+        public DbSet<OutbackClientAllowedCorsOrigin> AllowedCorsOrigins { get; set; }
         public DbSet<OutbackClient> Clients { get; set; }
         public DbSet<OutbackClientClaim> ClientClaims { get; set; }
         public DbSet<OutbackClientFamily> ClientFamilies { get; set; }
@@ -32,7 +32,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<OutbackAllowedCorsOrigin>()
+            modelBuilder.Entity<OutbackClientAllowedCorsOrigin>()
                 .HasKey(m => m.Id);
 
             modelBuilder.Entity<OutbackClientClaim>()

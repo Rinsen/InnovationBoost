@@ -42,11 +42,11 @@ namespace Rinsen.IdentityProvider.Outback
                 Resolved = outbackCodeGrant.Resolved,
                 Scope = outbackCodeGrant.Scope,
                 State = outbackCodeGrant.State,
-                SubjectId = outbackCodeGrant.SubjectId,
+                SubjectId = outbackCodeGrant.SubjectId.ToString(),
             };
         }
 
-        public async Task<PersistedGrant> GetPersistedGrant(string clientId, string subjectId)
+        public async Task<PersistedGrant> GetPersistedGrant(string clientId, Guid subjectId)
         {
             var outbackPersistedGrant = await _outbackDbContext.PersistedGrants.Include(m => m.Client).SingleOrDefaultAsync(m => m.Client.ClientId == clientId && m.SubjectId == subjectId);
 
@@ -61,7 +61,7 @@ namespace Rinsen.IdentityProvider.Outback
                 Created = outbackPersistedGrant.Created,
                 Expires = outbackPersistedGrant.Expires,
                 Scope = outbackPersistedGrant.Scope,
-                SubjectId = outbackPersistedGrant.SubjectId,
+                SubjectId = outbackPersistedGrant.SubjectId.ToString()
             };
         }
 
@@ -80,7 +80,7 @@ namespace Rinsen.IdentityProvider.Outback
                 Created = outbackPersistedGrant.Created,
                 Expires = outbackPersistedGrant.Expires,
                 Scope = outbackPersistedGrant.Scope,
-                SubjectId = outbackPersistedGrant.SubjectId,
+                SubjectId = outbackPersistedGrant.SubjectId.ToString(),
                 RefreshToken = outbackPersistedGrant.RefreshToken,
                 Resolved = outbackPersistedGrant.Resolved
             };
@@ -103,7 +103,7 @@ namespace Rinsen.IdentityProvider.Outback
                 Resolved = codeGrant.Resolved,
                 Scope = codeGrant.Scope,
                 State = codeGrant.State,
-                SubjectId = codeGrant.SubjectId,
+                SubjectId = Guid.Parse(codeGrant.SubjectId),
             };
 
             await _outbackDbContext.CodeGrants.AddAsync(outbackCodeGrant);

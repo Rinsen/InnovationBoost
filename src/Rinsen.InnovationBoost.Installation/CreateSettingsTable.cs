@@ -7,7 +7,7 @@ namespace Rinsen.InnovationBoost.Installation
     public class CreateSettingsTable : DatabaseVersion
     {
         public CreateSettingsTable()
-            : base(2)
+            : base(4)
         {
         }
 

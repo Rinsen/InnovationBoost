@@ -7,7 +7,7 @@ namespace Rinsen.InnovationBoost.Installation
     public class CreateAuditLog : DatabaseVersion
     {
         public CreateAuditLog()
-            : base(4)
+            : base(5)
         {
         }
 

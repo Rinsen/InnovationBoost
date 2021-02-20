@@ -157,6 +157,15 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             outbackRefreshTokenGrantsTable.AddColumn(m => m.Resolved);
             outbackRefreshTokenGrantsTable.AddColumn(m => m.Scope, 2000);
             outbackRefreshTokenGrantsTable.AddColumn(m => m.SubjectId).ForeignKey("Identities", "IdentityId");
+
+            var outbackSecretsTable = dbChangeList.AddNewTable<OutbackSecret>();
+            outbackSecretsTable.AddAutoIncrementColumn(m => m.Id);
+            outbackSecretsTable.AddColumn(m => m.ActiveSigningKey);
+            outbackSecretsTable.AddColumn(m => m.Created);
+            outbackSecretsTable.AddColumn(m => m.Deleted);
+            outbackSecretsTable.AddColumn(m => m.Expires);
+            outbackSecretsTable.AddColumn(m => m.SigningData, int.MaxValue);
+            outbackSecretsTable.AddColumn(m => m.Updated);
         }
     }
 }

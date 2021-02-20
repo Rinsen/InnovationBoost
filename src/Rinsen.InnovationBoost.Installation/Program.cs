@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Rinsen.DatabaseInstaller;
+using Rinsen.InnovationBoost.Installation.IdentityServer;
 
 namespace Rinsen.InnovationBoost.Installation
 {
@@ -16,8 +17,13 @@ namespace Rinsen.InnovationBoost.Installation
     {
         public void DatabaseVersionsToInstall(List<DatabaseVersion> databaseVersions)
         {
-            databaseVersions.Add(new SetDatabaseSettingsVersion());
+            databaseVersions.Add(new InitializeDatabase());
             databaseVersions.Add(new CreateTables());
+            databaseVersions.Add(new CreateLogTables());
+            databaseVersions.Add(new CreateSettingsTable());
+            databaseVersions.Add(new CreateAuditLog());
+            databaseVersions.Add(new OutbackTableInstallation());
+
         }
     }
 }

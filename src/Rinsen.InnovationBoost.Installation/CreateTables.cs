@@ -8,7 +8,7 @@ namespace Rinsen.InnovationBoost.Installation
     public class CreateTables : DatabaseVersion
     {
         public CreateTables()
-        : base(1)
+        : base(2)
         { }
 
         public override void AddDbChanges(List<IDbChange> dbChangeList)

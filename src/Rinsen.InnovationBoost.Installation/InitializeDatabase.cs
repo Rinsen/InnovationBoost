@@ -3,9 +3,9 @@ using Rinsen.DatabaseInstaller;
 
 namespace Rinsen.InnovationBoost.Installation
 {
-    public class SetDatabaseSettingsVersion : DatabaseVersion
+    public class InitializeDatabase : DatabaseVersion
     {
-        public SetDatabaseSettingsVersion()
+        public InitializeDatabase()
             :base(1)
         {
 

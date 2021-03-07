@@ -12,7 +12,7 @@ namespace Rinsen.IdentityProvider
 
         public string GetRandomString(int length)
         {
-            var bytes = new byte[32];
+            var bytes = new byte[length];
 
             CryptoRandom.GetBytes(bytes);
 

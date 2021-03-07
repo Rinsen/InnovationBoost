@@ -164,7 +164,8 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             outbackSecretsTable.AddColumn(m => m.Created);
             outbackSecretsTable.AddColumn(m => m.Deleted);
             outbackSecretsTable.AddColumn(m => m.Expires);
-            outbackSecretsTable.AddColumn(m => m.SigningData, int.MaxValue);
+            outbackSecretsTable.AddColumn(m => m.CryptographyData, int.MaxValue);
+            outbackSecretsTable.AddColumn(m => m.PublicKeyCryptographyType);
             outbackSecretsTable.AddColumn(m => m.Updated);
         }
     }

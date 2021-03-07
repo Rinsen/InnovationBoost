@@ -6,7 +6,9 @@ namespace Rinsen.IdentityProvider.Outback.Entities
     {
         public int Id { get; set; }
 
-        public string SigningData { get; set; }
+        public string CryptographyData { get; set; }
+
+        public PublicKeyCryptographyType PublicKeyCryptographyType { get; set; }
 
         public bool ActiveSigningKey { get; set; }
 
@@ -17,5 +19,11 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DateTimeOffset? Deleted { get; set; }
 
         public DateTime Expires { get; set; }
+    }
+
+    public enum PublicKeyCryptographyType
+    {
+        EC_NistP256 = 1,
+
     }
 }

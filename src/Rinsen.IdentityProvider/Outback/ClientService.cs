@@ -17,7 +17,6 @@ namespace Rinsen.IdentityProvider.Outback
             _outbackDbContext = outbackDbContext;
         }
         
-        
         public Task<List<OutbackClient>> GetAll()
         {
             return _outbackDbContext.Clients.Include(m => m.AllowedCorsOrigins)
@@ -42,7 +41,7 @@ namespace Rinsen.IdentityProvider.Outback
                 .Include(m => m.SupportedGrantTypes).SingleOrDefaultAsync();
         }
 
-        public async Task DeleteIdentityServerClient(string clientId)
+        public async Task DeleteClient(string clientId)
         {
             var client = await _outbackDbContext.Clients.SingleOrDefaultAsync(m => m.ClientId == clientId);
 
@@ -54,7 +53,6 @@ namespace Rinsen.IdentityProvider.Outback
             _outbackDbContext.Clients.Remove(client);
 
             await _outbackDbContext.SaveChangesAsync();
-
         }
 
         public Task<List<OutbackClientFamily>> GetAllClientFamilies()

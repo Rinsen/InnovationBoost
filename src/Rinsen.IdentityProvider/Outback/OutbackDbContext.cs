@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +27,8 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DbSet<OutbackRefreshTokenGrant> RefreshTokenGrants { get; set; }
         public DbSet<OutbackScope> OutbackScopes { get; set; }
         public DbSet<OutbackScopeClaim> OutbackScopeClaims { get; set; }
+
+        public DbSet<OutbackSecret> OutbackSecrets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -86,6 +86,9 @@ namespace Rinsen.IdentityProvider.Outback.Entities
                 scope.HasMany(m => m.ClientScopes).WithOne();
                 scope.HasMany(m => m.ScopeClaims).WithOne();
             });
+
+            modelBuilder.Entity<OutbackSecret>()
+                .HasKey(m => m.Id);
         }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Rinsen.IdentityProvider.Outback.Entities;
 using Rinsen.Outback.Claims;
 
@@ -35,9 +37,37 @@ namespace Rinsen.IdentityProvider.Outback
             return creadentials;
         }
 
-        private Task CreateSigningKey()
+        private async Task CreateSigningKey()
         {
-            throw new NotImplementedException();
+            var secret = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+
+            var ecdSaKey = new ECDsaSecurityKey(secret)
+            {
+                KeyId = _randomStringGenerator.GetRandomString(20)
+            };
+
+            var publicKey = ecdSaKey.ECDsa.ExportParameters(true);
+
+            var cryptographyParameters = new CryptographyParameters
+            {
+                EncodedD = Base64UrlEncoder.Encode(publicKey.D),
+                EncodedX = Base64UrlEncoder.Encode(publicKey.Q.X),
+                EncodedY = Base64UrlEncoder.Encode(publicKey.Q.Y),
+                KeyId = ecdSaKey.KeyId
+            };
+
+            var outbackSecret = new OutbackSecret
+            {
+                ActiveSigningKey = true,
+                CryptographyData = JsonSerializer.Serialize(cryptographyParameters),
+                Expires = DateTime.UtcNow.AddYears(100),
+                PublicKeyCryptographyType = PublicKeyCryptographyType.EC_NistP256,
+            };
+
+            await _outbackDbContext.OutbackSecrets.AddAsync(outbackSecret);
+
+            await _outbackDbContext.SaveChangesAsync();
+
         }
 
         private async Task<Credentials> CreateInnovationBoostWebClient()

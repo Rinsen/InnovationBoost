@@ -56,7 +56,7 @@ namespace Rinsen.InnovationBoost.ApiControllers
         [ProducesResponseType(404)]
         public async Task<ActionResult> Delete(string id)
         {
-            await _clientService.DeleteIdentityServerClient(id);
+            await _clientService.DeleteClient(id);
 
             return Ok();
         }

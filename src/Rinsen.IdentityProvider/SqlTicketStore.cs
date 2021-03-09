@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Rinsen.Outback.Claims;
 
 namespace Rinsen.IdentityProvider
 {
@@ -56,7 +57,7 @@ namespace Rinsen.IdentityProvider
         {
             var session = new Session
             {
-                SessionId = ticket.Principal.GetClaimStringValue(""/*JwtClaimTypes.SessionId*/),
+                SessionId = ticket.Principal.GetClaimStringValue(StandardClaims.SessionId),
                 IdentityId = ticket.Principal.GetClaimGuidValue(ClaimTypes.NameIdentifier),
                 CorrelationId = ticket.Principal.GetClaimGuidValue(ClaimTypes.SerialNumber),
                 UserAgent = string.Empty,

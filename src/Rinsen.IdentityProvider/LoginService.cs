@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OtpNet;
 using Rinsen.IdentityProvider.LocalAccounts;
+using Rinsen.Outback.Claims;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -169,10 +170,10 @@ namespace Rinsen.IdentityProvider
                 new Claim(ClaimTypes.IsPersistent, rememberMe.ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
                 new Claim(ClaimTypes.Expiration, timeToExpiration.ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
                 new Claim(ClaimTypes.SerialNumber, Guid.NewGuid().ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
-                //new Claim(JwtClaimTypes.Issuer, host, ClaimValueTypes.String,  RinsenIdentityConstants.RinsenIdentityProvider),
-                //new Claim(JwtClaimTypes.Subject, identity.IdentityId.ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
-                //new Claim(JwtClaimTypes.SessionId, sessionId, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
-                //new Claim(JwtClaimTypes.Expiration, DateTimeOffset.UtcNow.AddSeconds(timeToExpiration.TotalSeconds).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+                new Claim(StandardClaims.Issuer, host, ClaimValueTypes.String,  RinsenIdentityConstants.RinsenIdentityProvider),
+                new Claim(StandardClaims.Subject, identity.IdentityId.ToString(), ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
+                new Claim(StandardClaims.SessionId, sessionId, ClaimValueTypes.String, RinsenIdentityConstants.RinsenIdentityProvider),
+                new Claim(StandardClaims.Expiration, DateTimeOffset.UtcNow.AddSeconds(timeToExpiration.TotalSeconds).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             };
 
             var identityAttributes = await _identityAttributeStorage.GetIdentityAttributesAsync(Guid.Parse(claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value));

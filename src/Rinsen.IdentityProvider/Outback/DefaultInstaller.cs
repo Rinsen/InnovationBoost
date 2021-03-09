@@ -252,7 +252,7 @@ namespace Rinsen.IdentityProvider.Outback
                         new OutbackScopeClaim 
                         { 
                             Description = "Identifier for the End-User at the Issuer",
-                            Type = OpenIdStandardClaims.Subject
+                            Type = StandardClaims.Subject
                         } 
                     } 
                 },
@@ -269,12 +269,12 @@ namespace Rinsen.IdentityProvider.Outback
                         new OutbackScopeClaim
                         {
                             Description = "Given name(s) or first name(s) of the End-User.Note that in some cultures, people can have multiple given names; all can be present, with the names being separated by space characters.",
-                            Type = OpenIdStandardClaims.GivenName
+                            Type = StandardClaims.GivenName
                         },
                         new OutbackScopeClaim
                         {
                             Description = "Surname(s) or last name(s) of the End-User.Note that in some cultures, people can have multiple family names or no family name; all can be present, with the names being separated by space characters.",
-                            Type = OpenIdStandardClaims.FamilyName
+                            Type = StandardClaims.FamilyName
                         }
                     }
                 },
@@ -291,12 +291,12 @@ namespace Rinsen.IdentityProvider.Outback
                         new OutbackScopeClaim
                         {
                             Description = "End-User's preferred e-mail address. Its value MUST conform to the RFC 5322 [RFC5322] addr-spec syntax. The RP MUST NOT rely upon this value being unique, as discussed in Section 5.7.",
-                            Type = OpenIdStandardClaims.Email
+                            Type = StandardClaims.Email
                         },
                         new OutbackScopeClaim
                         {
                             Description = "True if the End-User's e-mail address has been verified; otherwise false. When this Claim Value is true, this means that the OP took affirmative steps to ensure that this e-mail address was controlled by the End-User at the time the verification was performed. The means by which an e-mail address is verified is context-specific, and dependent upon the trust framework or contractual agreements within which the parties are operating.",
-                            Type = OpenIdStandardClaims.EmailVerified
+                            Type = StandardClaims.EmailVerified
                         }
                     }
                 }
@@ -310,17 +310,20 @@ namespace Rinsen.IdentityProvider.Outback
         {
             await _outbackDbContext.ClientFamilies.AddAsync(new OutbackClientFamily
             {
-                Name = "WebApplication"
+                Name = "WebApplication",
+                Description = "Web applications"
             });
 
             await _outbackDbContext.ClientFamilies.AddAsync(new OutbackClientFamily
             {
-                Name = "SpaApplication"
+                Name = "SpaApplication",
+                Description = "Browser SPA technology based applications"
             });
 
             await _outbackDbContext.ClientFamilies.AddAsync(new OutbackClientFamily
             {
-                Name = "Node"
+                Name = "Node",
+                Description = "Home control nodes"
             });
 
             await _outbackDbContext.SaveChangesAsync();

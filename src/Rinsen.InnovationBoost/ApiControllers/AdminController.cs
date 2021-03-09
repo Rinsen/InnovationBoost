@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Rinsen.IdentityProvider.Outback;
 
-namespace Rinsen.InnovationBoost.Controllers
+namespace Rinsen.InnovationBoost.ApiControllers
 {
-    [Authorize("AdminsOnly")]
+    [ApiController]
+    //[Authorize("AdminsOnly")]
+    [Route("Outback/api/[controller]")]
     public class AdminController : Controller
     {
         private readonly DefaultInstaller _defaultInstaller;
@@ -20,7 +22,9 @@ namespace Rinsen.InnovationBoost.Controllers
             _configuration = configuration;
         }
 
-        [AllowAnonymous]
+        [HttpGet]
+        [Route("Install")]
+        [ProducesResponseType(200)]
         public async Task<IActionResult> InstallDefault()
         {
             var credentials = await _defaultInstaller.Install();

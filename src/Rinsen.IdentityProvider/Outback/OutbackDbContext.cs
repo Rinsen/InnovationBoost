@@ -27,11 +27,11 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DbSet<OutbackRefreshTokenGrant> RefreshTokenGrants { get; set; }
         public DbSet<OutbackScope> OutbackScopes { get; set; }
         public DbSet<OutbackScopeClaim> OutbackScopeClaims { get; set; }
-
         public DbSet<OutbackSecret> OutbackSecrets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<OutbackClientAllowedCorsOrigin>()
                 .HasKey(m => m.Id);
 
@@ -44,8 +44,13 @@ namespace Rinsen.IdentityProvider.Outback.Entities
             modelBuilder.Entity<OutbackClientPostLogoutRedirectUri>()
                 .HasKey(m => m.Id);
 
-            modelBuilder.Entity<OutbackClientScope>()
-                .HasKey(m => m.Id);
+            modelBuilder.Entity<OutbackClientScope>(clientScope => 
+            {
+                clientScope.HasKey(m => m.Id);
+                clientScope.HasOne(m => m.Client).WithMany(m => m.Scopes).HasForeignKey(m => m.ClientId);
+                clientScope.HasOne(m => m.Scope).WithMany(m => m.ClientScopes).HasForeignKey(m => m.ScopeId);
+            });
+                
 
             modelBuilder.Entity<OutbackClientSecret>()
                 .HasKey(m => m.Id);
@@ -62,19 +67,25 @@ namespace Rinsen.IdentityProvider.Outback.Entities
             modelBuilder.Entity<OutbackRefreshTokenGrant>()
                 .HasKey(m => m.Id);
 
+            modelBuilder.Entity<OutbackClientFamily>()
+                .ToTable("OutbackClientFamilies")
+                .HasKey(m => m.Id);
+                
+
             modelBuilder.Entity<OutbackClient>(client =>
             {
                 client.HasKey(m => m.Id);
-                client.HasMany(m => m.AllowedCorsOrigins).WithOne();
-                client.HasMany(m => m.ClientClaims).WithOne();
-                client.HasMany(m => m.CodeGrants).WithOne();
-                client.HasMany(m => m.LoginRedirectUris).WithOne();
-                client.HasMany(m => m.PersistedGrants).WithOne();
-                client.HasMany(m => m.PostLogoutRedirectUris).WithOne();
-                client.HasMany(m => m.RefreshTokenGrants).WithOne();
-                client.HasMany(m => m.Scopes).WithOne();
-                client.HasMany(m => m.Secrets).WithOne();
-                client.HasMany(m => m.SupportedGrantTypes).WithOne();
+                client.HasMany(m => m.AllowedCorsOrigins).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasMany(m => m.ClientClaims).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasMany(m => m.CodeGrants).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasMany(m => m.LoginRedirectUris).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasMany(m => m.PersistedGrants).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasMany(m => m.PostLogoutRedirectUris).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasMany(m => m.RefreshTokenGrants).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasMany(m => m.Scopes).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasMany(m => m.Secrets).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasMany(m => m.SupportedGrantTypes).WithOne(m => m.Client).HasForeignKey(m => m.ClientId);
+                client.HasOne(m => m.ClientFamily).WithMany(m => m.Clients).HasForeignKey(m => m.ClientFamilyId);
             });
 
             modelBuilder.Entity<OutbackScopeClaim>()
@@ -83,8 +94,8 @@ namespace Rinsen.IdentityProvider.Outback.Entities
             modelBuilder.Entity<OutbackScope>(scope =>
             {
                 scope.HasKey(m => m.Id);
-                scope.HasMany(m => m.ClientScopes).WithOne();
-                scope.HasMany(m => m.ScopeClaims).WithOne();
+                //scope.HasMany(m => m.ClientScopes).WithOne(m => m.Scope).HasForeignKey(m => m.ClientId);
+                scope.HasMany(m => m.ScopeClaims).WithOne(m => m.Scope).HasForeignKey(m => m.ScopeId);
             });
 
             modelBuilder.Entity<OutbackSecret>()

@@ -20,7 +20,7 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             outbackScopesTable.AddAutoIncrementColumn(m => m.Id);
             outbackScopesTable.AddColumn(m => m.DisplayName, 200);
             outbackScopesTable.AddColumn(m => m.Description, 1000);
-            outbackScopesTable.AddColumn(m => m.ScopeName).Unique("UX_OutbackScope_ScopeName");
+            outbackScopesTable.AddColumn(m => m.ScopeName, 200).Unique("UX_OutbackScope_ScopeName");
             outbackScopesTable.AddColumn(m => m.Enabled);
             outbackScopesTable.AddColumn(m => m.ClaimsInIdToken);
             outbackScopesTable.AddColumn(m => m.ShowInDiscoveryDocument);
@@ -134,9 +134,9 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             outbackCodeGrantsTable.AddColumn(m => m.CodeChallangeMethod, 200);
             outbackCodeGrantsTable.AddColumn(m => m.Expires);
             outbackCodeGrantsTable.AddColumn(m => m.Nonce, 200);
-            outbackCodeGrantsTable.AddColumn(m => m.RedirectUri, 200);
+            outbackCodeGrantsTable.AddColumn(m => m.RedirectUri, 1000);
             outbackCodeGrantsTable.AddColumn(m => m.Resolved);
-            outbackCodeGrantsTable.AddColumn(m => m.Scope, 2000);
+            outbackCodeGrantsTable.AddColumn(m => m.Scope, int.MaxValue);
             outbackCodeGrantsTable.AddColumn(m => m.State, 200);
             outbackCodeGrantsTable.AddColumn(m => m.SubjectId).ForeignKey("Identities", "IdentityId");
             

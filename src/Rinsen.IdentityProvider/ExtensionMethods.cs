@@ -47,6 +47,8 @@ namespace Rinsen.IdentityProvider
             services.AddScoped<IWellKnownSigningAccessor, TokenSigningAccessor>();
             services.AddScoped<ClientService>();
             services.AddScoped<ScopeService>();
+            services.AddScoped<DefaultInstaller>();
+            
         }
 
         public static string GetClaimStringValue(this ClaimsPrincipal claimsPrincipal, string claimType)

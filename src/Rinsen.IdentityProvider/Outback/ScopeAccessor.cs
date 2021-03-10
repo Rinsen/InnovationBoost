@@ -19,7 +19,7 @@ namespace Rinsen.IdentityProvider.Outback
         
         public Task<List<Scope>> GetScopes()
         {
-            return _outbackDbContext.OutbackScopes.Include(m => m.ScopeClaims).Select(s => new Scope
+            return _outbackDbContext.Scopes.Include(m => m.ScopeClaims).Select(s => new Scope
             {
                 ScopeName = s.ScopeName,
                 ShowInDiscoveryDocument = s.ShowInDiscoveryDocument,

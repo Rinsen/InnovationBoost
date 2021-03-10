@@ -21,7 +21,7 @@ namespace Rinsen.IdentityProvider.Outback
 
         public async Task<EllipticCurveJsonWebKeyModelKeys> GetEllipticCurveJsonWebKeyModelKeys()
         {
-            var secrets = await _outbackDbContext.OutbackSecrets.ToListAsync();
+            var secrets = await _outbackDbContext.Secrets.ToListAsync();
 
             var result = new EllipticCurveJsonWebKeyModelKeys();
             foreach (var secret in secrets)
@@ -43,7 +43,7 @@ namespace Rinsen.IdentityProvider.Outback
 
         public async Task<SecurityKeyWithAlgorithm> GetSigningSecurityKey()
         {
-            var secret = await _outbackDbContext.OutbackSecrets.SingleOrDefaultAsync(m => m.ActiveSigningKey == true);
+            var secret = await _outbackDbContext.Secrets.SingleOrDefaultAsync(m => m.ActiveSigningKey == true);
 
             switch (secret.PublicKeyCryptographyType)
             {

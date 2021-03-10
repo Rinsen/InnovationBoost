@@ -86,6 +86,7 @@ namespace Rinsen.InnovationBoost
                     options.SessionStore = new SqlTicketStore(new SessionStorage(connectionString), httpContextAccessor);
                     options.LoginPath = "/Identity/Login";
                     options.LogoutPath = "/Identity/LogOut";
+                    options.AccessDeniedPath = "/Identity/AccessDenied";
 
                     options.ForwardDefaultSelector = ctx =>
                     {
@@ -102,7 +103,7 @@ namespace Rinsen.InnovationBoost
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = Configuration["Rinsen:InnovationBoost"];
-                    options.Audience = Configuration["Rinsen:Audience"];
+                    options.Audience = Configuration["Rinsen:ClientId"];
 
                     options.ForwardDefaultSelector = ctx =>
                     {

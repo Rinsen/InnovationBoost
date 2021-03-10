@@ -39,6 +39,11 @@ namespace Rinsen.IdentityProvider.Outback
 
         private async Task CreateSigningKey()
         {
+            if (await _outbackDbContext.Secrets.AnyAsync())
+            {
+                return;
+            }
+
             var secret = ECDsa.Create(ECCurve.NamedCurves.nistP256);
 
             var ecdSaKey = new ECDsaSecurityKey(secret)
@@ -64,7 +69,7 @@ namespace Rinsen.IdentityProvider.Outback
                 PublicKeyCryptographyType = PublicKeyCryptographyType.EC_NistP256,
             };
 
-            await _outbackDbContext.OutbackSecrets.AddAsync(outbackSecret);
+            await _outbackDbContext.Secrets.AddAsync(outbackSecret);
 
             await _outbackDbContext.SaveChangesAsync();
 
@@ -72,8 +77,13 @@ namespace Rinsen.IdentityProvider.Outback
 
         private async Task<Credentials> CreateInnovationBoostWebClient()
         {
+            if (await _outbackDbContext.Clients.AnyAsync(m => m.Name == "InnovationBoost"))
+            {
+                return new Credentials();
+            }
+
             var clientFamily = await _outbackDbContext.ClientFamilies.SingleAsync(m => m.Name == "WebApplication");
-            var createLogsScope = await _outbackDbContext.OutbackScopes.SingleAsync(m => m.ScopeName == "innovationboost.createlogs");
+            var createLogsScope = await _outbackDbContext.Scopes.SingleAsync(m => m.ScopeName == "innovationboost.createlogs");
 
             var secret = _randomStringGenerator.GetRandomString(30);
             var secretHashString = GetSha256Hash(secret);
@@ -81,6 +91,7 @@ namespace Rinsen.IdentityProvider.Outback
             var client = new OutbackClient
             {
                 ClientFamilyId = clientFamily.Id,
+                ClientId = Guid.NewGuid().ToString(),
                 ClientType = Rinsen.Outback.Clients.ClientType.Confidential,
                 Name = "InnovationBoost",
                 SupportedGrantTypes = new List<OutbackClientSupportedGrantType>
@@ -135,14 +146,20 @@ namespace Rinsen.IdentityProvider.Outback
 
         private async Task<string> CreateInnovationBoostSpaClient()
         {
+            if (await _outbackDbContext.Clients.AnyAsync(m => m.Name == "InnovationBoostAdminApp"))
+            {
+                return string.Empty;
+            }
+
             var clientFamily = await _outbackDbContext.ClientFamilies.SingleAsync(m => m.Name == "SpaApplication");
-            var scopes = await _outbackDbContext.OutbackScopes.ToListAsync();
+            var scopes = await _outbackDbContext.Scopes.ToListAsync();
 
             var client = new OutbackClient
             {
                 ClientFamilyId = clientFamily.Id,
                 ClientType = Rinsen.Outback.Clients.ClientType.Confidential,
-                Name = "InnovationBoost",
+                ClientId = Guid.NewGuid().ToString(),
+                Name = "InnovationBoostAdminApp",
                 SupportedGrantTypes = new List<OutbackClientSupportedGrantType>
                 {
                     new OutbackClientSupportedGrantType { GrantType = "client_credentials" }
@@ -177,9 +194,13 @@ namespace Rinsen.IdentityProvider.Outback
 
         private async Task CreateDefaultInnovationBoostScopes()
         {
-            var scopes = new List<OutbackScope>
+            var existingScopes = await _outbackDbContext.Scopes.ToListAsync();
+
+            var scopes = new List<OutbackScope>();
+
+            if (!existingScopes.Any(m => m.ScopeName == "innovationboost.createlogs"))
             {
-                new OutbackScope
+                scopes.Add(new OutbackScope
                 {
                     ClaimsInIdToken = false,
                     Description = "Api for creating logs",
@@ -188,8 +209,12 @@ namespace Rinsen.IdentityProvider.Outback
                     ShowInDiscoveryDocument = false,
                     Enabled = true,
                     ScopeClaims = new List<OutbackScopeClaim>()
-                },
-                new OutbackScope
+                });
+            }
+
+            if (!existingScopes.Any(m => m.ScopeName == "innovationboost.administration"))
+            {
+                scopes.Add(new OutbackScope
                 {
                     ClaimsInIdToken = true,
                     Description = "Api for InnovationBoost administration",
@@ -198,8 +223,12 @@ namespace Rinsen.IdentityProvider.Outback
                     ShowInDiscoveryDocument = false,
                     Enabled = true,
                     ScopeClaims = new List<OutbackScopeClaim>()
-                },
-                new OutbackScope
+                });
+            }
+
+            if (!existingScopes.Any(m => m.ScopeName == "innovationboost.sessions"))
+            {
+                scopes.Add(new OutbackScope
                 {
                     ClaimsInIdToken = true,
                     Description = "Api for session management",
@@ -208,8 +237,12 @@ namespace Rinsen.IdentityProvider.Outback
                     ShowInDiscoveryDocument = false,
                     Enabled = true,
                     ScopeClaims = new List<OutbackScopeClaim>()
-                },
-                new OutbackScope
+                });
+            }
+
+            if (!existingScopes.Any(m => m.ScopeName == "innovationboost.sendmessage"))
+            {
+                scopes.Add(new OutbackScope
                 {
                     ClaimsInIdToken = true,
                     Description = "Api for sending messages",
@@ -218,8 +251,12 @@ namespace Rinsen.IdentityProvider.Outback
                     ShowInDiscoveryDocument = false,
                     Enabled = true,
                     ScopeClaims = new List<OutbackScopeClaim>()
-                },
-                new OutbackScope
+                });
+            }
+
+            if (!existingScopes.Any(m => m.ScopeName == "innovationboost.createnode"))
+            {
+                scopes.Add(new OutbackScope
                 {
                     ClaimsInIdToken = true,
                     Description = "Api for creating Nodes",
@@ -228,35 +265,45 @@ namespace Rinsen.IdentityProvider.Outback
                     ShowInDiscoveryDocument = false,
                     Enabled = true,
                     ScopeClaims = new List<OutbackScopeClaim>()
-                }
-            };
+                });
+            }
 
-            await _outbackDbContext.OutbackScopes.AddRangeAsync(scopes);
-            await _outbackDbContext.SaveChangesAsync();
+            if (scopes.Any())
+            {
+                await _outbackDbContext.Scopes.AddRangeAsync(scopes);
+                await _outbackDbContext.SaveChangesAsync();
+            }
         }
 
         private async Task CreateDefaultOpenIdScopes()
         {
-            var scopes = new List<OutbackScope>
+            var existingScopes = await _outbackDbContext.Scopes.ToListAsync();
+
+            var scopes = new List<OutbackScope>();
+            if (!existingScopes.Any(m => m.ScopeName == "openid"))
             {
-                new OutbackScope 
-                { 
+                scopes.Add(new OutbackScope
+                {
                     ClaimsInIdToken = true,
                     Description = "OpenId Connect Subject identifier",
                     DisplayName = "openid",
                     ScopeName = "openid",
                     ShowInDiscoveryDocument = true,
                     Enabled = true,
-                    ScopeClaims = new List<OutbackScopeClaim> 
-                    { 
-                        new OutbackScopeClaim 
-                        { 
+                    ScopeClaims = new List<OutbackScopeClaim>
+                    {
+                        new OutbackScopeClaim
+                        {
                             Description = "Identifier for the End-User at the Issuer",
                             Type = StandardClaims.Subject
-                        } 
-                    } 
-                },
-                new OutbackScope
+                        }
+                    }
+                });
+            }
+
+            if (!existingScopes.Any(m => m.ScopeName == "openid"))
+            {
+                scopes.Add(new OutbackScope
                 {
                     ClaimsInIdToken = true,
                     Description = "Default profile claims",
@@ -277,8 +324,12 @@ namespace Rinsen.IdentityProvider.Outback
                             Type = StandardClaims.FamilyName
                         }
                     }
-                },
-                new OutbackScope
+                });
+            }
+
+            if (!existingScopes.Any(m => m.ScopeName == "openid"))
+            {
+                scopes.Add(new OutbackScope
                 {
                     ClaimsInIdToken = true,
                     Description = "Email claims",
@@ -299,34 +350,54 @@ namespace Rinsen.IdentityProvider.Outback
                             Type = StandardClaims.EmailVerified
                         }
                     }
-                }
-            };
+                });
+            }
 
-            await _outbackDbContext.OutbackScopes.AddRangeAsync(scopes);
-            await _outbackDbContext.SaveChangesAsync();
+            if (scopes.Any())
+            {
+                await _outbackDbContext.Scopes.AddRangeAsync(scopes);
+                await _outbackDbContext.SaveChangesAsync();
+            }
         }
 
         private async Task CreateDefaultClientFamilies()
         {
-            await _outbackDbContext.ClientFamilies.AddAsync(new OutbackClientFamily
-            {
-                Name = "WebApplication",
-                Description = "Web applications"
-            });
+            var existingClientFamilies = await _outbackDbContext.ClientFamilies.ToListAsync();
 
-            await _outbackDbContext.ClientFamilies.AddAsync(new OutbackClientFamily
-            {
-                Name = "SpaApplication",
-                Description = "Browser SPA technology based applications"
-            });
+            var clientFamilies = new List<OutbackClientFamily>();
 
-            await _outbackDbContext.ClientFamilies.AddAsync(new OutbackClientFamily
+            if (!existingClientFamilies.Any(m => m.Name == "WebApplication"))
             {
-                Name = "Node",
-                Description = "Home control nodes"
-            });
+                clientFamilies.Add(new OutbackClientFamily
+                {
+                    Name = "WebApplication",
+                    Description = "Web applications"
+                });
+            }
 
-            await _outbackDbContext.SaveChangesAsync();
+            if (!existingClientFamilies.Any(m => m.Name == "SpaApplication"))
+            {
+                clientFamilies.Add(new OutbackClientFamily
+                {
+                    Name = "SpaApplication",
+                    Description = "Browser SPA technology based applications"
+                });
+            }
+
+            if (!existingClientFamilies.Any(m => m.Name == "Node"))
+            {
+                clientFamilies.Add(new OutbackClientFamily
+                {
+                    Name = "Node",
+                    Description = "Home control nodes"
+                });
+            }
+            
+            if (clientFamilies.Any())
+            {
+                await _outbackDbContext.ClientFamilies.AddRangeAsync(clientFamilies);
+                await _outbackDbContext.SaveChangesAsync();
+            }
         }
     }
 

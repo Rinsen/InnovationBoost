@@ -50,7 +50,7 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             outbackClient.AddColumn(m => m.AccessTokenLifetime);
             outbackClient.AddColumn(m => m.AuthorityCodeLifetime);
             outbackClient.AddColumn(m => m.ClientFamilyId).ForeignKey("OutbackClientFamilies", "Id");
-            outbackClient.AddColumn(m => m.ClientId).Unique("UX_OutbackClient_ClientId");
+            outbackClient.AddColumn(m => m.ClientId, 200).Unique("UX_OutbackClient_ClientId");
             outbackClient.AddColumn(m => m.ClientType);
             outbackClient.AddColumn(m => m.ConsentRequired);
             outbackClient.AddColumn(m => m.Description, 1000);
@@ -68,6 +68,7 @@ namespace Rinsen.InnovationBoost.Installation.IdentityServer
             outbackClientAllowedCorsOriginsTable.AddAutoIncrementColumn(m => m.Id);
             outbackClientAllowedCorsOriginsTable.AddColumn(m => m.ClientId).ForeignKey<OutbackClient>(m => m.Id);
             outbackClientAllowedCorsOriginsTable.AddColumn(m => m.Description, 1000);
+            outbackClientAllowedCorsOriginsTable.AddColumn(m => m.Origin, 1000);
             outbackClientAllowedCorsOriginsTable.AddColumn(m => m.Created);
             outbackClientAllowedCorsOriginsTable.AddColumn(m => m.Updated);
             outbackClientAllowedCorsOriginsTable.AddColumn(m => m.Deleted);

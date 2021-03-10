@@ -18,7 +18,7 @@ namespace Rinsen.Logger
         {
             loggingBuilder.AddRinsenLogger(options =>
             {
-                options.ApplicationLogKey = configuration["Rinsen:ApplicationKey"];
+                options.ApplicationLogKey = configuration["Rinsen:ApplicationName"];
                 options.LogServiceUri = configuration["Rinsen:InnovationBoost"].TrimEnd('/') + "/";
                 options.EnvironmentName = environmentName;
             });

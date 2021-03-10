@@ -37,6 +37,9 @@
     <Content Update="Views\Identity\Create.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Identity\AccessDenied.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Identity\TwoFactor.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

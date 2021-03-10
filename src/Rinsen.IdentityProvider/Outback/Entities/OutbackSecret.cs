@@ -21,7 +21,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
         public DateTime Expires { get; set; }
     }
 
-    public enum PublicKeyCryptographyType
+    public enum PublicKeyCryptographyType : byte
     {
         EC_NistP256 = 1,
 

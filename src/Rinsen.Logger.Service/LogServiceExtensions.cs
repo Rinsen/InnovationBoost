@@ -13,7 +13,7 @@ namespace Rinsen.Logger.Service
         {
             loggingBuilder.AddLoggerService(options =>
             {
-                options.ApplicationLogKey = configuration["Rinsen:ApplicationKey"];
+                options.ApplicationLogKey = configuration["Rinsen:ApplicationName"];
                 options.LogServiceUri = configuration["Rinsen:InnovationBoost"];
                 options.ConnectionString = configuration["Rinsen:ConnectionString"];
                 options.EnvironmentName = environmentName;

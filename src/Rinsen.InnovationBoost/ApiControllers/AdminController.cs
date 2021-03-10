@@ -7,7 +7,7 @@ using Rinsen.IdentityProvider.Outback;
 namespace Rinsen.InnovationBoost.ApiControllers
 {
     [ApiController]
-    //[Authorize("AdminsOnly")]
+    [Authorize("AdminsOnly")]
     [Route("Outback/api/[controller]")]
     public class AdminController : Controller
     {

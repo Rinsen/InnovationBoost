@@ -116,6 +116,7 @@ namespace Rinsen.InnovationBoost.Controllers
                 {
                     await CreateAuditLogEvent("InvalidLoginAttempt", $"Email '{model.Email}'");
 
+                    model.InvalidEmailOrPassword = true;
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 }
             }
@@ -265,6 +266,22 @@ namespace Rinsen.InnovationBoost.Controllers
         private Task CreateAuditLogEvent(string eventType, string details)
         {
             return _auditLog.Log(eventType, details, HttpContext.Connection.RemoteIpAddress.ToString());
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied([FromQuery]string returnUrl)
+        {
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                ViewBag.ErrorMessage = $"{returnUrl} is not allowed";
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "No path";
+            }
+
+            return View();
         }
     }
 }

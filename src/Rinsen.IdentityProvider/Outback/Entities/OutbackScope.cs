@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Rinsen.IdentityProvider.Outback.Entities
 {
@@ -25,6 +26,7 @@ namespace Rinsen.IdentityProvider.Outback.Entities
 
         public DateTimeOffset? Deleted { get; set; }
 
+        [JsonIgnore]
         public List<OutbackClientScope> ClientScopes { get; set; }
 
         public List<OutbackScopeClaim> ScopeClaims { get; set; }

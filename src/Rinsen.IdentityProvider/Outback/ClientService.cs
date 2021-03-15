@@ -24,7 +24,7 @@ namespace Rinsen.IdentityProvider.Outback
                 .Include(m => m.ClientFamily)
                 .Include(m => m.LoginRedirectUris)
                 .Include(m => m.PostLogoutRedirectUris)
-                .Include(m => m.Scopes)
+                .Include(m => m.Scopes).ThenInclude(m => m.Scope)
                 .Include(m => m.Secrets)
                 .Include(m => m.SupportedGrantTypes).ToListAsync();
         }
@@ -76,9 +76,38 @@ namespace Rinsen.IdentityProvider.Outback
             await _outbackDbContext.SaveChangesAsync();
         }
 
-        public Task UpdateClient(int id, OutbackClient client)
+        public async Task UpdateClient(int id, OutbackClient updatedClient)
         {
-            throw new NotImplementedException();
+            var client = await _outbackDbContext.Clients.Where(m => m.Id == id).Include(m => m.AllowedCorsOrigins)
+                .Include(m => m.ClientClaims)
+                .Include(m => m.ClientFamily)
+                .Include(m => m.LoginRedirectUris)
+                .Include(m => m.PostLogoutRedirectUris)
+                .Include(m => m.Scopes)
+                .Include(m => m.Secrets)
+                .Include(m => m.SupportedGrantTypes).SingleOrDefaultAsync();
+
+            if (ClientPropertiesEquals(client, updatedClient))
+            {
+                UpdateClientProperties(client, updatedClient);
+            }
+
+            await _outbackDbContext.SaveChangesAsync();
+        }
+
+        private static void UpdateClientProperties(OutbackClient client, OutbackClient updatedClient)
+        {
+            client.AccessTokenLifetime = updatedClient.AccessTokenLifetime;
+            client.AuthorityCodeLifetime = updatedClient.AccessTokenLifetime;
+            client.ClientFamilyId = updatedClient.ClientFamilyId;
+            client.ClientType = updatedClient.ClientType;
+            client.ConsentRequired = updatedClient.ConsentRequired;
+            client.Description = updatedClient.Description;
+            client.IdentityTokenLifetime = updatedClient.IdentityTokenLifetime;
+            client.IssueRefreshToken = updatedClient.IssueRefreshToken;
+            client.Name = updatedClient.Name;
+            client.SaveConsent = updatedClient.SaveConsent;
+            client.SavedConsentLifetime = updatedClient.SavedConsentLifetime;
         }
 
         public async Task<OutbackClientFamily> CreateNewFamily(string name, string description)
@@ -94,6 +123,21 @@ namespace Rinsen.IdentityProvider.Outback
             await _outbackDbContext.SaveChangesAsync();
 
             return outbackClientFamily;
+        }
+
+        private static bool ClientPropertiesEquals(OutbackClient client, OutbackClient updatedClient)
+        {
+            return client.AccessTokenLifetime == updatedClient.AccessTokenLifetime
+                && client.AuthorityCodeLifetime == updatedClient.AccessTokenLifetime
+                && client.ClientFamilyId == updatedClient.ClientFamilyId
+                && client.ClientType == updatedClient.ClientType
+                && client.ConsentRequired == updatedClient.ConsentRequired
+                && client.Description == updatedClient.Description
+                && client.IdentityTokenLifetime == updatedClient.IdentityTokenLifetime
+                && client.IssueRefreshToken == updatedClient.IssueRefreshToken
+                && client.Name == updatedClient.Name
+                && client.SaveConsent == updatedClient.SaveConsent
+                && client.SavedConsentLifetime == updatedClient.SavedConsentLifetime;
         }
     }
 }

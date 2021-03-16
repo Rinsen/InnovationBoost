@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Rinsen.IdentityProvider.Outback.Entities;
+using Rinsen.Outback;
 using Rinsen.Outback.Claims;
 
 namespace Rinsen.IdentityProvider.Outback
@@ -86,7 +87,6 @@ namespace Rinsen.IdentityProvider.Outback
             var createLogsScope = await _outbackDbContext.Scopes.SingleAsync(m => m.ScopeName == "innovationboost.createlogs");
 
             var secret = _randomStringGenerator.GetRandomString(30);
-            var secretHashString = GetSha256Hash(secret);
 
             var client = new OutbackClient
             {
@@ -103,7 +103,7 @@ namespace Rinsen.IdentityProvider.Outback
                     new OutbackClientSecret
                     {
                         Description = "Initial secret created by installer",
-                        Secret = secretHashString,
+                        Secret = HashHelper.GetSha256Hash(secret),
                     }
                 },
                 Scopes = new List<OutbackClientScope>
@@ -123,25 +123,6 @@ namespace Rinsen.IdentityProvider.Outback
                 ClientId = client.ClientId,
                 Secret = secret
             };
-        }
-
-        private static string GetSha256Hash(string secret)
-        {
-            string secretHashString = string.Empty;
-            using (var mySHA256 = SHA256.Create())
-            {
-                var hash = mySHA256.ComputeHash(Encoding.UTF8.GetBytes(secret));
-
-                var sb = new StringBuilder();
-                foreach (byte b in hash)
-                {
-                    sb.Append(b.ToString("X2"));
-                }
-
-                secretHashString = sb.ToString();
-            }
-
-            return secretHashString;
         }
 
         private async Task<string> CreateInnovationBoostSpaClient()
